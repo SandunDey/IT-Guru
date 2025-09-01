@@ -1,0 +1,49 @@
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import loggingController from "./loggingController.js";
+import Admin from '../model/Admin.js';
+
+dotenv.config();
+
+export function saveAdmin(req,res){
+const hashedPassword = bcrypt.hashSync(req.body.password,10);
+console.log(hashedPassword);
+
+const admin = new Admin({
+    firstName: req.body.firstName,
+    email: req.body.email,
+    phoneNumber: req.body.phoneNumber,
+    password: hashedPassword,
+    role: req.body.role || 'Admin',
+});
+admin.save()
+                .then(()=>{
+                    res.status(201).json({
+                        message: "admin saved successfully",admin
+                    });
+                }).catch((err)=>{
+                        res.status(500).json({
+                        message: "Error saving admin",
+                        error: err.message
+                    });
+                });
+}
+
+export function adminLoging(req,res){
+    req.body.role = 'admin';  
+    return loggingController(req, res);
+}
+export async function getAllAdmins(req, res) {
+    try {
+        const admins = await Admin.find();
+        res.json(admins);
+    } catch (err) {
+        res.status(500).json({
+            message: "Error retrieving admins",
+            error: err.message
+        });
+    }
+}
+
+
