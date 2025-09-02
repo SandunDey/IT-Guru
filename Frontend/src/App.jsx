@@ -5,6 +5,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import PaymentsPage from './Payment.jsx';
 import LoginPage from './LoginPage.jsx'
+import AdminLoginPage from './loging.jsx'
 
 export default function App() {
   return(
@@ -12,6 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/payment" element={<PaymentsPage/>}/>
         <Route path="/" element={<LoginPage/>}/>
+        <Route path="/admin" element={<AdminLoginPage/>}/>
       </Routes>
     </BrowserRouter>
 
