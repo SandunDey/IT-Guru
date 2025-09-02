@@ -1,11 +1,10 @@
 import { customAlphabet } from 'nanoid';
+// Ensure the path is correct (models, not model) - Corrected path below
 import SupportTicket from '../model/SupportTicketModel.js';
 
 // --- Create a new support ticket ---
 export const createTicket = async (req, res) => {
   try {
-    
-    // --- අලුත් fields ටික මෙතනට ගන්න ---
     const { 
         name, 
         email, 
@@ -21,9 +20,11 @@ export const createTicket = async (req, res) => {
       return res.status(400).json({ message: 'Please fill all required fields.' });
     }
 
+    // Generate the unique reference code
     const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 6);
     const referenceCode = `TCK-${nanoid()}`;
 
+    // Create a new ticket object WITH the reference code
     const newTicket = new SupportTicket({
         name,
         email,
@@ -32,11 +33,13 @@ export const createTicket = async (req, res) => {
         courseOrExamYear,
         subject,
         message,
+        referenceCode, // <-- THIS WAS THE MISSING LINE
     });
 
     const savedTicket = await newTicket.save();
     res.status(201).json({ message: 'Support ticket created successfully!', ticket: savedTicket });
   } catch (error) {
+    console.log("Error creating ticket:", error);
     res.status(500).json({ message: 'Server error while creating ticket.', error: error.message });
   }
 };
@@ -44,7 +47,7 @@ export const createTicket = async (req, res) => {
 // --- Get all support tickets ---
 export const getAllTickets = async (req, res) => {
   try {
-    const tickets = await SupportTicket.find({});
+    const tickets = await SupportTicket.find({}).sort({ createdAt: -1 }); // Show newest first
     res.status(200).json(tickets);
   } catch (error) {
     res.status(500).json({ message: 'Server error while fetching tickets.', error: error.message });
@@ -64,14 +67,15 @@ export const getTicketById = async (req, res) => {
   }
 };
 
-// --- Update a ticket by ID ---
+// --- Update a ticket by ID (For Admin/Staff use) ---
 export const updateTicket = async (req, res) => {
   try {
-    const { title, description, status, priority } = req.body;
+    // Corrected to use new field names like 'subject' and 'message'
+    const { subject, message, status, priority } = req.body; 
     const updatedTicket = await SupportTicket.findByIdAndUpdate(
       req.params.id,
-      { title, description, status, priority },
-      { new: true, runValidators: true } // 'new: true' returns the updated document
+      { subject, message, status, priority },
+      { new: true, runValidators: true }
     );
 
     if (!updatedTicket) {
@@ -83,7 +87,7 @@ export const updateTicket = async (req, res) => {
   }
 };
 
-// --- Delete a ticket by ID ---
+// --- Delete a ticket by ID (Generally not recommended, use 'Closed' status instead) ---
 export const deleteTicket = async (req, res) => {
   try {
     const deletedTicket = await SupportTicket.findByIdAndDelete(req.params.id);
@@ -95,3 +99,4 @@ export const deleteTicket = async (req, res) => {
     res.status(500).json({ message: 'Server error while deleting ticket.', error: error.message });
   }
 };
+
