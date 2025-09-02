@@ -11,6 +11,7 @@ import StudentRoute from "./routes/StudentRoute.js";
 import adminrouter from "./routes/AdminRoute.js";
 import StaffRouter from "./routes/StaffRoute.js";
 import router from "./routes/paymentRoutes.js";
+import SupportTicketRoute from "./routes/SupportTicketRoute.js";//supportTicket(Vishwa)
 
 
 dotenv.config();
@@ -82,6 +83,7 @@ async function bootstrap() {
   app.use("/api/Admin", adminrouter);
   app.use("/api/Staff", StaffRouter);
   app.use("/api/payment",router);
+  app.use("/api/tickets", SupportTicketRoute);//supportTicket(Vishwa)
 
   // 5) 404 + error handler
   app.use((req, res) => res.status(404).json({ message: "Route not found" }));
