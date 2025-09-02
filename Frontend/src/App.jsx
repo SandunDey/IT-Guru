@@ -5,8 +5,12 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import PaymentsPage from './Payment.jsx';
 import LoginPage from './LoginPage.jsx'
-import SupportTicketPage from './SupportTicketPage.jsx'//supportTicket(Vishwa)
 import AdminLoginPage from './loging.jsx'
+//supportTicket(Vishwa)
+import HelpCenterPage from './HelpCenterPage.jsx';
+import SubmitTicketPage from './SubmitTicketPage.jsx';
+import MyTicketsPage from './MyTicketsPage.jsx';
+import TicketDetailPage from './TicketDetailPage.jsx';
 
 export default function App() {
   return(
@@ -14,7 +18,10 @@ export default function App() {
       <Routes>
         <Route path="/payment" element={<PaymentsPage/>}/>
         <Route path="/" element={<LoginPage/>}/>
-        <Route path="/support" element={<SupportTicketPage />} />
+        <Route path="/support" element={<HelpCenterPage />} />
+        <Route path="/submit-ticket" element={<SubmitTicketPage />} />
+        <Route path="/my-tickets" element={<MyTicketsPage />} />
+        <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
         <Route path="/admin" element={<AdminLoginPage/>}/>
       </Routes>
     </BrowserRouter>

@@ -44,6 +44,13 @@ const supportTicketSchema = new mongoose.Schema(
         }
     ], // For file uploads
 
+    referenceCode: {
+      type: String,
+      required: true,
+      unique: true,
+      uppercase: true,
+    },
+
     // --- පවතින Fields ---
     status: {
       type: String,

@@ -1,8 +1,10 @@
+import { customAlphabet } from 'nanoid';
 import SupportTicket from '../model/SupportTicketModel.js';
 
 // --- Create a new support ticket ---
 export const createTicket = async (req, res) => {
   try {
+    
     // --- අලුත් fields ටික මෙතනට ගන්න ---
     const { 
         name, 
@@ -18,6 +20,9 @@ export const createTicket = async (req, res) => {
     if (!name || !email || !registrationNumber || !subject || !message) {
       return res.status(400).json({ message: 'Please fill all required fields.' });
     }
+
+    const nanoid = customAlphabet('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 6);
+    const referenceCode = `TCK-${nanoid()}`;
 
     const newTicket = new SupportTicket({
         name,
