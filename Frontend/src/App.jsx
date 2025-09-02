@@ -6,6 +6,7 @@ import './App.css'
 import PaymentsPage from './Payment.jsx';
 import LoginPage from './LoginPage.jsx'
 import SupportTicketPage from './SupportTicketPage.jsx'//supportTicket(Vishwa)
+import AdminLoginPage from './loging.jsx'
 
 export default function App() {
   return(
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/payment" element={<PaymentsPage/>}/>
         <Route path="/" element={<LoginPage/>}/>
         <Route path="/support" element={<SupportTicketPage />} />
+        <Route path="/admin" element={<AdminLoginPage/>}/>
       </Routes>
     </BrowserRouter>
 
