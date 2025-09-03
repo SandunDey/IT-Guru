@@ -1,318 +1,160 @@
-import React, { useMemo, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";   // ⬅️ add this
+import { signUpStudent } from "./api";
 
-// Resolve API base from Vite or CRA envs (works in both)
-const API_BASE =
-  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||
-  (typeof process !== "undefined" && process.env?.REACT_APP_API_BASE_URL) ||
-  "";
-
-// --- Validators ------------------------------------------------------------
-const NIC_REGEX = /^([0-9]{9}[VvXx]|[0-9]{12})$/; // Sri Lanka NIC (old/new)
-const PHONE_REGEX = /^\+?[0-9]{10,15}$/;
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-const initialValues = {
-  staffId: "",
+const initial = {
+  studentId: "",
   name: "",
   address: "",
+  year: "2025",
   nic: "",
-  gender: "",
+  birthday: "",
+  gender: "Male",
   email: "",
   password: "",
   confirmPassword: "",
   phonenumber: "",
-  role: "staff",
 };
 
-function validate(values) {
-  const errors = {};
-  if (!values.staffId.trim()) errors.staffId = "Staff ID is required";
-  if (!values.name.trim()) errors.name = "Name is required";
-  if (!values.address.trim()) errors.address = "Address is required";
+const nicRegex = /^([0-9]{9}[VX]|[0-9]{12})$/;
+const phoneRegex = /^\+?[0-9]{10,15}$/;
+const emailRegex = /^\S+@\S+\.\S+$/;
 
-  if (!values.nic.trim()) errors.nic = "NIC is required";
-  else if (!NIC_REGEX.test(values.nic.trim())) errors.nic = "Invalid NIC format";
-
-  if (!values.gender) errors.gender = "Select a gender";
-
-  if (!values.email.trim()) errors.email = "Email is required";
-  else if (!EMAIL_REGEX.test(values.email.trim())) errors.email = "Invalid email";
-
-  if (!values.password) errors.password = "Password is required";
-  else if (values.password.length < 6) errors.password = "Minimum 6 characters";
-
-  if (!values.confirmPassword) errors.confirmPassword = "Confirm your password";
-  else if (values.confirmPassword !== values.password)
-    errors.confirmPassword = "Passwords do not match";
-
-  if (!values.phonenumber.trim()) errors.phonenumber = "Phone number is required";
-  else if (!PHONE_REGEX.test(values.phonenumber.trim()))
-    errors.phonenumber = "Invalid phone number";
-
-  if (!values.role) errors.role = "Role is required";
-
-  return errors;
-}
-
-export default function AddStaffPage() {
-  const [values, setValues] = useState(initialValues);
-  const [errors, setErrors] = useState({});
-  const [serverError, setServerError] = useState("");
-  const [success, setSuccess] = useState("");
+export default function SignupForm() {
+  const [form, setForm] = useState(initial);
   const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState(null);
+  const navigate = useNavigate();                 // ⬅️ init
 
-  const isValid = useMemo(() => Object.keys(validate(values)).length === 0, [values]);
-
-  function handleChange(e) {
+  const onChange = (e) => {
     const { name, value } = e.target;
-    // Auto-format NIC to uppercase
-    const next = name === "nic" ? value.toUpperCase() : value;
-    setValues((v) => ({ ...v, [name]: next }));
-    // Live-validate individual field
-    setErrors((prev) => {
-      const nextValues = { ...values, [name]: next };
-      const v = validate(nextValues);
-      return { ...prev, [name]: v[name] };
-    });
-  }
+    setForm((f) => ({ ...f, [name]: value }));
+  };
 
-  async function handleSubmit(e) {
+  const validate = () => {
+    if (!form.studentId || !form.name || !form.address) return "Fill required fields";
+    const yearNum = Number(form.year);
+    if (!Number.isInteger(yearNum) || yearNum < 2025) return "Year must be >= 2025";
+    if (!nicRegex.test(form.nic.toUpperCase())) return "Invalid NIC";
+    if (form.birthday && isNaN(Date.parse(form.birthday))) return "Invalid birthday";
+    if (!emailRegex.test(form.email)) return "Invalid email";
+    if (!phoneRegex.test(form.phonenumber)) return "Invalid phone number";
+    if (form.password.length < 6) return "Password must be at least 6 characters";
+    if (form.password !== form.confirmPassword) return "Passwords do not match";
+    return null;
+  };
+
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setServerError("");
-    setSuccess("");
-
-    const v = validate(values);
-    setErrors(v);
-    if (Object.keys(v).length > 0) return;
-
+    const error = validate();
+    if (error) {
+      setMsg({ type: "error", text: error });
+      return;
+    }
+    setLoading(true);
+    setMsg(null);
     try {
-      setLoading(true);
-      // Adjust endpoint to match your backend route
-      const res = await axios.post(`${API_BASE}/api/staff`, {
-        staffId: values.staffId.trim(),
-        name: values.name.trim(),
-        address: values.address.trim(),
-        nic: values.nic.trim(),
-        gender: values.gender,
-        email: values.email.trim().toLowerCase(),
-        password: values.password,
-        confirmPassword: values.confirmPassword,
-        phonenumber: values.phonenumber.trim(),
-        role: values.role,
-      }, { withCredentials: true });
+      const payload = { ...form, year: Number(form.year), nic: form.nic.toUpperCase() };
+      const { message } = await signUpStudent(payload);
 
-      if (res.status >= 200 && res.status < 300) {
-        setSuccess("Staff member added successfully.");
-        setValues(initialValues);
-      }
+      // (optional) show a brief success then redirect
+      setMsg({ type: "success", text: message || "Signed up" });
+      setForm(initial);
+
+      // redirect to login; pass a flash message if you want to show it there
+      navigate("/login", {
+        replace: true,
+        state: { flash: "Account created. Please log in." },
+      });
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Failed to add staff";
-      setServerError(msg);
+      setMsg({ type: "error", text: err.message });
     } finally {
       setLoading(false);
     }
-  }
+  };
+
+  const onClear = () => setForm(initial);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-6 md:p-8">
-        <header className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight">Add New Staff</h1>
-          <p className="text-gray-500 mt-1">Fill in the details and submit to create a staff account.</p>
+    <div className="auth-wrapper">
+      <div className="card">
+        <header className="card__header">
+          <h1 className="card__title">Create your Student account</h1>
+          <p className="card__subtitle">Fill in your details to get started.</p>
         </header>
 
-        {serverError && (
-          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-red-700">
-            {serverError}
-          </div>
-        )}
-        {success && (
-          <div className="mb-4 rounded-lg border border-green-200 bg-green-50 p-3 text-green-700">
-            {success}
+        {msg && (
+          <div className={`alert ${msg.type === "success" ? "alert--success" : "alert--error"}`} role="alert">
+            {msg.text}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Staff ID */}
-          <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="staffId">Staff ID *</label>
-            <input
-              id="staffId"
-              name="staffId"
-              type="text"
-              className={`w-full rounded-xl border p-2.5 outline-none focus:ring-2 ${errors.staffId ? "border-red-400 focus:ring-red-200" : "border-gray-300 focus:ring-gray-200"}`}
-              placeholder="STF-001"
-              value={values.staffId}
-              onChange={handleChange}
-            />
-            {errors.staffId && <p className="text-xs text-red-600 mt-1">{errors.staffId}</p>}
+        <form onSubmit={onSubmit} className="form">
+          <div className="form-grid">
+            {/* ... all your fields unchanged ... */}
+            <div className="field">
+              <label className="label" htmlFor="studentId">Student ID</label>
+              <input className="input" id="studentId" name="studentId" value={form.studentId} onChange={onChange} required />
+            </div>
+            <div className="field">
+              <label className="label" htmlFor="name">Full Name</label>
+              <input className="input" id="name" name="name" value={form.name} onChange={onChange} required />
+            </div>
+            <div className="field">
+              <label className="label" htmlFor="address">Address</label>
+              <input className="input" id="address" name="address" value={form.address} onChange={onChange} required />
+            </div>
+            <div className="field">
+              <label className="label" htmlFor="year">Academic Year</label>
+              <input className="input" type="number" id="year" name="year" min={2025} value={form.year} onChange={onChange} required />
+            </div>
+            <div className="field">
+              <label className="label" htmlFor="nic">NIC</label>
+              <input className="input" id="nic" name="nic" placeholder="200012345678" value={form.nic} onChange={onChange} required />
+            </div>
+            <div className="field">
+              <label className="label" htmlFor="birthday">Birthday</label>
+              <input className="input" type="date" id="birthday" name="birthday" value={form.birthday} onChange={onChange} />
+            </div>
+            <div className="field">
+              <label className="label" htmlFor="gender">Gender</label>
+              <select className="input" id="gender" name="gender" value={form.gender} onChange={onChange} required>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div className="field">
+              <label className="label" htmlFor="email">Email</label>
+              <input className="input" type="email" id="email" name="email" placeholder="you@example.com" value={form.email} onChange={onChange} required />
+            </div>
+            <div className="field">
+              <label className="label" htmlFor="password">Password</label>
+              <input className="input" type="password" id="password" name="password" value={form.password} onChange={onChange} required />
+            </div>
+            <div className="field">
+              <label className="label" htmlFor="confirmPassword">Confirm Password</label>
+              <input className="input" type="password" id="confirmPassword" name="confirmPassword" value={form.confirmPassword} onChange={onChange} required />
+            </div>
+            <div className="field">
+              <label className="label" htmlFor="phonenumber">Phone Number</label>
+              <input className="input" id="phonenumber" name="phonenumber" placeholder="+9471XXXXXXX" value={form.phonenumber} onChange={onChange} required />
+            </div>
           </div>
 
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="name">Full Name *</label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              className={`w-full rounded-xl border p-2.5 outline-none focus:ring-2 ${errors.name ? "border-red-400 focus:ring-red-200" : "border-gray-300 focus:ring-gray-200"}`}
-              placeholder="Jane Doe"
-              value={values.name}
-              onChange={handleChange}
-            />
-            {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name}</p>}
-          </div>
-
-          {/* Address */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium mb-1" htmlFor="address">Address *</label>
-            <input
-              id="address"
-              name="address"
-              type="text"
-              className={`w-full rounded-xl border p-2.5 outline-none focus:ring-2 ${errors.address ? "border-red-400 focus:ring-red-200" : "border-gray-300 focus:ring-gray-200"}`}
-              placeholder="123, Example Road, Colombo"
-              value={values.address}
-              onChange={handleChange}
-            />
-            {errors.address && <p className="text-xs text-red-600 mt-1">{errors.address}</p>}
-          </div>
-
-          {/* NIC */}
-          <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="nic">NIC *</label>
-            <input
-              id="nic"
-              name="nic"
-              type="text"
-              className={`w-full rounded-xl border p-2.5 uppercase tracking-wider outline-none focus:ring-2 ${errors.nic ? "border-red-400 focus:ring-red-200" : "border-gray-300 focus:ring-gray-200"}`}
-              placeholder="199012345678 or 900123456V"
-              value={values.nic}
-              onChange={handleChange}
-            />
-            {errors.nic && <p className="text-xs text-red-600 mt-1">{errors.nic}</p>}
-          </div>
-
-          {/* Gender */}
-          <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="gender">Gender *</label>
-            <select
-              id="gender"
-              name="gender"
-              className={`w-full rounded-xl border p-2.5 outline-none focus:ring-2 ${errors.gender ? "border-red-400 focus:ring-red-200" : "border-gray-300 focus:ring-gray-200"}`}
-              value={values.gender}
-              onChange={handleChange}
-            >
-              <option value="">Select</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-            {errors.gender && <p className="text-xs text-red-600 mt-1">{errors.gender}</p>}
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="email">Email *</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              className={`w-full rounded-xl border p-2.5 outline-none focus:ring-2 ${errors.email ? "border-red-400 focus:ring-red-200" : "border-gray-300 focus:ring-gray-200"}`}
-              placeholder="name@example.com"
-              value={values.email}
-              onChange={handleChange}
-            />
-            {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email}</p>}
-          </div>
-
-          {/* Phone */}
-          <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="phonenumber">Phone *</label>
-            <input
-              id="phonenumber"
-              name="phonenumber"
-              type="tel"
-              className={`w-full rounded-xl border p-2.5 outline-none focus:ring-2 ${errors.phonenumber ? "border-red-400 focus:ring-red-200" : "border-gray-300 focus:ring-gray-200"}`}
-              placeholder="+9471XXXXXXX"
-              value={values.phonenumber}
-              onChange={handleChange}
-            />
-            {errors.phonenumber && <p className="text-xs text-red-600 mt-1">{errors.phonenumber}</p>}
-          </div>
-
-          {/* Role */}
-          <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="role">Role *</label>
-            <select
-              id="role"
-              name="role"
-              className={`w-full rounded-xl border p-2.5 outline-none focus:ring-2 ${errors.role ? "border-red-400 focus:ring-red-200" : "border-gray-300 focus:ring-gray-200"}`}
-              value={values.role}
-              onChange={handleChange}
-            >
-              <option value="staff">Staff</option>
-              <option value="admin">Admin</option>
-              <option value="teacher">Teacher</option>
-            </select>
-            {errors.role && <p className="text-xs text-red-600 mt-1">{errors.role}</p>}
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="password">Password *</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              className={`w-full rounded-xl border p-2.5 outline-none focus:ring-2 ${errors.password ? "border-red-400 focus:ring-red-200" : "border-gray-300 focus:ring-gray-200"}`}
-              placeholder="••••••"
-              value={values.password}
-              onChange={handleChange}
-            />
-            {errors.password && <p className="text-xs text-red-600 mt-1">{errors.password}</p>}
-          </div>
-
-          {/* Confirm Password */}
-          <div>
-            <label className="block text-sm font-medium mb-1" htmlFor="confirmPassword">Confirm Password *</label>
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              className={`w-full rounded-xl border p-2.5 outline-none focus:ring-2 ${errors.confirmPassword ? "border-red-400 focus:ring-red-200" : "border-gray-300 focus:ring-gray-200"}`}
-              placeholder="••••••"
-              value={values.confirmPassword}
-              onChange={handleChange}
-            />
-            {errors.confirmPassword && <p className="text-xs text-red-600 mt-1">{errors.confirmPassword}</p>}
-          </div>
-
-          {/* Actions */}
-          <div className="md:col-span-2 flex items-center justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={() => { setValues(initialValues); setErrors({}); setServerError(""); setSuccess(""); }}
-              className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-50"
-              disabled={loading}
-            >
+          <div className="form__footer">
+            <button type="button" className="btn btn--ghost" onClick={onClear} disabled={loading}>
               Clear
             </button>
-            <button
-              type="submit"
-              disabled={loading || !isValid}
-              className={`px-4 py-2 rounded-xl text-white ${loading || !isValid ? "bg-gray-400" : "bg-black hover:opacity-90"}`}
-            >
-              {loading ? "Saving..." : "Add Staff"}
+            <button type="submit" className="btn btn--primary" disabled={loading}>
+              {loading ? "Saving..." : "Create account"}
             </button>
           </div>
-        </form>
 
-        {/* Tiny helper text */}
-        <p className="text-[11px] text-gray-400 mt-4">
-          By creating an account you confirm the details are correct. Required fields are marked with *. 
-        </p>
+          <p className="fineprint">
+            By signing up, you agree to our <a href="#" onClick={(e)=>e.preventDefault()}>Terms</a> and <a href="#" onClick={(e)=>e.preventDefault()}>Privacy Policy</a>.
+          </p>
+        </form>
       </div>
     </div>
   );

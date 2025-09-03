@@ -33,10 +33,7 @@ async function bootstrap() {
 
   app.use(helmet());
   app.use(
-    cors({
-      origin: true,
-      credentials: true,
-    })
+    cors()
   );
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ extended: true }));
@@ -82,6 +79,7 @@ async function bootstrap() {
   app.use("/api/Admin", adminrouter);
   app.use("/api/Staff", StaffRouter);
   app.use("/api/payment",router);
+  app.use("/api/staff",   StaffRouter); 
 
   // 5) 404 + error handler
   app.use((req, res) => res.status(404).json({ message: "Route not found" }));
