@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const API_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -34,12 +36,14 @@ export default function LoginPage() {
         }
       );
 
+
       if (res?.data?.token) {
         if (remember) localStorage.setItem("itguru_token", res.data.token);
         else sessionStorage.setItem("itguru_token", res.data.token);
+          navigate("/dashboard", { replace: true });
       }
 
-      window.location.href = "/dashboard";
+
     } catch (err) {
       const msg =
         err?.response?.data?.message ||
@@ -158,7 +162,7 @@ export default function LoginPage() {
         {/* Secondary */}
         <div className="mt-6 grid grid-cols-2 gap-4">
           <a
-            href="/register"
+             onClick={() => navigate("/signup")}
             className="rounded-lg border border-gray-300 py-2.5 text-center text-sm font-medium text-black hover:bg-gray-50"
           >
             Create account

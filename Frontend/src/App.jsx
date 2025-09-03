@@ -6,6 +6,12 @@ import './App.css'
 import PaymentsPage from './Payment.jsx';
 import LoginPage from './LoginPage.jsx'
 import AdminLoginPage from './loging.jsx'
+import StudentSignUpPage from "./StudentSignUpPage.jsx";
+import Checkout from './button.jsx'
+import StaffDashboard from './StaffDashboard.jsx'
+
+
+
 
 export default function App() {
   return(
@@ -14,11 +20,27 @@ export default function App() {
         <Route path="/payment" element={<PaymentsPage/>}/>
         <Route path="/" element={<LoginPage/>}/>
         <Route path="/admin" element={<AdminLoginPage/>}/>
+        <Route path="/signup" element={<StudentSignUpPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/button" element={<Checkout/>}/>
+         <Route path="/admindashbord" element={<StaffDashboard/>} />
+        
       </Routes>
     </BrowserRouter>
 
   )
 
 }
+
+
+function LoginPagePlaceholder() {
+  return (
+    <div style={{ padding: 24 }}>
+      <h1>Login Page</h1>
+      <p>Replace this with your real login page component.</p>
+    </div>
+  );
+}
+
 
 
