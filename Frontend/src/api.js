@@ -1,20 +1,44 @@
 // src/api.js
 import axios from "axios";
 
-// point to your API (NOT the Vite dev server)
+/** Base URL (strip trailing slash) */
 const RAW = import.meta.env?.VITE_API_BASE_URL || "http://localhost:3000";
 export const API_BASE = RAW.replace(/\/$/, "");
 
+/** Single axios client
+ * NOTE: Staff update/delete need admin session, so cookies must be sent.
+ * If you 100% don't use sessions, set withCredentials:false – but your backend
+ * enables sessions when deps exist, so we keep it true for safety.
+ */
 export const api = axios.create({
   baseURL: API_BASE,
   headers: { "Content-Type": "application/json" },
-  withCredentials: false, // set true only if you actually use cookies
+  withCredentials: true,
 });
 
-// -------- Students --------
-export const signUpStudent = (payload) => api.post("/api/student", payload);
-export const loginStudent  = (payload) => api.post("/api/student/login", payload);
+/* -------------------- STUDENTS -------------------- */
+/** These match your typical Student routes used elsewhere:
+ *  - POST /api/Student/register
+ *  - POST /api/Student/loging  (note: backend uses 'loging' spelling)
+ */
+export const signUpStudent = (payload) =>
+  api.post("/api/Student/register", payload);
+export const loginStudent = (payload) =>
+  api.post("/api/Student/loging", payload);
 
-// -------- Staff --------
-export const createStaff  = (payload) => api.post("/api/staff", payload);   // <— PLURAL
-export const loginStaff   = (payload) => api.post("/api/staff/login", payload);
+
+export const registerStaff = (payload) =>
+  api.post("/api/Staff/register", payload);
+export const loginStaff = (payload) =>
+  api.post("/api/Staff/loging", payload);
+export const getAllStaff = () =>
+  api.get("/api/Staff/viewStaffmember");
+export const getStaffById = (staffId) =>
+  api.get(`/api/Staff/viewStaffmember/${encodeURIComponent(staffId)}`);
+export const updateStaffById = (staffId, payload) =>
+  api.put(`/api/Staff/updateStaffmember/${encodeURIComponent(staffId)}`, payload);
+export const deleteStaffById = (staffId) =>
+  api.delete(`/api/Staff/deleteStaffmember/${encodeURIComponent(staffId)}`);
+
+/* Optional: generic helper if you need raw access */
+export default api;
