@@ -1,10 +1,10 @@
 @import "tailwindcss";
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 html, body, #root { height: 100%; }
-body { @apply bg-gradient-to-br from-blue-500 to-blue-700 text-black; } /* blue bg */
+body { @apply bg-gradient-to-br from-blue-500 to-blue-700 text-black; } blue bg
 
 a {
   font-weight: 500;
@@ -58,4 +58,25 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+} */
+
+@theme {
+  --color-accent :#124170 ;
+  --color-primary :#FFFffF ;
+  --color-boardercolor:#1C6EA4;
+  --color-similar :#222831 ;
+
+
 }
+
+/* --- Hide scrollbar but keep scroll ability --- */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;          /* Chrome, Safari, Edge (WebKit) */
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none;    /* Firefox */
+}
+
+
