@@ -134,7 +134,7 @@ export default function AdminAnnouncementPage() {
 
         <div className="flex items-center gap-3">
           <Link
-            to="/admin/add-announcements"
+            to="/admin/dashboard/add-announcements"
             className="flex items-center bg-blue-950 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-boardercolor transition-colors"
           >
             <FaRegPlusSquare className="text-xl mr-2" />
@@ -143,7 +143,7 @@ export default function AdminAnnouncementPage() {
 
           {/* Report Button */}
           <Link
-            to="/admin/announcement-report"
+            to="/admin/dashboard/announcement-report"
             className="flex items-center bg-blue-950 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-boardercolor transition-colors"
           >
             <TbReportAnalytics className="text-xl" />{" "}
@@ -192,7 +192,7 @@ export default function AdminAnnouncementPage() {
                         title="Edit"
                         aria-label="Edit Announcement"
                         onClick={() => {
-                          navigate("/admin/update-announcements", {
+                          navigate("/admin/dashboard/update-announcements", {
                             // state kiyannenjson ekk update karankot e adal product tike details yavann state json ekk danva
                             state: item,
                           });

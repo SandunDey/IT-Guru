@@ -2,7 +2,11 @@ import { Link, Route, Routes } from "react-router-dom";
 import { HiOutlineUserAdd, HiOutlineUsers } from "react-icons/hi";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { FiUsers } from "react-icons/fi";
-import { FaRegCalendarTimes, FaRegMoneyBillAlt, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaRegCalendarTimes,
+  FaRegMoneyBillAlt,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import { TfiAnnouncement } from "react-icons/tfi";
 import {
   MdOutlineFeedback,
@@ -32,7 +36,7 @@ export default function AdminPage() {
         </div>
 
         <Link
-          to="/admin"
+          to="/admin/dashboard"
           className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg 
              transition-all duration-300 ease-in-out
              hover:scale-105 hover:rounded-2xl 
@@ -44,7 +48,7 @@ export default function AdminPage() {
         </Link>
 
         <Link
-          to="/admin/users"
+          to="/admin/dashboard/users"
           className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg 
              transition-all duration-300 ease-in-out
              hover:scale-105 hover:rounded-2xl 
@@ -56,7 +60,7 @@ export default function AdminPage() {
         </Link>
 
         <Link
-          to="/admin/staff"
+          to="/admin/dashboard/staff"
           className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg 
              transition-all duration-300 ease-in-out
              hover:scale-105 hover:rounded-2xl 
@@ -68,7 +72,7 @@ export default function AdminPage() {
         </Link>
 
         <Link
-          to="/admin/payment"
+          to="/admin/dashboard/payment"
           className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg 
              transition-all duration-300 ease-in-out
              hover:scale-105 hover:rounded-2xl 
@@ -80,7 +84,7 @@ export default function AdminPage() {
         </Link>
 
         <Link
-          to="/admin/announcements"
+          to="/admin/dashboard/announcements"
           className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg 
              transition-all duration-300 ease-in-out
              hover:scale-105 hover:rounded-2xl 
@@ -92,7 +96,7 @@ export default function AdminPage() {
         </Link>
 
         <Link
-          to="/admin/enrollment"
+          to="/admin/dashboard/enrollment"
           className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg 
              transition-all duration-300 ease-in-out
              hover:scale-105 hover:rounded-2xl 
@@ -104,7 +108,7 @@ export default function AdminPage() {
         </Link>
 
         <Link
-          to="/admin/timetable"
+          to="/admin/dashboard/timetable"
           className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg 
              transition-all duration-300 ease-in-out
              hover:scale-105 hover:rounded-2xl 
@@ -116,7 +120,7 @@ export default function AdminPage() {
         </Link>
 
         <Link
-          to="/admin/performance"
+          to="/admin/dashboard/performance"
           className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg 
              transition-all duration-300 ease-in-out
              hover:scale-105 hover:rounded-2xl 
@@ -128,7 +132,7 @@ export default function AdminPage() {
         </Link>
 
         <Link
-          to="/admin/feedback"
+          to="/admin/dashboard/feedback"
           className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg 
              transition-all duration-300 ease-in-out
              hover:scale-105 hover:rounded-2xl 
@@ -140,7 +144,7 @@ export default function AdminPage() {
         </Link>
 
         <Link
-          to="/admin/supportTicket"
+          to="/admin/dashboard/supportTicket"
           className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg 
              transition-all duration-300 ease-in-out
              hover:scale-105 hover:rounded-2xl 
@@ -163,7 +167,6 @@ export default function AdminPage() {
             Logout
           </button>
         </div>
-
       </div>
 
       <div className="w-[calc(100%-300px)] h-full border-[4px] border-boardercolor bg-primary rounded-[20px] overflow-hidden">
@@ -177,19 +180,16 @@ export default function AdminPage() {
             <Route path="/announcements" element={<AdminAnnouncementPage />} />
             <Route path="/enrollment" element={<h1>Enrollment</h1>} />
             <Route path="/timetable" element={<h1>Time Table</h1>} />
-            <Route path="/performance" element={<h1>Payment</h1>} />
-            <Route path="/feedback" element={<h1>Payment</h1>} />
-            <Route path="/supportTicket" element={<h1>Payment</h1>} />
+            <Route path="/performance" element={<h1>performance</h1>} />
+            <Route path="/feedback" element={<h1>feedback</h1>} />
+            <Route path="/supportTicket" element={<h1>supportTicket</h1>} />
+            <Route path="add-announcements" element={<AddAnnouncementPage />} />
             <Route
-              path="/add-announcements"
-              element={<AddAnnouncementPage />}
-            />
-            <Route
-              path="/update-announcements"
+              path="update-announcements"
               element={<UpdateAnnouncementPage />}
             />
             <Route
-              path="/announcement-report"
+              path="announcement-report"
               element={<AnnouncementReport />}
             />
           </Routes>

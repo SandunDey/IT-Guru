@@ -57,7 +57,7 @@ export default function AddAnnouncementPage() {
       );
 
       toast.success("Announcement Added Successfully");
-      navigate("/admin/announcements");
+      navigate("/admin/dashboard/announcements");
     } catch {
       toast.error("An error Occurred");
     }
@@ -168,7 +168,7 @@ export default function AddAnnouncementPage() {
         {/* Submit / Cancel button */}
         <div className="mt-8 flex justify-end gap-4">
           <button
-            onClick={() => navigate("/admin/announcements")}
+            onClick={() => navigate("/admin/dashboard/announcements")}
             className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg shadow-md transition"
           >
             Cancel Announcement
