@@ -12,7 +12,7 @@ export default function UserAnnouncementPage() {
     async function fetchAnnouncements() {
       try {
         const response = await axios.get(
-          import.meta.env.VITE_API_BASE_URL+ "/api/announcements"
+          import.meta.env.VITE_API_BASE_URL + "/api/announcements"
         );
         setAnnouncements(response.data);
         setFilteredAnnouncements(response.data);
