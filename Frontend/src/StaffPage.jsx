@@ -4,11 +4,19 @@ import { Plus, Search, X } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
 
-const API_BASE = (import.meta?.env?.VITE_BACKEND_URL || "").replace(/\/+$/, "");
+/** Resolve API base (Vite or fallback) */
+const API_BASE = (
+  import.meta?.env?.VITE_BACKEND_URL ||
+  import.meta?.env?.VITE_API_BASE_URL ||
+  "http://localhost:3000"
+).replace(/\/+$/, "");
 
+if (!API_BASE) {
+  console.warn("Missing API base URL. Set VITE_BACKEND_URL or VITE_API_BASE_URL in your .env");
+}
 
 /** Validators to match your schema (frontend) */
-const NIC_REGEX = /^([0-9]{9}[VX]|[0-9]{12})$/i;   // model uppercases; we send .toUpperCase()
+const NIC_REGEX = /^([0-9]{9}[VX]|[0-9]{12})$/i; // Sri Lanka NIC (old/new)
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 const PHONE_REGEX = /^\+?[0-9]{10,15}$/;
 
@@ -22,7 +30,7 @@ const emptyForm = {
   password: "",
   confirmPassword: "",
   phonenumber: "",
-  role: "staff",
+  role: "staff", // default
 };
 
 export default function StaffPage() {
@@ -36,7 +44,6 @@ export default function StaffPage() {
 
   // Form
   const [form, setForm] = useState(emptyForm);
-
   const resetForm = () => setForm(emptyForm);
 
   const onChange = (e) => {
@@ -45,44 +52,47 @@ export default function StaffPage() {
   };
 
   // ---- LOAD ----
-// ---- LOAD ----
-async function load() {
-  try {
-    setBusy(true);
-    const { data } = await axios.get(`${API_BASE}/api/Staff/viewStaffmember`, {
-      // withCredentials: true, // <- comment this out to test CORS quickly
-    });
+  async function load() {
+    try {
+      setBusy(true);
+      const { data } = await axios.get(`${API_BASE}/api/Staff/viewStaffmember`, {
+        // withCredentials: true, // enable only if your API uses cookies/sessions
+      });
 
-    const list = Array.isArray(data)
-      ? data
-      : Array.isArray(data?.result)
-      ? data.result
-      : Array.isArray(data?.staff)
-      ? data.staff
-      : Array.isArray(data?.data)
-      ? data.data
-      : [];
+      // Accept several common shapes
+      const list = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.result)
+        ? data.result
+        : Array.isArray(data?.staff)
+        ? data.staff
+        : Array.isArray(data?.Staff)
+        ? data.Staff
+        : Array.isArray(data?.data)
+        ? data.data
+        : [];
 
-    setRows(list);
-  } catch (err) {
-    const msg =
-      err?.response?.data?.message ||
-      err?.response?.data?.error ||
-      err?.message ||
-      "Failed to load staff";
-    toast.error(String(msg));
-  } finally {
-    setBusy(false);
+      setRows(list);
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.error ||
+        err?.message ||
+        "Failed to load staff";
+      toast.error(String(msg));
+    } finally {
+      setBusy(false);
+    }
   }
-}
 
-useEffect(() => {
-  load();               // ✅ use the single, robust loader
-}, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   // ---- CREATE ----
   async function onCreate(e) {
     e.preventDefault();
+
     // basic validations
     if (!form.staffId.trim()) return toast.error("Staff ID is required");
     if (!form.name.trim()) return toast.error("Name is required");
@@ -95,23 +105,23 @@ useEffect(() => {
       return toast.error("Password min length is 6");
     if (form.password !== form.confirmPassword)
       return toast.error("Passwords do not match");
+    if (!form.role) return toast.error("Role is required");
 
     try {
       setBusy(true);
-      // Backend: POST /api/Staff/register
       await axios.post(
         `${API_BASE}/api/Staff/register`,
         {
           staffId: form.staffId.trim(),
           name: form.name.trim(),
           address: form.address.trim(),
-          nic: form.nic.trim().toUpperCase(), // model uppercases
+          nic: form.nic.trim().toUpperCase(),
           gender: form.gender,
           email: form.email.trim().toLowerCase(),
           password: form.password,
           confirmPassword: form.confirmPassword,
           phonenumber: String(form.phonenumber).trim(),
-          role: "staff",
+          role: form.role, // <-- from form control
         },
         { withCredentials: true }
       );
@@ -140,10 +150,10 @@ useEffect(() => {
       nic: row.nic ?? "",
       gender: row.gender ?? "Male",
       email: row.email ?? "",
-      password: "", // don't prefill
+      password: "",
       confirmPassword: "",
       phonenumber: row.phonenumber ?? "",
-      role: row.role ?? "staff",
+      role: row.role ?? "staff", // keep existing
     });
     setOpen(true);
   }
@@ -153,7 +163,6 @@ useEffect(() => {
     e.preventDefault();
     if (!editingId) return toast.error("Missing staffId for update");
 
-    // Allow updating without changing password:
     if (!form.staffId.trim()) return toast.error("Staff ID is required");
     if (!form.name.trim()) return toast.error("Name is required");
     if (!form.address.trim()) return toast.error("Address is required");
@@ -161,8 +170,8 @@ useEffect(() => {
     if (!EMAIL_REGEX.test(form.email)) return toast.error("Invalid email");
     if (!PHONE_REGEX.test(String(form.phonenumber)))
       return toast.error("Invalid phone");
+    if (!form.role) return toast.error("Role is required");
 
-    // If user typed passwords, validate match
     if (
       (form.password || form.confirmPassword) &&
       form.password !== form.confirmPassword
@@ -170,7 +179,6 @@ useEffect(() => {
       return toast.error("Passwords do not match");
     }
 
-    // Build payload (omit password fields if blank)
     const payload = {
       staffId: form.staffId.trim(),
       name: form.name.trim(),
@@ -179,7 +187,7 @@ useEffect(() => {
       gender: form.gender,
       email: form.email.trim().toLowerCase(),
       phonenumber: String(form.phonenumber).trim(),
-      role: form.role || "staff",
+      role: form.role, // <-- include role on update too
     };
     if (form.password) {
       payload.password = form.password;
@@ -188,7 +196,6 @@ useEffect(() => {
 
     try {
       setBusy(true);
-      // Backend: PUT /api/Staff/updateStaffmember/:id (admin-only)
       await axios.put(
         `${API_BASE}/api/Staff/updateStaffmember/${encodeURIComponent(
           form.staffId
@@ -220,9 +227,6 @@ useEffect(() => {
 
     try {
       setBusy(true);
-      // Backend router currently wires this to deleteStudent (bug server-side),
-      // but the URL is correct for staff:
-      // DELETE /api/Staff/deleteStaffmember/:id
       await axios.delete(
         `${API_BASE}/api/Staff/deleteStaffmember/${encodeURIComponent(id)}`,
         { withCredentials: true }
@@ -458,6 +462,21 @@ useEffect(() => {
                     placeholder="+9477XXXXXXX or 077XXXXXXX"
                     className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm outline-none focus:border-red-500"
                   />
+                </label>
+
+                {/* ✅ ROLE select (create & update) */}
+                <label className="text-sm block">
+                  <span className="mb-1 block font-medium">Role *</span>
+                  <select
+                    name="role"
+                    value={form.role}
+                    onChange={onChange}
+                    className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm outline-none focus:border-red-500"
+                  >
+                    <option value="staff">staff</option>
+                    <option value="admin">admin</option>
+                    <option value="teacher">teacher</option>
+                  </select>
                 </label>
 
                 {/* Passwords only required on create */}
