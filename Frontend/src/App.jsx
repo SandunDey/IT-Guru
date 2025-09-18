@@ -1,37 +1,32 @@
-// src/App.jsx
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
+import { useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import reactLogo from "./assets/react.svg";
+import viteLogo from "/vite.svg";
+import "./App.css";
 import PaymentsPage from "./Payment.jsx";
 import LoginPage from "./LoginPage.jsx";
-import AdminLoginPage from "./loging.jsx"; // keep this if your file name is 'loging.jsx'
-import Checkout from "./button.jsx";
-import StudentSignUpPage from "./StudentSignUpPage.jsx";
-import StaffPage from "./StaffPage.jsx";
 
-// ✅ Add Staff page if you created it at src/pages/StaffPage.jsx
+import AdminPage from "./pages/adminPage.jsx";
+import AboutUs from "./pages/aboutUs.jsx";
+import UserAnnouncementPage from "./pages/announcementPage.jsx";
+import HomePage from "./pages/homePage.jsx";
+import AnnouncementReport from "./pages/announcementReport.jsx";
+import { Toaster } from "react-hot-toast";
 
+import AdminLoginPage from "./loging.jsx";
+//supportTicket(Vishwa)
+import HelpCenterPage from "./HelpCenterPage.jsx";
+import SubmitTicketPage from "./SubmitTicketPage.jsx";
+import MyTicketsPage from "./MyTicketsPage.jsx";
+import TicketDetailPage from "./TicketDetailPage.jsx";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Default: go to /login */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
-
-        {/* Auth + entry */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/admin" element={<AdminLoginPage />} />
-        <Route path="/signup" element={<StudentSignUpPage />} />
-
-        {/* Payments / demo */}
-        <Route path="/payment" element={<PaymentsPage />} />
-        <Route path="/button" element={<Checkout />} />
-
-        {/* Staff CRUD (matches backend /api/Staff routes) */}
-        <Route path="/staff" element={<StaffPage />} />
-
-        {/* 404 */}
-        <Route path="*" element={<div className="p-6">Not Found</div>} />
+        <Route path="/payment" element={<PaymentsPage/>}/>
+        <Route path="/" element={<LoginPage/>}/>
+        <Route path="/admin" element={<AdminLoginPage/>}/>
       </Routes>
     </BrowserRouter>
   );

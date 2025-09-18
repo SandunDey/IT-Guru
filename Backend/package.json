@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@react-pdf/renderer": "^4.3.0",
     "@stripe/stripe-js": "^7.9.0",
     "bcrypt": "^6.0.0",
     "connect-mongo": "^5.1.0",
@@ -24,6 +25,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.1",
     "morgan": "^1.10.1",
+    "nanoid": "^5.1.5",
     "nodemon": "^3.1.10",
     "stripe": "^18.5.0"
   }
