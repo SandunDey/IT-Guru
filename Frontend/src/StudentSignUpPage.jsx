@@ -1,5 +1,6 @@
+// SignupForm.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";   // ⬅️ add this
+import { useNavigate } from "react-router-dom";
 import { signUpStudent } from "./api";
 
 const initial = {
@@ -24,7 +25,7 @@ export default function SignupForm() {
   const [form, setForm] = useState(initial);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);
-  const navigate = useNavigate();                 // ⬅️ init
+  const navigate = useNavigate();
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -56,18 +57,14 @@ export default function SignupForm() {
     try {
       const payload = { ...form, year: Number(form.year), nic: form.nic.toUpperCase() };
       const { message } = await signUpStudent(payload);
-
-      // (optional) show a brief success then redirect
       setMsg({ type: "success", text: message || "Signed up" });
       setForm(initial);
-
-      // redirect to login; pass a flash message if you want to show it there
       navigate("/login", {
         replace: true,
         state: { flash: "Account created. Please log in." },
       });
     } catch (err) {
-      setMsg({ type: "error", text: err.message });
+      setMsg({ type: "error", text: err.message || "Something went wrong" });
     } finally {
       setLoading(false);
     }
@@ -84,14 +81,17 @@ export default function SignupForm() {
         </header>
 
         {msg && (
-          <div className={`alert ${msg.type === "success" ? "alert--success" : "alert--error"}`} role="alert">
+          <div
+            className={`alert ${msg.type === "success" ? "alert--success" : "alert--error"}`}
+            role="status"
+            aria-live="polite"
+          >
             {msg.text}
           </div>
         )}
 
-        <form onSubmit={onSubmit} className="form">
+        <form onSubmit={onSubmit} className="form" noValidate>
           <div className="form-grid">
-            {/* ... all your fields unchanged ... */}
             <div className="field">
               <label className="label" htmlFor="studentId">Student ID</label>
               <input className="input" id="studentId" name="studentId" value={form.studentId} onChange={onChange} required />
@@ -144,15 +144,17 @@ export default function SignupForm() {
 
           <div className="form__footer">
             <button type="button" className="btn btn--ghost" onClick={onClear} disabled={loading}>
-              Clear
+              {loading ? "…" : "Clear"}
             </button>
             <button type="submit" className="btn btn--primary" disabled={loading}>
-              {loading ? "Saving..." : "Create account"}
+              {loading ? "Saving…" : "Create account"}
             </button>
           </div>
 
           <p className="fineprint">
-            By signing up, you agree to our <a href="#" onClick={(e)=>e.preventDefault()}>Terms</a> and <a href="#" onClick={(e)=>e.preventDefault()}>Privacy Policy</a>.
+            By signing up, you agree to our{" "}
+            <a href="#" onClick={(e)=>e.preventDefault()}>Terms</a> and{" "}
+            <a href="#" onClick={(e)=>e.preventDefault()}>Privacy Policy</a>.
           </p>
         </form>
       </div>
