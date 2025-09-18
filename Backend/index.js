@@ -12,6 +12,7 @@ import adminrouter from "./routes/AdminRoute.js";
 import StaffRouter from "./routes/StaffRoute.js";
 import router from "./routes/paymentRoutes.js";
 import SupportTicketRoute from "./routes/SupportTicketRoute.js";//supportTicket(Vishwa)
+import SupportTicketRoute from "./routes/SupportTicketRoute.js";//supportTicket(Vishwa)
 
 
 dotenv.config();
@@ -91,6 +92,7 @@ async function bootstrap() {
   app.use("/api/Admin", adminrouter);
   app.use("/api/Staff", StaffRouter);
   app.use("/api/payment",router);
+  app.use("/api/tickets", SupportTicketRoute);//supportTicket(Vishwa)
   app.use("/api/tickets", SupportTicketRoute);//supportTicket(Vishwa)
  
 

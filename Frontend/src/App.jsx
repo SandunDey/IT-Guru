@@ -23,11 +23,26 @@ import TicketDetailPage from "./TicketDetailPage.jsx";
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/payment" element={<PaymentsPage/>}/>
-        <Route path="/" element={<LoginPage/>}/>
-        <Route path="/admin" element={<AdminLoginPage/>}/>
-      </Routes>
+      <div className="w-full h-[100vh]">
+        <Toaster position="top-right" />
+
+        <Routes>
+          {/*install karagatta router-dom ekem ganne meka component ekak */}
+          {/*  me vage Route gdk dagann puluvam */}
+          <Route path="/payment" element={<PaymentsPage />} />
+
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin/dashboard/*" element={<AdminPage />} />
+          <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/announcement" element={<UserAnnouncementPage />} />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/support" element={<HelpCenterPage />} />
+          <Route path="/submit-ticket" element={<SubmitTicketPage />} />
+          <Route path="/my-tickets" element={<MyTicketsPage />} />
+          <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
+          <Route path="/admin" element={<AdminLoginPage />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   );
 }
