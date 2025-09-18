@@ -1,5 +1,5 @@
-import Announcement from "../models/announcement.js";
-import { isAdmin } from "./userController.js";
+import Announcement from "../model/announcement.js";
+import { isAdmin } from "./adminController.js";
 
 export async function createAnnouncement(req, res) {
 
