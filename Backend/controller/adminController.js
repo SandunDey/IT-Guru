@@ -11,11 +11,11 @@ export function saveAdmin(req, res) {
     console.log(hashedPassword);
 
     const admin = new Admin({
-        firstName: req.body.firstName,
+        name: req.body.name,
         email: req.body.email,
-        phoneNumber: req.body.phoneNumber,
+        phonenumber: req.body.phonenumber,
         password: hashedPassword,
-        role: req.body.role || 'Admin',
+        role: (req.body.role || 'admin').toLowerCase(),
     });
     admin.save()
         .then(() => {
@@ -46,14 +46,14 @@ export async function getAllAdmins(req, res) {
     }
 }
 
-export function isAdmin(req){
+export function isAdmin(req) {
 
     //only admin user can ->
-    if(req.user == null){
+    if (req.user == null) {
         return false; //pahala code tika run vena eka methanin ehat navathinva
     }
 
-    if(req.user.role != "admin"){
+    if (req.user.role != "admin") {
         return false;
     }
 

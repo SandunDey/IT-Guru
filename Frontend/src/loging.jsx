@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Shield } from "lucide-react";
 
-
 import ITGURULogo from "../src/assets/logo.jpg";
 import LoginBG from "../src/assets/background.jpg"; // <- your left-panel background
 
@@ -34,7 +33,7 @@ export default function AdminLoginPage() {
       const { token, user } = await login({ role, email, password });
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
-      navigate(user.role.toLowerCase() === "admin" ? "/admin" : "/", {
+      navigate(user.role.toLowerCase() === "admin" ? "/admin/dashboard" : "/", {
         replace: true,
       });
     } catch (err) {
@@ -69,7 +68,7 @@ export default function AdminLoginPage() {
           <div className="relative z-10 flex h-full flex-col items-center justify-center px-10 text-center text-white">
             <h2 className="text-3xl font-semibold tracking-tight">IT GURU</h2>
             <p className="mt-2 max-w-md text-white/80">
-             Learn smarter. Manage students, teachers, and classes in one place
+              Learn smarter. Manage students, teachers, and classes in one place
             </p>
           </div>
         </div>
@@ -79,9 +78,11 @@ export default function AdminLoginPage() {
           <div className="w-full max-w-md">
             {/* header (mobile) */}
             <div className="mb-6 flex items-center gap-3 md:hidden">
-                 <img src={ITGURULogo} alt="IT GURU" className="h-12 w-12" />
+              <img src={ITGURULogo} alt="IT GURU" className="h-12 w-12" />
               <div>
-                <p className="text-xs uppercase tracking-wider text-[#e30613]">Admin</p>
+                <p className="text-xs uppercase tracking-wider text-[#e30613]">
+                  Admin
+                </p>
                 <h1 className="text-lg font-semibold">IT GURU</h1>
               </div>
             </div>
@@ -93,12 +94,19 @@ export default function AdminLoginPage() {
                   <Shield size={20} />
                 </div>
                 <h2 className="text-2xl font-semibold">Admin Sign In</h2>
-                <p className="mt-1 text-sm text-neutral-500">Access the IT GURU dashboard</p>
+                <p className="mt-1 text-sm text-neutral-500">
+                  Access the IT GURU dashboard
+                </p>
               </div>
 
               <form onSubmit={onSubmit}>
                 <div className="mb-4">
-                  <label htmlFor="role" className="mb-1 block text-sm font-medium">Role</label>
+                  <label
+                    htmlFor="role"
+                    className="mb-1 block text-sm font-medium"
+                  >
+                    Role
+                  </label>
                   <select
                     id="role"
                     value={role}
@@ -112,7 +120,12 @@ export default function AdminLoginPage() {
                 </div>
 
                 <div className="mb-4">
-                  <label htmlFor="email" className="mb-1 block text-sm font-medium">Email</label>
+                  <label
+                    htmlFor="email"
+                    className="mb-1 block text-sm font-medium"
+                  >
+                    Email
+                  </label>
                   <input
                     id="email"
                     type="email"
@@ -124,7 +137,12 @@ export default function AdminLoginPage() {
                 </div>
 
                 <div className="mb-2">
-                  <label htmlFor="password" className="mb-1 block text-sm font-medium">Password</label>
+                  <label
+                    htmlFor="password"
+                    className="mb-1 block text-sm font-medium"
+                  >
+                    Password
+                  </label>
                   <div className="relative">
                     <input
                       id="password"
@@ -155,7 +173,10 @@ export default function AdminLoginPage() {
                     <input type="checkbox" className="h-4 w-4 rounded border" />
                     Remember me
                   </label>
-                  <a href="#" className="text-sm text-neutral-600 underline-offset-4 hover:underline">
+                  <a
+                    href="#"
+                    className="text-sm text-neutral-600 underline-offset-4 hover:underline"
+                  >
                     Forgot password?
                   </a>
                 </div>
@@ -164,7 +185,6 @@ export default function AdminLoginPage() {
                   type="submit"
                   disabled={loading}
                   className="mt-6 w-full rounded-xl bg-[#1D9BF0] px-4 py-2 text-sm font-medium text-white shadow hover:bg-[#1877CC] disabled:opacity-60"
-
                 >
                   {loading ? "Signing in…" : "Sign in"}
                 </button>

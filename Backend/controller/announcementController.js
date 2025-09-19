@@ -44,6 +44,7 @@ export async function getAnnouncement(req, res) {
 }
 
 export async function deleteAnnouncement(req, res) {
+    console.log(req.user)
     if (!isAdmin(req)) {
         res.status(403).json({
             message: "You are not authorized to delete an Announcement"

@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 html, body, #root { height: 100%; }
-body { @apply bg-gradient-to-br from-blue-500 to-blue-700 text-black; } blue bg
+body { @apply bg-gradient-to-br  text-black; } blue bg
 
 a {
   font-weight: 500;

@@ -1,5 +1,5 @@
 import express from 'express';
-import { createEnrollment, deleteEnrollment, getAllEnrollment, getEnrollmentByYear, updateEnrollment } from '../controllers/enrollmentController.js';
+import { createEnrollment, deleteEnrollment, getAllEnrollment, getEnrollmentByYear, updateEnrollment } from '../controller/enrollmentController.js';
 
 
 const enrollmentRouter = express.Router();

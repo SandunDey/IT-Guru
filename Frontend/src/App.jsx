@@ -19,6 +19,8 @@ import HelpCenterPage from "./HelpCenterPage.jsx";
 import SubmitTicketPage from "./SubmitTicketPage.jsx";
 import MyTicketsPage from "./MyTicketsPage.jsx";
 import TicketDetailPage from "./TicketDetailPage.jsx";
+import Enrollment from "./pages/enrollmentPage.jsx";
+
 
 export default function App() {
   return (
@@ -41,6 +43,7 @@ export default function App() {
           <Route path="/my-tickets" element={<MyTicketsPage />} />
           <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
           <Route path="/admin" element={<AdminLoginPage />} />
+          <Route path="/enrollment" element={<Enrollment/>} />
         </Routes>
       </div>
     </BrowserRouter>

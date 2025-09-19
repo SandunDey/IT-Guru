@@ -2,62 +2,64 @@ import mongoose from "mongoose";
 
 const enrollmentSchema = new mongoose.Schema(
     {
-        
-       enrollmentID :{
-        type : String,
-        require : true,
-        unique : true
-       },
 
-       studentID :{
-        type : String,
-        require : true
-        
-       },
+        enrollmentID: {
+            type: String,
+            require: true,
+            unique: true
+        },
 
-       classYear : {
-        type : String,
-        require : true
-       },
+        studentId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Student",
+            required: true,
+        },
 
-       studentYear : {
-        type : String,
-        require : true
-       },
 
-       enrollmentKey : {
-        type : String,
-        require : true
-       },
+        classYear: {
+            type: String,
+            require: true
+        },
 
-       paymentStatus : {
-        type : String,
-        enum: ["PAID", "UNPAID"],
-        default: "UNPAID"
-       },
+        year: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Student",
+            required: true,
+        },
 
-       isActive : {
-        type : Boolean,
-        default : false 
-       },
+        enrollmentKey: {
+            type: String,
+            require: true
+        },
 
-       enrollmentDate : {
-        type : Date,
-        default: Date.now
-       },
+        paymentStatus: {
+            type: String,
+            enum: ["PAID", "UNPAID"],
+            default: "UNPAID"
+        },
+
+        isActive: {
+            type: Boolean,
+            default: false
+        },
+
+        enrollmentDate: {
+            type: Date,
+            default: Date.now
+        },
     },
     { timestamps: true }
 )
 
-enrollmentSchema.methods.canEnroll = function(studentYear){
-    return(
+enrollmentSchema.methods.canEnroll = function (studentYear) {
+    return (
         this.classYear == studentYear &&
-        this.enrollmentKey == this.studentID &&
+        this.enrollmentKey == this.studentId &&
         this.paymentStatus == "PAID" &&
         this.isActive
     )
 }
 
-const Enrollment =  mongoose.model("Enrollment", enrollmentSchema)
+const Enrollment = mongoose.model("Enrollment", enrollmentSchema)
 
 export default Enrollment;

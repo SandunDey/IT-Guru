@@ -7,19 +7,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { Loder } from "../../components/loder";
 import { TbReportAnalytics } from "react-icons/tb";
 
-function AnnouncementDeleteConfirm(props) {
-  const announcementID = props.announcementID;
+function EnrollmentDeleteConfirm(props) {
+  const enrollmentID = props.enrollmentID;
   const close = props.close;
   const refresh = props.refresh;
 
-  function deleteAnnouncement() {
+  function deleteEnrollment() {
     const token = localStorage.getItem("token");
 
     axios
       .delete(
-        import.meta.env.VITE_API_BASE_URL +
-          "/api/announcements/" +
-          announcementID,
+        import.meta.env.VITE_API_BASE_URL + "/api/enrollments/" + enrollmentID,
         {
           headers: {
             Authorization: "Bearer " + token,
@@ -28,11 +26,11 @@ function AnnouncementDeleteConfirm(props) {
       )
       .then((response) => {
         close();
-        toast.success("Announcement Delete Successfully");
+        toast.success("Enrollment Delete Successfully");
         refresh();
       })
       .catch(() => {
-        toast.error("Failed to Delete Announcement");
+        toast.error("Failed to Delete Enrollment");
       });
   }
 
@@ -56,14 +54,14 @@ function AnnouncementDeleteConfirm(props) {
 
         {/* Title */}
         <h2 className="text-xl font-semibold text-center mb-2 text-gray-800">
-          Delete Announcement
+          Delete Enrollment
         </h2>
 
         {/* Description */}
         <p className="text-center text-gray-600 mb-6">
-          Are you sure you want to delete Announcement {""}
-          <span className="font-bold">{announcementID}</span>? This action
-          cannot be undone.
+          Are you sure you want to delete Enrollment {""}
+          <span className="font-bold">{enrollmentID}</span>? This action cannot
+          be undone.
         </p>
 
         {/* Action buttons */}
@@ -75,7 +73,7 @@ function AnnouncementDeleteConfirm(props) {
             Cancel
           </button>
           <button
-            onClick={deleteAnnouncement}
+            onClick={deleteEnrollment}
             className="px-5 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
           >
             Delete
@@ -86,10 +84,10 @@ function AnnouncementDeleteConfirm(props) {
   );
 }
 
-export default function AdminAnnouncementPage() {
-  const [announcements, setAnnouncements] = useState([]);
+export default function AdminEnrollmentPage() {
+  const [enrollments, setEnrollments] = useState([]);
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
-  const [selectedAnnouncementID, setSelectedAnnouncementID] = useState(null); //delete karann ona product id ek
+  const [selectedEnrollmentID, setSelectedEnrollmentID] = useState(null); //delete karann ona product id ek
   const [isLoading, setIsLoading] = useState(true); //patam ganiddi loading vevi thiyenne e nisa true
 
   const navigate = useNavigate();
@@ -100,10 +98,10 @@ export default function AdminAnnouncementPage() {
     if (isLoading) {
       //loading vemin thiyenvanm vitrak me ek parak run karann kiyanva
       axios
-        .get(import.meta.env.VITE_API_BASE_URL + "/api/announcements")
+        .get(import.meta.env.VITE_API_BASE_URL + "/api/enrollments")
         .then((response) => {
           console.log(response.data);
-          setAnnouncements(response.data);
+          setEnrollments(response.data);
           setIsLoading(false); //methan me anvashsha vidiyt 2parak run venva e nisa uda if ek danva
         });
     }
@@ -114,11 +112,11 @@ export default function AdminAnnouncementPage() {
     <div className="w-full h-full p-6 bg-primary">
       {
         isDeleteConfirmVisible && ( //&& this is not and this is if  mek trueb nisa ithuru tika pennann
-          <AnnouncementDeleteConfirm
+          <EnrollmentDeleteConfirm
             refresh={() => {
               setIsLoading(true);
             }}
-            announcementID={selectedAnnouncementID}
+            enrollmentID={selectedEnrollmentID}
             close={() => {
               setIsDeleteConfirmVisible(false);
             }}
@@ -128,17 +126,17 @@ export default function AdminAnnouncementPage() {
 
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-accent">
-          Announcement Management
+          Enrollment Management
         </h1>
 
         <div className="flex items-center gap-3">
-          <Link
+          {/* <Link
             to="/admin/dashboard/add-announcements"
             className="flex items-center bg-blue-950 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-boardercolor transition-colors"
           >
             <FaRegPlusSquare className="text-xl mr-2" />
             Add Announcement
-          </Link>
+          </Link> */}
 
           {/* Report Button */}
           <Link
@@ -158,40 +156,44 @@ export default function AdminAnnouncementPage() {
           <table className="w-full border-collapse">
             <thead className="bg-accent text-white font-bold">
               <tr>
+                <th className="py-3 px-4 text-sm font-medium">Enrollment ID</th>
+                <th className="py-3 px-4 text-sm font-medium">Student ID</th>
+                <th className="py-3 px-4 text-sm font-medium">Year</th>
                 <th className="py-3 px-4 text-sm font-medium">
-                  Announcement ID
+                  Payment Status
                 </th>
-                <th className="py-3 px-4 text-sm font-medium">Title</th>
-                <th className="py-3 px-4 text-sm font-medium">Type</th>
-                <th className="py-3 px-4 text-sm font-medium">Audiance</th>
-                <th className="py-3 px-4 text-sm font-medium">Expiry Date</th>
+                <th className="py-3 px-4 text-sm font-medium">Active Status</th>
+                <th className="py-3 px-4 text-sm font-medium">
+                  Enrollment Date
+                </th>
                 <th className="py-3 px-4 text-sm font-medium">Actions</th>
               </tr>
             </thead>
 
             <tbody className="divide-y divide-boardercolor bg-white">
-              {announcements.map((item) => (
+              {enrollments.map((item) => (
                 <tr
-                  key={item.announcementID}
+                  key={item.enrollmentID}
                   className="hover:bg-primary transition-colors"
                 >
                   <td className="py-3 px-4 font-semibold text-secondary">
-                    {item.announcementID}
+                    {item.enrollmentID}
                   </td>
-                  <td className="py-3 px-4">{item.title}</td>
-                  <td className="py-3 px-4">{item.type}</td>
-                  <td className="py-3 px-4">{item.audience.join(", ")}</td>
+                  <td className="py-3 px-4">{item.studentId}</td>
+                  <td className="py-3 px-4">{item.year}</td>
+                  <td className="py-3 px-4">{item.paymentStatus}</td>
+                  <td className="py-3 px-4">{item.isActive}</td>
                   <td className="py-3 px-4">
-                    {new Date(item.expiryDate).toLocaleDateString()}
+                    {new Date(item.enrollmentDate).toLocaleDateString()}
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex flex-row gap-4 justify-center items-center">
                       <FaRegEdit
                         className="cursor-pointer hover:text-accent hover:scale-110 transition-transform"
                         title="Edit"
-                        aria-label="Edit Announcement"
+                        aria-label="Edit Enrollment"
                         onClick={() => {
-                          navigate("/admin/dashboard/update-announcements", {
+                          navigate("/admin/dashboard/update-enrollments", {
                             // state kiyannenjson ekk update karankot e adal product tike details yavann state json ekk danva
                             state: item,
                           });
@@ -200,9 +202,9 @@ export default function AdminAnnouncementPage() {
                       <IoTrashOutline
                         className="cursor-pointer hover:text-red-500 hover:scale-110 transition-transform"
                         title="Delete"
-                        aria-label="Delete Announcement"
+                        aria-label="Delete Enrollment"
                         onClick={() => {
-                          setSelectedAnnouncementID(item.announcementID);
+                          setSelectedEnrollmentID(item.enrollmentID);
                           setIsDeleteConfirmVisible(true);
                         }}
                       />
