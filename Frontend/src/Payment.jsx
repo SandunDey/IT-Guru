@@ -1,11 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 
-/**
- * Minimal Axios client (JSX version)
- * - Sets baseURL to your backend (change to your server origin)
- * - Adds Authorization header if a token exists in localStorage
- */
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api",
   withCredentials: true,

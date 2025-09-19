@@ -17,6 +17,7 @@ import enrollmentRouter from "./routes/enrollmentRouter.js";
 import verifyJWT from "./middleware/auth.js"
 
 
+
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.DB_url || process.env.MONGO_URI;
@@ -36,13 +37,20 @@ async function bootstrap() {
   const app = express();
 
   app.use(helmet());
-  app.use(verifyJWT)
+  app.use(verifyJWT);
   app.use(
     cors({
-      origin: true,
+      origin: [
+        "http://localhost:5173", // Vite
+        "http://localhost:3000", // if you sometimes open frontend here
+      ],
       credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
     })
   );
+
+
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ extended: true }));
   app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
@@ -88,8 +96,10 @@ async function bootstrap() {
   app.use("/api/Staff", StaffRouter);
   app.use("/api/payment", router);
   app.use("/api/tickets", SupportTicketRoute);//supportTicket(Vishwa)
+  app.use("/api/tickets", SupportTicketRoute);//supportTicket(Vishwa)
   app.use("/api/announcements", announcementRouter);
-  app.use("/api/enrollments", enrollmentRouter)
+  app.use("/api/enrollments", enrollmentRouter);
+
 
   // 5) 404 + error handler
   app.use((req, res) => res.status(404).json({ message: "Route not found" }));
