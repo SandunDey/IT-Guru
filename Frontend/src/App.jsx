@@ -8,7 +8,7 @@ import LoginPage from "./LoginPage.jsx";
 import SignupForm from "./StudentSignUpPage.jsx";
 
 import AdminPage from "./pages/adminPage.jsx";
-import AboutUs from "./pages/aboutUs.jsx";                // ✅ fixed path
+import AboutUs from "./pages/aboutUs.jsx"; // ✅ fixed path
 import UserAnnouncementPage from "./pages/announcementPage.jsx";
 import HomePage from "./pages/homePage.jsx";
 import AnnouncementReport from "./pages/announcementReport.jsx";
@@ -19,6 +19,7 @@ import MyTicketsPage from "./MyTicketsPage.jsx";
 import TicketDetailPage from "./TicketDetailPage.jsx";
 import StaffPage from "./StaffPage.jsx";
 import AdminLoginPage from "./loging.jsx";
+import UserEnrollmentPage from "./pages/enrollmentPage.jsx";
 
 export default function App() {
   return (
@@ -32,6 +33,8 @@ export default function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/announcement" element={<UserAnnouncementPage />} />
         <Route path="/announcement/report" element={<AnnouncementReport />} />
+        <Route path="/enrollment" element={<UserEnrollmentPage />} />
+        <Route path="/enrollment/report" element={<h1>Report</h1>} />
         <Route path="/support" element={<HelpCenterPage />} />
         <Route path="/submit-ticket" element={<SubmitTicketPage />} />
         <Route path="/my-tickets" element={<MyTicketsPage />} />

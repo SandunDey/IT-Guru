@@ -3,7 +3,7 @@ import Header from "../components/header";
 import Footer from "../components/footer";
 import toast from "react-hot-toast";
 
-export default function AboutUs() {
+export default function UserEnrollmentPage() {
   const [showModal, setShowModal] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
   const [enrollmentKey, setEnrollmentKey] = useState("");

@@ -73,16 +73,20 @@ export default function SignupForm() {
   const onClear = () => setForm(initial);
 
   return (
-    <div className="auth-wrapper">
-      <div className="card">
-        <header className="card__header">
-          <h1 className="card__title">Create your Student account</h1>
-          <p className="card__subtitle">Fill in your details to get started.</p>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-[#124170] via-[#1C6EA4] to-[#222831] px-4">
+      <div className="w-full max-w-4xl bg-white rounded-2xl shadow-2xl p-8 md:p-12">
+        <header className="text-center mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#124170]">Create your Student Account</h1>
+          <p className="text-gray-600 mt-2">Fill in your details to get started.</p>
         </header>
 
         {msg && (
           <div
-            className={`alert ${msg.type === "success" ? "alert--success" : "alert--error"}`}
+            className={`mb-6 px-4 py-3 rounded-lg text-sm font-medium ${
+              msg.type === "success"
+                ? "bg-green-100 text-green-800 border border-green-300"
+                : "bg-red-100 text-red-800 border border-red-300"
+            }`}
             role="status"
             aria-live="polite"
           >
@@ -90,71 +94,89 @@ export default function SignupForm() {
           </div>
         )}
 
-        <form onSubmit={onSubmit} className="form" noValidate>
-          <div className="form-grid">
-            <div className="field">
-              <label className="label" htmlFor="studentId">Student ID</label>
-              <input className="input" id="studentId" name="studentId" value={form.studentId} onChange={onChange} required />
+        <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6" noValidate>
+          {/* Input Fields */}
+          {[
+            { id: "studentId", label: "Student ID", type: "text", required: true },
+            { id: "name", label: "Full Name", type: "text", required: true },
+            { id: "address", label: "Address", type: "text", required: true },
+            { id: "year", label: "Academic Year", type: "number", min: 2025, required: true },
+            { id: "nic", label: "NIC", type: "text", placeholder: "200012345678", required: true },
+            { id: "birthday", label: "Birthday", type: "date" },
+            {
+              id: "gender",
+              label: "Gender",
+              type: "select",
+              options: ["Male", "Female", "Other"],
+              required: true,
+            },
+            { id: "email", label: "Email", type: "email", placeholder: "you@example.com", required: true },
+            { id: "password", label: "Password", type: "password", required: true },
+            { id: "confirmPassword", label: "Confirm Password", type: "password", required: true },
+            { id: "phonenumber", label: "Phone Number", type: "text", placeholder: "+9471XXXXXXX", required: true },
+          ].map((field) => (
+            <div key={field.id} className="flex flex-col">
+              <label htmlFor={field.id} className="text-sm font-semibold text-gray-700 mb-1">
+                {field.label}
+              </label>
+              {field.type === "select" ? (
+                <select
+                  id={field.id}
+                  name={field.id}
+                  value={form[field.id]}
+                  onChange={onChange}
+                  required={field.required}
+                  className="rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#1C6EA4] focus:border-[#1C6EA4] px-3 py-2"
+                >
+                  {field.options.map((opt) => (
+                    <option key={opt}>{opt}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  id={field.id}
+                  name={field.id}
+                  type={field.type}
+                  min={field.min}
+                  placeholder={field.placeholder}
+                  value={form[field.id]}
+                  onChange={onChange}
+                  required={field.required}
+                  className="rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#1C6EA4] focus:border-[#1C6EA4] px-3 py-2"
+                />
+              )}
             </div>
-            <div className="field">
-              <label className="label" htmlFor="name">Full Name</label>
-              <input className="input" id="name" name="name" value={form.name} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="address">Address</label>
-              <input className="input" id="address" name="address" value={form.address} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="year">Academic Year</label>
-              <input className="input" type="number" id="year" name="year" min={2025} value={form.year} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="nic">NIC</label>
-              <input className="input" id="nic" name="nic" placeholder="200012345678" value={form.nic} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="birthday">Birthday</label>
-              <input className="input" type="date" id="birthday" name="birthday" value={form.birthday} onChange={onChange} />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="gender">Gender</label>
-              <select className="input" id="gender" name="gender" value={form.gender} onChange={onChange} required>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="email">Email</label>
-              <input className="input" type="email" id="email" name="email" placeholder="you@example.com" value={form.email} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="password">Password</label>
-              <input className="input" type="password" id="password" name="password" value={form.password} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="confirmPassword">Confirm Password</label>
-              <input className="input" type="password" id="confirmPassword" name="confirmPassword" value={form.confirmPassword} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="phonenumber">Phone Number</label>
-              <input className="input" id="phonenumber" name="phonenumber" placeholder="+9471XXXXXXX" value={form.phonenumber} onChange={onChange} required />
-            </div>
-          </div>
+          ))}
 
-          <div className="form__footer">
-            <button type="button" className="btn btn--ghost" onClick={onClear} disabled={loading}>
+          {/* Footer Buttons */}
+          <div className="md:col-span-2 flex justify-end gap-4 mt-4">
+            <button
+              type="button"
+              onClick={onClear}
+              disabled={loading}
+              className="px-5 py-2 rounded-lg font-semibold border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
+            >
               {loading ? "…" : "Clear"}
             </button>
-            <button type="submit" className="btn btn--primary" disabled={loading}>
-              {loading ? "Saving…" : "Create account"}
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-2 rounded-lg font-semibold bg-[#124170] text-white shadow hover:bg-[#0d2f54] transition-colors disabled:opacity-50"
+            >
+              {loading ? "Saving…" : "Create Account"}
             </button>
           </div>
 
-          <p className="fineprint">
+          {/* Terms */}
+          <p className="md:col-span-2 text-xs text-gray-500 mt-4 text-center">
             By signing up, you agree to our{" "}
-            <a href="#" onClick={(e)=>e.preventDefault()}>Terms</a> and{" "}
-            <a href="#" onClick={(e)=>e.preventDefault()}>Privacy Policy</a>.
+            <a href="#" onClick={(e) => e.preventDefault()} className="text-[#1C6EA4] underline hover:text-[#124170]">
+              Terms
+            </a>{" "}
+            and{" "}
+            <a href="#" onClick={(e) => e.preventDefault()} className="text-[#1C6EA4] underline hover:text-[#124170]">
+              Privacy Policy
+            </a>.
           </p>
         </form>
       </div>
