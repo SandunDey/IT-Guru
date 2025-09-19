@@ -25,12 +25,12 @@
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* ----- Base layout (no blue background) ----- */
+/* ----- Base layout with gradient background ----- */
 html, body, #root { height: 100%; }
 
 :root {
-  --bg: #ffffff;
-  --card: #ffffff;
+  --bg: linear-gradient(120deg, #f6f8ff 0%, #e8efff 40%, #2563eb 100%);
+  --card: #ffffffee;
   --text: var(--color-primary);
   --muted: #475569;
   --ring: var(--color-ring);
@@ -40,11 +40,11 @@ html, body, #root { height: 100%; }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0b1220;
-    --card: #0e1627;
+    --bg: linear-gradient(-45deg, #0b1220, #111827, #1e293b, #0f172a);
+    --card: rgba(14, 22, 39, 0.85);
     --text: #e5e7eb;
     --muted: #9aa4b2;
-    --shadow-1: 0 10px 24px rgba(0,0,0,.35);
+    --shadow-1: 0 10px 24px rgba(0,0,0,.45);
     --border: #1f2937;
   }
 }
@@ -55,10 +55,15 @@ body {
     "Apple Color Emoji", "Segoe UI Emoji";
   color: var(--text);
   background: var(--bg);
+  background-size: 300% 300%;
+  animation: gradientMove 20s ease infinite;
 }
 
-/* If you EVER need a soft gradient wrapper, use this class manually */
-/* .app-bg { background: linear-gradient(120deg,#f6f8ff 0%,#e8efff 35%,#2563eb 100%); } */
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
 /* ----- Containers / Utilities ----- */
 .container {
@@ -83,10 +88,12 @@ body {
   width: 100%;
   max-width: 1060px;
   background: var(--card);
+  backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-1);
   padding: clamp(24px, 5vw, 48px);
+  transition: background .3s ease;
 }
 
 .card__header { margin-bottom: 16px; }
@@ -109,7 +116,6 @@ body {
 .alert--success { background:#ecfdf5; border-color:var(--color-success); color:#065f46; }
 .alert--error   { background:#fef2f2; border-color:var(--color-danger); color:#991b1b; }
 
-/* Dark scheme alert tweaks */
 @media (prefers-color-scheme: dark) {
   .alert--success { background: rgba(16,185,129,.12); color:#c8f8e7; }
   .alert--error   { background: rgba(239,68,68,.12); color:#ffd2d2; }
@@ -160,7 +166,6 @@ body {
 }
 .field:has(.input[aria-invalid="true"]) .label { color: #b91c1c; }
 
-/* Textareas inherit styles */
 textarea.input { min-height: 96px; resize: vertical; }
 
 /* ----- Buttons ----- */
@@ -187,7 +192,6 @@ textarea.input { min-height: 96px; resize: vertical; }
 .btn--primary { background: var(--ring); color:#fff; }
 .btn--primary:hover { filter: brightness(0.95); }
 
-/* Footer actions row */
 .form__footer {
   display:flex;
   gap:12px;
