@@ -18,6 +18,7 @@ import AdminAnnouncementPage from "./admin/adminAnnouncementPage";
 import AddAnnouncementPage from "./admin/adminAddNewAnnouncement";
 import UpdateAnnouncementPage from "./admin/adminUpdateAnnouncement";
 import AnnouncementReport from "./announcementReport";
+import AdminTicketsPage from "./admin/AdminTicketsPage"; // Import the Support Tickets page
 
 export default function AdminPage() {
   return (
