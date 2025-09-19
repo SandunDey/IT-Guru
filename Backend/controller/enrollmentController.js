@@ -1,62 +1,42 @@
 import Enrollment from "../model/enroll.js";
 
-export function createEnrollment(req, res) {
+export async function createEnrollment(req, res) {
+    const { studentID, classYear, enrollmentKey } = req.body;
 
-    if (!isAdmin(req)) {
-        res.status(403).json({
-            message: "You are not authorized to create Enrollment "
+    // Ensure student can only enroll in their own year
+    const student = await Student.findOne({ studentId: studentID });
+    if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+    }
+
+    if (student.year + " A/L" !== classYear) {
+        return res.status(400).json({
+            message: "Student year does not match the selected class year",
         });
-        return;
     }
 
-    const { enrollmentID, studentID, classYear, enrollmentKey, studentYear } = req.body;
-
-    if (classYear !== studentYear) {
-        return (
-            res.status(400).json(
-                {
-                    message: "Student year does not match class year"
-                }
-            )
-        )
+    if (student.studentId !== enrollmentKey) {
+        return res.status(400).json({ message: "Invalid enrollment key" });
     }
 
-    if (studentID !== enrollmentKey) {
-        return (
-            res.status(400).json(
-                {
-                    message: "Invalid enrollment key"
-                }
-            )
-        )
+    const enrollment = new Enrollment({
+        enrollmentID: new mongoose.Types.ObjectId(), // generate unique ID
+        studentId: student._id,
+        classYear,
+        enrollmentKey,
+        paymentStatus: "UNPAID",
+        isActive: true,
+    });
+
+    try {
+        await enrollment.save();
+        res.json({ message: "Enrollment created successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Failed to create enrollment" });
     }
-
-    const enrollment = new Enrollment(
-        {
-            enrollmentID: req.body.enrollmentID,
-            studentID: req.body.studentID,
-            classYear: req.body.classYear,
-            enrollmentKey: req.body.enrollmentKey,
-            paymentStatus: "UNPAID",
-            isActive: true,
-        }
-    )
-
-    enrollment.save().then(
-        () => {
-            res.json({
-                message: "Enrollment created successfully"
-            })
-        }
-    ).catch(
-        () => {
-            res.json({
-                message: "Fail to create Enrollment"
-
-            })
-        }
-    )
 }
+
 
 export function getEnrollmentByYear(req, res) {
 

@@ -91,7 +91,7 @@ async function bootstrap() {
   }
 
   // 4) Routes (keeping your original paths)
-  app.use("/api/Student", StudentRoute);
+  app.use("/api/students", StudentRoute);
   app.use("/api/Admin", adminrouter);
   app.use("/api/Staff", StaffRouter);
   app.use("/api/payment", router);

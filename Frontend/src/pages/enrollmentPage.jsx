@@ -2,28 +2,74 @@ import { useState } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import toast from "react-hot-toast";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function UserEnrollmentPage() {
+  const { studentId } = useParams(); // get from route, e.g., /enroll/STU123
+  const [student, setStudent] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
   const [enrollmentKey, setEnrollmentKey] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    /** meka tikak balanna */
+    async function fetchStudent() {
+      try {
+        const res = await fetch(`/api/students/${studentId}`);
+        if (!res.ok) throw new Error("Failed to fetch student data");
+        const data = await res.json();
+        setStudent(data);
+      } catch (err) {
+        toast.error(err.message);
+      }
+    }
+    fetchStudent();
+  }, [studentId]);
 
   function handleEnrollClick(year) {
-    setSelectedYear(year);
+    if (!student) return;
+    if (student.year !== parseInt(year)) {
+      toast.error(
+        "You cannot enroll for a year different from your student year."
+      );
+      return;
+    }
+    setSelectedYear(year + " A/L");
+    setEnrollmentKey("");
     setShowModal(true);
   }
 
   function handleSubmit() {
+    if (!student) return;
+
     if (!enrollmentKey) {
       toast.error("Please enter your enrollment key!");
       return;
     }
+
+    if (enrollmentKey !== student.studentId) {
+      toast.error("Enrollment key is incorrect!");
+      return;
+    }
+
     toast.success(
       `Enrolled successfully for ${selectedYear} with key: ${enrollmentKey}`
     );
     setShowModal(false);
     setEnrollmentKey("");
+
+    navigate(`/learning-materials/${student.studentId}`);
   }
+
+  //  if (!student) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center">
+  //       <p className="text-gray-600">Loading student data...</p>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100 flex flex-col">
@@ -46,30 +92,21 @@ export default function UserEnrollmentPage() {
 
           {/* Buttons */}
           <div className="flex flex-wrap justify-center gap-8 mt-15">
-            <button
-              onClick={function () {
-                handleEnrollClick("2025 A/L");
-              }}
-              className="px-12 py-5 rounded-2xl bg-gradient-to-r from-indigo-500 to-blue-600 text-white text-lg font-semibold shadow-lg hover:scale-110 hover:shadow-indigo-400/50 transform transition duration-300"
-            >
-              2025 A/L
-            </button>
-            <button
-              onClick={function () {
-                handleEnrollClick("2026 A/L");
-              }}
-              className="px-12 py-5 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 text-white text-lg font-semibold shadow-lg hover:scale-110 hover:shadow-green-400/50 transform transition duration-300"
-            >
-              2026 A/L
-            </button>
-            <button
-              onClick={function () {
-                handleEnrollClick("2027 A/L");
-              }}
-              className="px-12 py-5 rounded-2xl bg-gradient-to-r from-pink-500 to-rose-600 text-white text-lg font-semibold shadow-lg hover:scale-110 hover:shadow-pink-400/50 transform transition duration-300"
-            >
-              2027 A/L
-            </button>
+            {[2025, 2026, 2027].map((year) => (
+              <button
+                key={year}
+                onClick={() => handleEnrollClick(year)}
+                className={`px-12 py-5 rounded-2xl text-white text-lg font-semibold shadow-lg transform transition duration-300 ${
+                  year === 2025
+                    ? "bg-gradient-to-r from-indigo-500 to-blue-600 hover:scale-110"
+                    : year === 2026
+                    ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-110"
+                    : "bg-gradient-to-r from-pink-500 to-rose-600 hover:scale-110"
+                }`}
+              >
+                {year}
+              </button>
+            ))}
           </div>
         </div>
       </main>
@@ -90,18 +127,14 @@ export default function UserEnrollmentPage() {
             <input
               type="text"
               value={enrollmentKey}
-              onChange={function (e) {
-                setEnrollmentKey(e.target.value);
-              }}
+              onChange={(e) => setEnrollmentKey(e.target.value)}
               placeholder="Enter enrollment key"
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none mb-6"
             />
 
             <div className="flex justify-center gap-4">
               <button
-                onClick={function () {
-                  setShowModal(false);
-                }}
+                onClick={() => setShowModal(false)}
                 className="px-6 py-3 rounded-xl bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold transition"
               >
                 Cancel

@@ -55,7 +55,7 @@ export default function LoginPage() {
         // localStorage.setItem("student", JSON.stringify(res.data.student));
 
         // ✅ Route that exists in your App.jsx
-        navigate("/admindashboard", { replace: true });
+        navigate("/", { replace: true });
         return;
       }
 
@@ -75,7 +75,9 @@ export default function LoginPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center"
-      style={{ background: "linear-gradient(to right, #ffffff, #dbeafe, #1e40af)" }}
+      style={{
+        background: "linear-gradient(to right, #ffffff, #dbeafe, #1e40af)",
+      }}
     >
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-10">
         {/* Logo */}
@@ -86,7 +88,9 @@ export default function LoginPage() {
             className="h-16 w-16 rounded-full object-cover shadow-lg"
           />
           <h1 className="mt-6 text-3xl font-bold text-black">Welcome back</h1>
-          <p className="mt-2 text-sm text-gray-600">Log in to your Student account</p>
+          <p className="mt-2 text-sm text-gray-600">
+            Log in to your Student account
+          </p>
         </div>
 
         {/* Flash from signup */}
@@ -99,7 +103,10 @@ export default function LoginPage() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           <div>
-            <label htmlFor="email" className="block text-sm font-semibold text-black">
+            <label
+              htmlFor="email"
+              className="block text-sm font-semibold text-black"
+            >
               Email
             </label>
             <input
@@ -115,7 +122,10 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-semibold text-black">
+            <label
+              htmlFor="password"
+              className="block text-sm font-semibold text-black"
+            >
               Password
             </label>
             <div className="relative mt-2">
@@ -150,7 +160,10 @@ export default function LoginPage() {
               />
               Remember me
             </label>
-            <a href="/forgot-password" className="text-sm font-medium text-blue-600 hover:underline">
+            <a
+              href="/forgot-password"
+              className="text-sm font-medium text-blue-600 hover:underline"
+            >
               Forgot password?
             </a>
           </div>
@@ -194,8 +207,14 @@ export default function LoginPage() {
 
         <p className="mt-8 text-center text-xs text-gray-500">
           By continuing you agree to IT Guru’s{" "}
-          <a href="/terms" className="underline">Terms</a> and{" "}
-          <a href="/privacy" className="underline">Privacy Policy</a>.
+          <a href="/terms" className="underline">
+            Terms
+          </a>{" "}
+          and{" "}
+          <a href="/privacy" className="underline">
+            Privacy Policy
+          </a>
+          .
         </p>
       </div>
     </div>
