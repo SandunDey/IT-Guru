@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
         sessionStorage.setItem("token", token);
         sessionStorage.setItem("user", JSON.stringify(user));
       }
-      navigate(user.role.toLowerCase() === "admin" ? "/admin" : "/", { replace: true });
+      navigate(user.role.toLowerCase() === "admin" ? "/admin/dashboard" : "/", { replace: true });
     } catch (err) {
       setError(err?.response?.data?.message || err?.message || "Login failed");
     } finally {
@@ -94,7 +94,9 @@ export default function AdminLoginPage() {
             <div className="mb-6 flex items-center gap-3 md:hidden">
               <img src={ITGURULogo} alt="IT GURU" className="h-12 w-12 rounded-xl object-cover ring-2 ring-black/5" />
               <div>
-                <p className="text-xs uppercase tracking-wider text-[#e30613]">Admin</p>
+                <p className="text-xs uppercase tracking-wider text-[#e30613]">
+                  Admin
+                </p>
                 <h1 className="text-lg font-semibold">IT GURU</h1>
               </div>
             </div>
@@ -106,7 +108,9 @@ export default function AdminLoginPage() {
                   <Shield size={20} />
                 </div>
                 <h2 className="text-2xl font-semibold">Admin Sign In</h2>
-                <p className="mt-1 text-sm text-neutral-500">Access the IT GURU dashboard</p>
+                <p className="mt-1 text-sm text-neutral-500">
+                  Access the IT GURU dashboard
+                </p>
               </div>
 
               <form onSubmit={onSubmit} className="space-y-4">

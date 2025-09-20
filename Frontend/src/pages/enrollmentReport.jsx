@@ -1,43 +1,43 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable"; // Added for table
+import autoTable from "jspdf-autotable";
 import toast from "react-hot-toast";
 import { FaRegFilePdf } from "react-icons/fa";
 
-export default function AnnouncementReport() {
-  const [announcements, setAnnouncements] = useState([]);
+export default function EnrollmentReport() {
+  const [enrollments, setEnrollments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Theme colors
   const colors = {
     accent: [18, 65, 112], // #124170
-    primary: [255, 255, 255], // white
-    secondary: [34, 40, 49], // #222831
-    border: [28, 110, 164], // #1c6ea4
-    similar: [34, 40, 49], // #222831
+    primary: [255, 255, 255],
+    secondary: [34, 40, 49],
+    border: [28, 110, 164],
+    similar: [34, 40, 49],
   };
 
   useEffect(() => {
-    async function fetchAnnouncements() {
+    async function fetchEnrollments() {
       try {
         const response = await axios.get(
-          import.meta.env.VITE_API_BASE_URL + "/api/announcements"
+          import.meta.env.VITE_API_BASE_URL + "/api/enrollments"
         );
-        setAnnouncements(response.data);
+        setEnrollments(response.data);
         setIsLoading(false);
       } catch (err) {
-        console.error("Error fetching announcements:", err);
-        toast.error("Failed to fetch announcements");
+        console.error("Error fetching enrollments:", err);
+        toast.error("Failed to fetch enrollments");
         setIsLoading(false);
       }
     }
-    fetchAnnouncements();
+    fetchEnrollments();
   }, []);
 
   const createPDFReport = () => {
-    if (!announcements || announcements.length === 0) {
-      toast.error("No announcements to generate report!");
+    if (!enrollments || enrollments.length === 0) {
+      toast.error("No enrollments to generate report!");
       return;
     }
 
@@ -46,7 +46,7 @@ export default function AnnouncementReport() {
       const pageWidth = doc.internal.pageSize.width;
 
       // --- Logo ---
-      const logoUrl = "/logo.jpg"; // Put logo in public/ folder
+      const logoUrl = "/logo.jpg"; // make sure logo.jpg is in /public
       doc.addImage(logoUrl, "PNG", 14, 10, 20, 20);
 
       // --- ITGuru Info ---
@@ -63,20 +63,34 @@ export default function AnnouncementReport() {
       // --- Title ---
       doc.setFontSize(14);
       doc.setTextColor(0, 0, 0);
-      doc.text("Announcement Report Summary", 14, 50);
+      doc.text("Enrollment Report Summary", 14, 50);
 
       // --- Table Data ---
-      const tableData = announcements.map((ann, index) => [
-        ann.announcementID || `A${index + 1}`,
-        ann.title || "Untitled",
-        ann.type || "General",
-        ann.expiryDate ? new Date(ann.expiryDate).toLocaleDateString() : "N/A",
-        ann.description || "No description",
+      const tableData = enrollments.map((enr, index) => [
+        enr.enrollmentID || enr._id || `ENR${index + 1}`,
+        enr.studentId?.studentId || enr.studentId || "N/A",
+        enr.studentId?.name || enr.name || "N/A",
+        enr.studentId?.year || enr.year || "N/A",
+        enr.paymentStatus || "UNPAID",
+        enr.isActive ? "Active" : "Inactive",
+        enr.enrollmentDate
+          ? new Date(enr.enrollmentDate).toLocaleDateString()
+          : "N/A",
       ]);
 
       autoTable(doc, {
         startY: 60,
-        head: [["ID", "Title", "Type", "Expiry Date", "Description"]],
+        head: [
+          [
+            "Enrollment ID",
+            "Student ID",
+            "Name",
+            "Year",
+            "Payment",
+            "Status",
+            "Date",
+          ],
+        ],
         body: tableData,
         theme: "grid",
         headStyles: { fillColor: colors.accent, textColor: 255 },
@@ -103,7 +117,7 @@ export default function AnnouncementReport() {
       }
 
       // --- Save ---
-      const filename = `ITGuru_AnnouncementReport_${
+      const filename = `ITGuru_EnrollmentReport_${
         new Date().toISOString().split("T")[0]
       }.pdf`;
       doc.save(filename);
@@ -123,7 +137,7 @@ export default function AnnouncementReport() {
           <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <h1 className="text-4xl font-extrabold bg-gradient-to-r from-accent to-boardercolor bg-clip-text text-transparent drop-shadow-sm">
-                 Announcement Reports
+                Enrollment Reports
               </h1>
               <p className="text-similar mt-3 text-lg font-medium">
                 Generate PDF reports with{" "}
@@ -136,7 +150,7 @@ export default function AnnouncementReport() {
             {/* Export Button */}
             <button
               onClick={createPDFReport}
-              disabled={isLoading || announcements.length === 0}
+              disabled={isLoading || enrollments.length === 0}
               className="relative flex items-center gap-3 bg-gradient-to-r from-[--color-accent] to-[--color-boardercolor] text-[--color-primary] px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed"
             >
               {isLoading ? (

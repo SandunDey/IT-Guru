@@ -1,4 +1,3 @@
-import { Route, Routes } from "react-router-dom";
 
 import AboutUs from "./aboutUs";
 import React from "react";
@@ -13,13 +12,14 @@ import PricingSection from "../components/PricingSection";
 import FaqSection from "../components/FaqSection";
 import ContactSection from "../components/ContactSection";
 import Footer from "../components/footer";
+import { Route, Routes } from "react-router-dom";
 
 
 export default function HomePage() {
   return (
     <div className="w-full h-full bg-primary">
       <Header/>
-       <HeroSection />
+      <HeroSection />
       <FeaturesSection />
       <SubjectsSection />
       <HowItWorks />
@@ -29,15 +29,19 @@ export default function HomePage() {
       <FaqSection />
       <ContactSection />
       
-      <Routes path="/">
-        <Route path="/" element={<h1>Welcome to the Home Page</h1>} />
-        <Route path="/learning-material" element={<h1>Material</h1>} />
+      <Routes>
+        <Route path="/" element={<HomePage/>} />
+        <Route
+          path="/enrollment/learning-material"
+          element={<h1>Material</h1>}
+        />
         <Route path="/performance" element={<h1>Performance</h1>} />
         <Route path="/timetable" element={<h1>Time Table</h1>} />
         <Route path="/quizzes" element={<h1>Quizzes</h1>} />
         <Route path="/aboutus" element={<AboutUs />} />
+        <Route path="/enrollment" element={<Enrollment />} />
         <Route path="/*" element={<h1>404 Not Found</h1>} />
-      </Routes>
+        </Routes>
       <Footer/>
     </div>
   );

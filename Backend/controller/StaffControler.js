@@ -1,6 +1,6 @@
 
 import dotenv from 'dotenv';
-import loggingController from "./logingControler.js";
+import loggingController from "./logingController.js";
 import Staff from "../model/Staff.js";
 import bcrypt from 'bcrypt';
 
@@ -19,7 +19,7 @@ export async  function registerStaff(req,res){
         res.status(201).json({
             message: "Staff registered successfully",
         });
-    }catch(err){
+    } catch (err) {
         res.status(500).json({
             message: "Error registering staff",
             error: err.message
@@ -27,7 +27,7 @@ export async  function registerStaff(req,res){
     }
 
 }
-export function getAllStaff(req,res){
+export function getAllStaff(req, res) {
     Staff.find().then(
         (staff) => {
             res.json(staff);
@@ -42,7 +42,7 @@ export function getAllStaff(req,res){
     );
 }
 export function loginStaff(req, res) {
-    req.body.role = 'staff';  
+    req.body.role = 'staff';
     return loggingController(req, res);
 }
 
@@ -103,8 +103,9 @@ export function deleteStaff(req, res) {
     Staff.findOneAndDelete({ staffId: req.params.id }).then(
         (staff) => {
             if (!staff) {
-                return res.status(404).json({ 
-                    message: 'Staffmember not found' });
+                return res.status(404).json({
+                    message: 'Staffmember not found'
+                });
             }
             res.status(200).json({
                 message: "Staffmember deleted successfully"
@@ -119,12 +120,13 @@ export function deleteStaff(req, res) {
         }
     );
 }
-export function getStaffbyId(req,res){
+export function getStaffbyId(req, res) {
     Staff.findOne({ staffId: req.params.id }).then(
         (staff) => {
             if (!staff) {
-                return res.status(404).json({ 
-                    message: 'Staff member not found' });
+                return res.status(404).json({
+                    message: 'Staff member not found'
+                });
             }
             res.status(200).json({
                 staff: staff

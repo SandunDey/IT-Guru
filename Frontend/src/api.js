@@ -2,7 +2,7 @@
 import axios from "axios";
 
 /** Base URL (strip trailing slash) */
-const RAW = import.meta.env?.VITE_API_BASE_URL || "http://localhost:3000";
+const RAW = import.meta.env?.VITE_API_BASE_URL || "http://localhost:5000";
 export const API_BASE = RAW.replace(/\/$/, "");
 
 /** Single axios client
@@ -22,9 +22,9 @@ export const api = axios.create({
  *  - POST /api/Student/loging  (note: backend uses 'loging' spelling)
  */
 export const signUpStudent = (payload) =>
-  api.post("/api/Student/register", payload);
+  api.post("/api/student/register", payload);
 export const loginStudent = (payload) =>
-  api.post("/api/Student/loging", payload);
+  api.post("/api/student/login", payload);
 
 
 export const registerStaff = (payload) =>

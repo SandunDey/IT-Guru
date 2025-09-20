@@ -12,11 +12,14 @@ import adminrouter from "./routes/AdminRoute.js";
 import StaffRouter from "./routes/StaffRoute.js";
 import router from "./routes/paymentRoutes.js";
 import SupportTicketRoute from "./routes/SupportTicketRoute.js";//supportTicket(Vishwa)
+import announcementRouter from "./routes/announcementRouter.js";
+import enrollmentRouter from "./routes/enrollmentRouter.js";
+import verifyJWT from "./middleware/auth.js"
 
 
 
 dotenv.config();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.DB_url || process.env.MONGO_URI;
 
 if (!MONGO_URI) {
@@ -34,7 +37,7 @@ async function bootstrap() {
   const app = express();
 
   app.use(helmet());
-
+  app.use(verifyJWT);
   app.use(
     cors({
       origin: [
@@ -46,7 +49,7 @@ async function bootstrap() {
       allowedHeaders: ["Content-Type", "Authorization"],
     })
   );
-  
+
 
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ extended: true }));
@@ -88,13 +91,15 @@ async function bootstrap() {
   }
 
   // 4) Routes (keeping your original paths)
-  app.use("/api/Student", StudentRoute);
+  app.use("/api/student", StudentRoute);
   app.use("/api/Admin", adminrouter);
   app.use("/api/Staff", StaffRouter);
-  app.use("/api/payment",router);
+  app.use("/api/payment", router);
   app.use("/api/tickets", SupportTicketRoute);//supportTicket(Vishwa)
   app.use("/api/tickets", SupportTicketRoute);//supportTicket(Vishwa)
- 
+  app.use("/api/announcements", announcementRouter);
+  app.use("/api/enrollments", enrollmentRouter);
+
 
   // 5) 404 + error handler
   app.use((req, res) => res.status(404).json({ message: "Route not found" }));

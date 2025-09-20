@@ -79,7 +79,7 @@ export default function AddAnnouncementPage() {
             </label>
             <input
               className="w-full p-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
-              placeholder="e.g., DS-CR-001"
+              placeholder="e.g., AN001"
               value={announcementID}
               onChange={(e) => setAnnouncementID(e.target.value)}
             />
@@ -92,7 +92,7 @@ export default function AddAnnouncementPage() {
             </label>
             <input
               className="w-full p-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
-              placeholder="e.g., Diamond Shine Night Cream"
+              placeholder="e.g., System Maintain"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
@@ -106,7 +106,7 @@ export default function AddAnnouncementPage() {
             <textarea
               rows={4}
               className="w-full p-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
-              placeholder="Brief product overview, benefits, and usage."
+              placeholder="Brief Announcement overview."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />

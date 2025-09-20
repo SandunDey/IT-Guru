@@ -18,6 +18,10 @@ import AdminAnnouncementPage from "./admin/adminAnnouncementPage";
 import AddAnnouncementPage from "./admin/adminAddNewAnnouncement";
 import UpdateAnnouncementPage from "./admin/adminUpdateAnnouncement";
 import AnnouncementReport from "./announcementReport";
+
+import AdminEnrollmentPage from "./admin/adminEnrollmentPage";
+import UpdateEnrollmentPage from "./admin/adminUpdateEnrollment";
+import EnrollmentReport from "./enrollmentReport";
 import AdminTicketsPage from "./admin/AdminTicketsPage"; // Import the Support Tickets page
 
 export default function AdminPage() {
@@ -179,7 +183,7 @@ export default function AdminPage() {
             <Route path="/staff" element={<h1>Staff</h1>} />
             <Route path="/payment" element={<h1>Payment</h1>} />
             <Route path="/announcements" element={<AdminAnnouncementPage />} />
-            <Route path="/enrollment" element={<h1>Enrollment</h1>} />
+            <Route path="/enrollment" element={<AdminEnrollmentPage />} />
             <Route path="/timetable" element={<h1>Time Table</h1>} />
             <Route path="/performance" element={<h1>performance</h1>} />
             <Route path="/feedback" element={<h1>feedback</h1>} />
@@ -190,9 +194,14 @@ export default function AdminPage() {
               element={<UpdateAnnouncementPage />}
             />
             <Route
+              path="update-enrollments"
+              element={<UpdateEnrollmentPage />}
+            />
+            <Route
               path="announcement-report"
               element={<AnnouncementReport />}
             />
+            <Route path="enrollment-report" element={<EnrollmentReport />} />
           </Routes>
         </div>
       </div>

@@ -34,7 +34,7 @@ export default function Header() {
             <Link to="/" className="hover:text-gray-200">
               Home
             </Link>
-            <Link to="/materials" className="hover:text-gray-200">
+            <Link to="/enrollment" className="hover:text-gray-200">
               Learning Materials
             </Link>
             <Link to="/performance" className="hover:text-gray-200">
@@ -110,7 +110,7 @@ export default function Header() {
           <Link to="/" className="hover:text-gray-200">
             Home
           </Link>
-          <Link to="/materials" className="hover:text-gray-200">
+          <Link to="/enrollment" className="hover:text-gray-200">
             Learning
           </Link>
           <Link to="/performance" className="hover:text-gray-200">

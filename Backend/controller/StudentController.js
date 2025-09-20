@@ -102,47 +102,58 @@ export function deleteStudent(req, res) {
     );
 }
 
-export function loginStudent(req, res) {
-  const email = req.body.email;
-  const password = req.body.password;
+export async function loginStudent(req, res) {
+  try {
+    const email = req.body.email.toLowerCase(); // normalize
+    const password = req.body.password;
 
-  Student.findOne({ email })
-    .then((student) => {
-      if (!student) {
-        return res.json({ message: "Student not found" });
-      }
+    const student = await Student.findOne({ email });
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
 
-      const isPasswordCorrect = bcrypt.compareSync(password, student.password);
-      if (!isPasswordCorrect) {
-        return res.json({ message: "Incorrect password" });
-      }
+    const isPasswordCorrect = bcrypt.compareSync(password, student.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Incorrect password" });
+    }
 
-      // never put hashed password in token payload sent back
-      const studentData = {
-        studentId: student.studentId,
-        name: student.name,
-        address: student.address,
-        year: student.year,
-        nic: student.nic,          // fixed from student.name
-        birthday: student.birthday,
-        gender: student.gender,
-        email: student.email,
-        phonenumber: student.phonenumber,
-      };
+    const studentData = {
+      studentId: student.studentId,
+      name: student.name,
+      address: student.address,
+      year: student.year,
+      nic: student.nic,
+      birthday: student.birthday,
+      gender: student.gender,
+      email: student.email,
+      phonenumber: student.phonenumber,
+    };
 
-      const token = jwt.sign({ sub: student._id, ...studentData }, process.env.JWT_KEY, {
-        expiresIn: "7d",
-      });
+    const token = jwt.sign({ sub: student._id, ...studentData }, process.env.JWT_KEY, {
+      expiresIn: "7d",
+    });
 
-      return res.json({
-        message: "Login successful",
-        token,
-        student: studentData,
-      });
-    })
-    .catch(() =>
-      res.status(500).json({
-        message: "Login failed",
-      })
-    );
+    return res.json({ message: "Login successful", token, student: studentData });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Login failed", error: err.message });
+  }
+}
+
+
+export async function verifyStudent(req, res) {
+  try {
+    const enrollmentKey = req.params.studentId.trim().toUpperCase();
+
+    // Find student by studentId
+    const student = await Student.findOne({ studentId: enrollmentKey });
+    if (!student) {
+      return res.status(404).json({ message: "Enrollment key is invalid" });
+    }
+
+    // Return student info (frontend will handle creating enrollment)
+    res.json(student);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
 }
