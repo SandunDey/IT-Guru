@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 
 const TicketDetailPage = () => {
   const { ticketId } = useParams();
@@ -10,7 +9,6 @@ const TicketDetailPage = () => {
   const [ticket, setTicket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const pdfContentRef = useRef(null);
   
   const [isDownloading, setIsDownloading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -23,6 +21,7 @@ const TicketDetailPage = () => {
         setTicket(response.data);
       } catch (err) {
         setError('Failed to fetch ticket details.');
+        console.error('Error fetching ticket:', err);
       }
       setIsLoading(false);
     };
@@ -30,34 +29,114 @@ const TicketDetailPage = () => {
   }, [ticketId]);
 
   const handleDownloadPDF = async () => {
-    const input = pdfContentRef.current;
-    if (!input) {
-        setError('PDF content area not found.');
-        return;
+    // Check if ticket data is available
+    if (!ticket || !ticket.referenceCode) {
+      setError('Ticket data is not loaded yet. Please wait.');
+      return;
     }
+    
     setIsDownloading(true);
-    window.scrollTo(0, 0);
 
     try {
-      const canvas = await html2canvas(input, {
-          scale: 2,
-          useCORS: true,
-          logging: true,
-          backgroundColor: '#ffffff',
-          foreignObjectRendering: false, 
-      });
-
-      const imgData = canvas.toDataURL('image/png', 1.0);
+      // Create a new PDF document
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const margin = 20;
+      const contentWidth = pageWidth - (margin * 2);
       
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      let yPosition = margin;
+      
+      // Add title
+      pdf.setFontSize(18);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Support Ticket Details', margin, yPosition);
+      yPosition += 15;
+      
+      // Add reference code
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`Reference: ${ticket.referenceCode}`, margin, yPosition);
+      yPosition += 10;
+      
+      // Add horizontal line
+      pdf.setDrawColor(0);
+      pdf.setLineWidth(0.5);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 15;
+      
+      // Add ticket information
+      pdf.setFontSize(12);
+      pdf.setFont('helvetica', 'normal');
+      
+      const addField = (label, value) => {
+        pdf.setFont('helvetica', 'bold');
+        pdf.text(`${label}:`, margin, yPosition);
+        pdf.setFont('helvetica', 'normal');
+        pdf.text(value, margin + 40, yPosition);
+        yPosition += 8;
+      };
+      
+      addField('Name', ticket.name);
+      addField('Email', ticket.email);
+      addField('Registration', ticket.registrationNumber);
+      addField('Contact', ticket.contactNumber);
+      addField('Course/Year', ticket.courseOrExamYear);
+      addField('Subject', ticket.subject);
+      addField('Status', ticket.status);
+      addField('Created', new Date(ticket.createdAt).toLocaleString());
+      
+      yPosition += 10;
+      
+      // Add message label
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Message:', margin, yPosition);
+      yPosition += 8;
+      
+      // Add message content with word wrap
+      pdf.setFont('helvetica', 'normal');
+      const messageLines = pdf.splitTextToSize(ticket.message, contentWidth);
+      pdf.text(messageLines, margin, yPosition);
+      yPosition += (messageLines.length * 6) + 15;
+      
+      // Add replies if they exist
+      if (ticket.replies && ticket.replies.length > 0) {
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Staff Replies:', margin, yPosition);
+        yPosition += 8;
+        
+        ticket.replies.forEach((reply, index) => {
+          if (yPosition > 250) { // Check if we need a new page
+            pdf.addPage();
+            yPosition = 20;
+          }
+          
+          pdf.setFontSize(10);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(`${reply.repliedBy} (${new Date(reply.repliedAt).toLocaleDateString()}):`, margin, yPosition);
+          yPosition += 5;
+          
+          pdf.setFont('helvetica', 'normal');
+          const replyLines = pdf.splitTextToSize(reply.text, contentWidth);
+          pdf.text(replyLines, margin, yPosition);
+          yPosition += (replyLines.length * 5) + 8;
+        });
+      }
+      
+      // Add department information
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Department: Student Services', margin, yPosition);
+      
+      // Add footer
+      const footerY = pdf.internal.pageSize.getHeight() - 10;
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'italic');
+      pdf.text(`Generated on ${new Date().toLocaleString()}`, margin, footerY);
+      
+      // Save the PDF
       pdf.save(`ticket-${ticket.referenceCode}.pdf`);
-
     } catch (err) {
-      console.error("PDF Generation Error (html2canvas):", err);
-      setError('Could not generate PDF. Please check the console for details.');
+      console.error("PDF Generation Error:", err);
+      setError('Could not generate PDF. Please try again.');
     } finally {
       setIsDownloading(false);
     }
@@ -71,10 +150,10 @@ const TicketDetailPage = () => {
       setTicket(response.data.ticket); 
     } catch (err) {
       setError('Failed to close ticket.');
+      console.error('Error closing ticket:', err);
     }
     setIsLoading(false);
   };
-
 
   if (isLoading) return <p className="text-center mt-8">Loading ticket details...</p>;
   if (error) return <p className="text-center mt-8 text-red-500">{error}</p>;
@@ -91,7 +170,11 @@ const TicketDetailPage = () => {
             {ticket.subject}
           </h1>
           <div className="flex items-center space-x-2">
-            <button onClick={handleDownloadPDF} disabled={isDownloading} className="p-2 bg-white rounded-md shadow-sm hover:bg-gray-200 disabled:bg-gray-300 disabled:cursor-not-allowed">
+            <button 
+              onClick={handleDownloadPDF} 
+              disabled={isDownloading || !ticket || !ticket.referenceCode} 
+              className="p-2 bg-white rounded-md shadow-sm hover:bg-gray-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
               {isDownloading ? '...' : <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>}
             </button>
             {!['Resolved', 'Closed'].includes(ticket.status) && (
@@ -106,18 +189,38 @@ const TicketDetailPage = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div ref={pdfContentRef} className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+          <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
             <div className="border-b pb-4">
               <p className="font-bold text-gray-800">{ticket.name} ({ticket.email})</p>
               <p className="text-sm text-gray-500">Created on {new Date(ticket.createdAt).toLocaleString()}</p>
               <p className="mt-4 text-gray-700 whitespace-pre-wrap">{ticket.message}</p>
             </div>
-            <div className="mt-6">
+
+            {/* Staff Replies Section */}
+            {ticket.replies && ticket.replies.length > 0 ? (
+              <div className="mt-6">
+                <h3 className="font-semibold text-gray-800 mb-3">Staff Replies:</h3>
+                {ticket.replies.map((reply, index) => (
+                  <div key={index} className="bg-blue-50 p-4 rounded-lg mb-3">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="font-medium text-blue-800">{reply.repliedBy}</span>
+                      <span className="text-sm text-blue-600">
+                        {new Date(reply.repliedAt).toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="text-blue-700 whitespace-pre-wrap">{reply.text}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="mt-6">
                 <p className="text-center text-gray-400 font-semibold p-4 border-2 border-dashed rounded-md">
                   Staff replies will appear here.
                 </p>
-            </div>
+              </div>
+            )}
           </div>
+
           <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="font-bold text-lg mb-4 border-b pb-2">Ticket Properties</h3>
@@ -125,6 +228,7 @@ const TicketDetailPage = () => {
                 <div className="flex justify-between"><span className="font-semibold text-gray-600">Reference:</span> <span className="font-mono text-gray-800">{ticket.referenceCode}</span></div>
                 <div className="flex justify-between"><span className="font-semibold text-gray-600">Reg Number:</span> <span className="text-gray-800">{ticket.registrationNumber}</span></div>
                 <div className="flex justify-between"><span className="font-semibold text-gray-600">Contact:</span> <span className="text-gray-800">{ticket.contactNumber}</span></div>
+                <div className="flex justify-between"><span className="font-semibold text-gray-600">Course/Year:</span> <span className="text-gray-800">{ticket.courseOrExamYear}</span></div>
                 <div className="flex justify-between"><span className="font-semibold text-gray-600">Department:</span> <span className="text-gray-800">Student Services</span></div>
               </div>
             </div>
@@ -149,4 +253,3 @@ const TicketDetailPage = () => {
 };
 
 export default TicketDetailPage;
-

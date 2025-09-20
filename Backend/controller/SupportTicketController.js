@@ -70,11 +70,24 @@ export const getTicketById = async (req, res) => {
 // --- Update a ticket by ID (For Admin/Staff use) ---
 export const updateTicket = async (req, res) => {
   try {
-    // Corrected to use new field names like 'subject' and 'message'
-    const { subject, message, status, priority } = req.body; 
+    const { subject, message, status, priority, reply, repliedBy } = req.body;
+    
+    const updateData = { subject, message, status, priority };
+    
+    // If reply is provided, add it to the replies array
+    if (reply && repliedBy) {
+      updateData.$push = {
+        replies: {
+          text: reply,
+          repliedBy: repliedBy,
+          repliedAt: new Date()
+        }
+      };
+    }
+
     const updatedTicket = await SupportTicket.findByIdAndUpdate(
       req.params.id,
-      { subject, message, status, priority },
+      updateData,
       { new: true, runValidators: true }
     );
 
@@ -99,4 +112,3 @@ export const deleteTicket = async (req, res) => {
     res.status(500).json({ message: 'Server error while deleting ticket.', error: error.message });
   }
 };
-

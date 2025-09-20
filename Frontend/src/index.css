@@ -1,3 +1,4 @@
+
 /* ===== Clean Global Styles (Tailwind v4-compatible) =====
 @import "tailwindcss"; */
 
@@ -54,10 +55,28 @@
     --shadow-1: 0 10px 24px rgba(0,0,0,.35);
     --border: #1f2937;
   }
+
+@import "tailwindcss";
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+body { @apply bg-gradient-to-br from-blue-500 to-blue-700 text-black; } blue bg
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+
 }
 
 body {
   margin: 0;
+
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
     "Apple Color Emoji", "Segoe UI Emoji";
   color: var(--text);
@@ -82,26 +101,17 @@ body {
 /* .auth-wrapper {
   min-height: 100%;
   display: grid;
+
+  display: flex;
+
   place-items: center;
-  padding: clamp(16px, 4vw, 32px);
+  min-width: 320px;
+  min-height: 100vh;
 }
 
-.card {
-  width: 100%;
-  max-width: 1060px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-1);
-  padding: clamp(24px, 5vw, 48px);
-}
-
-.card__header { margin-bottom: 16px; }
-.card__title {
-  margin: 0 0 6px;
-  font-weight: 800;
-  font-size: clamp(24px, 3.2vw, 34px);
-  letter-spacing: -0.01em;
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
 }
 .card__subtitle { margin: 0; color: var(--muted); font-size: 15px; } */
 
@@ -111,8 +121,19 @@ body {
   padding: 12px 14px;
   margin: 16px 0 8px;
   font-size: 14px;
+
+button {
+  border-radius: 8px;
   border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
 }
+
 .alert--success { background:#ecfdf5; border-color:var(--color-success); color:#065f46; }
 .alert--error   { background:#fef2f2; border-color:var(--color-danger); color:#991b1b; } */
 
@@ -186,16 +207,43 @@ body {
   border: 1px solid transparent;
   cursor: pointer;
   transition: transform .04s ease, background .18s ease, border-color .18s ease, opacity .18s ease;
+=======
+button:hover {
+  border-color: #646cff;
 }
-.btn:active { transform: translateY(1px); }
-.btn:disabled { opacity:.6; cursor:not-allowed; }
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
 
-.btn--ghost { background:#fff; color:#111827; border-color: var(--border); }
-.btn--ghost:hover { background:#f8fafc; }
-@media (prefers-color-scheme: dark) {
-  .btn--ghost { background:#0b1220; color:#e5e7eb; }
-  .btn--ghost:hover { background:#0f172a; }
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+} */
+
+@theme {
+  --color-accent :#124170 ;
+  --color-primary :#FFFffF ;
+  --color-boardercolor:#1C6EA4;
+  --color-similar :#222831 ;
+
+
+
 }
+
+/* --- Hide scrollbar but keep scroll ability --- */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;          /* Chrome, Safari, Edge (WebKit) */
+}
+
 
 .btn--primary { background: var(--ring); color:#fff; }
 .btn--primary:hover { filter: brightness(0.95); } */
@@ -236,4 +284,12 @@ body {
   -ms-overflow-style: none; /* IE 10+ */
   scrollbar-width: none;    /* Firefox */
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none;    /* Firefox */
+}
+
+
+
 
