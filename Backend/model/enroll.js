@@ -13,6 +13,7 @@ const enrollmentSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: "Student",
             required: true,
+            unique: true,
         },
 
 
@@ -34,8 +35,9 @@ const enrollmentSchema = new mongoose.Schema(
 
         paymentStatus: {
             type: String,
-            enum: ["PAID", "UNPAID"],
-            default: "UNPAID"
+            enum: ["pending", "succeeded", "failed", "refunded", "cancelled"],
+            index: true,
+            default: "succeeded"
         },
 
         isActive: {

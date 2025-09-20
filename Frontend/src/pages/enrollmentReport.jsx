@@ -46,7 +46,7 @@ export default function EnrollmentReport() {
       const pageWidth = doc.internal.pageSize.width;
 
       // --- Logo ---
-      const logoUrl = "/logo.jpg"; // put logo in public/
+      const logoUrl = "/logo.jpg"; // make sure logo.jpg is in /public
       doc.addImage(logoUrl, "PNG", 14, 10, 20, 20);
 
       // --- ITGuru Info ---
@@ -67,10 +67,10 @@ export default function EnrollmentReport() {
 
       // --- Table Data ---
       const tableData = enrollments.map((enr, index) => [
-        enr.enrollmentID || `ENR${index + 1}`,
-        enr.studentId || "N/A",
-        enr.name || "N/A",
-        enr.year || "N/A",
+        enr.enrollmentID || enr._id || `ENR${index + 1}`,
+        enr.studentId?.studentId || enr.studentId || "N/A",
+        enr.studentId?.name || enr.name || "N/A",
+        enr.studentId?.year || enr.year || "N/A",
         enr.paymentStatus || "UNPAID",
         enr.isActive ? "Active" : "Inactive",
         enr.enrollmentDate

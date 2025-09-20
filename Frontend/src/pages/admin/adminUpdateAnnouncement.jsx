@@ -47,7 +47,9 @@ export default function UpdateAnnouncementPage() {
 
       //backend call
       await axios.put(
-        import.meta.env.VITE_API_BASE_URL + "/api/announcements/" + announcementID,
+        import.meta.env.VITE_API_BASE_URL +
+          "/api/announcements/" +
+          announcementID,
         announcement,
         {
           //1-> yavann ona url ek , import
@@ -62,6 +64,7 @@ export default function UpdateAnnouncementPage() {
       toast.success("Announcement Updated Successfully");
       navigate("/admin/dashboard/announcements");
     } catch {
+      console.log(error);
       toast.error("An error Occurred");
     }
   }

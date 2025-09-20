@@ -45,12 +45,12 @@ export async function getAnnouncement(req, res) {
 
 export async function deleteAnnouncement(req, res) {
     console.log(req.user)
-    if (!isAdmin(req)) {
-        res.status(403).json({
-            message: "You are not authorized to delete an Announcement"
-        });
-        return;
-    }
+    // if (!isAdmin(req)) {
+    //     res.status(403).json({
+    //         message: "You are not authorized to delete an Announcement"
+    //     });
+    //     return;
+    // }
     try {
 
         const announcementID = req.params.announcementID
@@ -72,12 +72,12 @@ export async function deleteAnnouncement(req, res) {
 }
 
 export async function updateAnnouncement(req, res) {
-    if (!isAdmin(req)) {
-        res.status(403).json({
-            message: "You are not authorized to update an Announcement"
-        });
-        return;
-    }
+    // if (!isAdmin(req)) {
+    //     res.status(403).json({
+    //         message: "You are not authorized to update an Announcement"
+    //     });
+    //     return;
+    // }
 
     try {
         const announcementID = req.params.announcementID;

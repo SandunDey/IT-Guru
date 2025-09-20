@@ -72,13 +72,17 @@ export default function UserEnrollmentPage() {
       const enrollmentData = await enrollmentRes.json();
       if (!enrollmentRes.ok) throw new Error(enrollmentData.message);
 
-      toast.success(
-        `Enrolled successfully for ${selectedYear} with key: ${enrollmentKey}`
-      );
+      if (enrollmentData.alreadyEnrolled) {
+        toast("You are already enrolled. Redirecting...");
+      } else {
+        toast.success(
+          `Enrolled successfully for ${selectedYear} with key: ${enrollmentKey}`
+        );
+      }
       setShowModal(false);
       setEnrollmentKey("");
 
-      navigate(`/learning-materials/${student.studentId}`);
+      navigate(`/learning-materials/${student.studentId}`); // mekat learning material page eka danna
     } catch (err) {
       toast.error(err.message);
     }

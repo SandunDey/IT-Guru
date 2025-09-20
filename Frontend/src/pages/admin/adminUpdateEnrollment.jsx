@@ -31,13 +31,10 @@ export default function UpdateEnrollmentPage() {
     try {
       //backend ekt yavann ona json ek
       const enrollment = {
-        enrollmentID: enrollmentID,
-        studentId: studentId,
-        name: name,
-        year: year,
-        paymentStatus: paymentStatus,
-        isActive: isActive,
-        enrollmentDate: enrollmentDate,
+        year,
+        paymentStatus,
+        isActive,
+        enrollmentDate,
       };
 
       //backend call
@@ -55,9 +52,10 @@ export default function UpdateEnrollmentPage() {
       );
 
       toast.success("Enrollment Updated Successfully");
-      navigate("/admin/dashboard/enrollments");
-    } catch {
-      toast.error("An error Occurred");
+      navigate("/admin/dashboard/enrollment");
+    } catch (err) {
+      console.error("Update failed:", err.response?.data || err.message);
+      toast.error(err.response?.data?.message || "An error Occurred");
     }
   }
 
@@ -138,8 +136,11 @@ export default function UpdateEnrollmentPage() {
               value={paymentStatus}
               onChange={(e) => setPaymentStatus(e.target.value)}
             >
-              <option value="Paid">Paid</option>
-              <option value="Unpaid">Unpaid</option>
+              <option value="pending">Pending</option>
+              <option value="succeeded">Succeeded</option>
+              <option value="failed">Failed</option>
+              <option value="refunded">Refunded</option>
+              <option value="cancelled">Cancelled</option>
             </select>
           </div>
 
@@ -150,11 +151,11 @@ export default function UpdateEnrollmentPage() {
             </label>
             <select
               className="w-full p-3 border rounded-lg border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
-              value={isActive}
-              onChange={(e) => setIsActive(e.target.value)}
+              value={isActive ? "true" : "false"}
+              onChange={(e) => setIsActive(e.target.value === "true")}
             >
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
             </select>
           </div>
 

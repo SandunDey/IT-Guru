@@ -148,7 +148,7 @@ button {
 .form-grid { display:grid; gap:18px 20px; }
 @media (min-width: 860px) { .form-grid { grid-template-columns: 1fr 1fr; } } */
 
-.field { display:grid; gap:6px; }
+/* .field { display:grid; gap:6px; } */
 /* .label { font-size:13px; color: color-mix(in srgb, var(--text) 80%, #0000); } */
 /*.label {
   font-size: 13px;
@@ -229,7 +229,7 @@ button:focus-visible {
   }
 } */
 
-@theme {
+/* @theme {
   --color-accent :#124170 ;
   --color-primary :#FFFffF ;
   --color-boardercolor:#1C6EA4;
@@ -237,16 +237,16 @@ button:focus-visible {
 
 
 
-}
+} */
 
 /* --- Hide scrollbar but keep scroll ability --- */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;          /* Chrome, Safari, Edge (WebKit) */
-}
+/* .scrollbar-hide::-webkit-scrollbar {
+  display: none;          /* Chrome, Safari, Edge (WebKit)} */
 
 
-.btn--primary { background: var(--ring); color:#fff; }
-.btn--primary:hover { filter: brightness(0.95); } */
+
+/*.btn--primary { background: var(--ring); color:#fff; }
+.btn--primary:hover { filter: brightness(0.95); } */ 
 
 /* Footer actions row */
 /* .form__footer {
@@ -264,7 +264,8 @@ button:focus-visible {
 .fineprint a { color: inherit; }
 .fineprint a:hover { color: var(--text); } */
 
-@import "tailwindcss";
+@import  "tailwindcss";
+
 
 @theme {
   --color-accent :#124170 ;

@@ -21,11 +21,8 @@ import AnnouncementReport from "./announcementReport";
 
 import AdminEnrollmentPage from "./admin/adminEnrollmentPage";
 import UpdateEnrollmentPage from "./admin/adminUpdateEnrollment";
-<<<<<<< HEAD
 import EnrollmentReport from "./enrollmentReport";
-=======
 import AdminTicketsPage from "./admin/AdminTicketsPage"; // Import the Support Tickets page
->>>>>>> b58d22f697301e2850a501575538ad0b71c4d03c
 
 export default function AdminPage() {
   return (
