@@ -5,17 +5,18 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import helmet from "helmet";
 import cors from "cors";
+import compression from "compression";
+import authOptional, { withActor } from "./auth.js";
 
-// Your routes
+// Routes
 import StudentRoute from "./routes/StudentRoute.js";
 import adminrouter from "./routes/AdminRoute.js";
 import StaffRouter from "./routes/StaffRoute.js";
-import router from "./routes/paymentRoutes.js";
-import SupportTicketRoute from "./routes/SupportTicketRoute.js";//supportTicket(Vishwa)
-
-
+import paymentRouter from "./routes/paymentRoutes.js";
+import SupportTicketRoute from "./routes/SupportTicketRoute.js";
 
 dotenv.config();
+
 const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.DB_url || process.env.MONGO_URI;
 
@@ -25,34 +26,48 @@ if (!MONGO_URI) {
 }
 
 async function bootstrap() {
-  // 1) Connect DB
+  // 1) DB
   mongoose.set("strictQuery", true);
   await mongoose.connect(MONGO_URI, { autoIndex: true });
   console.log("✅ MongoDB connected");
 
-  // 2) Build app
+  // 2) App
   const app = express();
 
-  app.use(helmet());
+  // If running behind a proxy (Railway/Render/NGINX), keep cookies/session flags sane
+  app.set("trust proxy", 1);
+
+  // Security headers
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: "cross-origin" },
+    })
+  );
+
+  // CORS (configure via env if needed)
+  const allowedOrigins = (
+    process.env.CORS_ORIGINS ||
+    "http://localhost:5173,http://localhost:3000,http://localhost:4000"
+  )
+    .split(",")
+    .map((s) => s.trim());
 
   app.use(
     cors({
-      origin: [
-        "http://localhost:5173", // Vite
-        "http://localhost:4000", // if you sometimes open frontend here
-      ],
+      origin: (origin, cb) =>
+        !origin || allowedOrigins.includes(origin) ? cb(null, true) : cb(new Error("Not allowed by CORS")),
       credentials: true,
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
       allowedHeaders: ["Content-Type", "Authorization"],
     })
   );
-  
 
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ extended: true }));
+  app.use(compression());
   app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
-  // 3) Try to enable sessions if deps are present; otherwise continue without them
+  // 3) Optional sessions (only if deps installed)
   let sessionEnabled = false;
   try {
     const sessionMod = await import("express-session");
@@ -82,21 +97,20 @@ async function bootstrap() {
     sessionEnabled = true;
     console.log("🟢 Sessions enabled");
   } catch (err) {
-    console.warn(
-      "⚠️ Sessions disabled: install 'express-session' and 'connect-mongo' to enable them."
-    );
+    console.warn("⚠️ Sessions disabled: install 'express-session' and 'connect-mongo' to enable them.");
   }
 
-  // 4) Routes (keeping your original paths)
-  app.use("/api/Student", StudentRoute);
-  app.use("/api/Admin", adminrouter);
-  app.use("/api/Staff", StaffRouter);
-  app.use("/api/payment",router);
-  app.use("/api/tickets", SupportTicketRoute);//supportTicket(Vishwa)
-  app.use("/api/tickets", SupportTicketRoute);//supportTicket(Vishwa)
- 
+  // 4) Health check
+  app.get("/health", (_req, res) => res.json({ ok: true }));
 
-  // 5) 404 + error handler
+  // 5) Routes (lowercase, single mount each)
+  app.use("/api/student", StudentRoute);
+  app.use("/api/admin", adminrouter);
+  app.use("/api/staff", StaffRouter);
+  app.use("/api/payment", paymentRouter);
+  app.use("/api/tickets", SupportTicketRoute);
+
+  // 6) 404 + error handler
   app.use((req, res) => res.status(404).json({ message: "Route not found" }));
   // eslint-disable-next-line no-unused-vars
   app.use((err, _req, res, _next) => {
@@ -104,13 +118,14 @@ async function bootstrap() {
     res.status(err.status || 500).json({ message: err.message || "Internal server error" });
   });
 
-  // 6) Start server
+  // 7) Start
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}${sessionEnabled ? " (with sessions)" : ""}`);
+    console.log(`   CORS allowed: ${allowedOrigins.join(", ")}`);
   });
 }
 
-bootstrap().catch(err => {
+bootstrap().catch((err) => {
   console.error("❌ Failed to start app:", err);
   process.exit(1);
 });

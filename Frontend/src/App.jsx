@@ -20,6 +20,7 @@ import TicketDetailPage from "./TicketDetailPage.jsx";
 import StaffPage from "./StaffPage.jsx";
 import AdminLoginPage from "./loging.jsx";
 import StudentDashboard from "./pages/Studentdashbord.jsx";
+import StudentProfile from "./pages/StudentProfile.jsx";
 
 import ProtectedRoute from "./ProtectedRoute.jsx";
 
@@ -52,9 +53,10 @@ export default function App() {
         <Route path="/admin" element={<AdminLoginPage />} />
 
         {/* Protected by role */}
-        <Route element={<ProtectedRoute allow="student" />}>
-          <Route path="/StudentDashboard" element={<StudentDashboard />} />
-        </Route>
+     <Route element={<ProtectedRoute allow="student" />}>
+  <Route path="/StudentDashboard" element={<StudentDashboard />} />
+  <Route path="/student/profile" element={<StudentProfile />} />
+</Route>
 
         <Route element={<ProtectedRoute allow="staff" />}>
           <Route path="/staff" element={<StaffPage />} />

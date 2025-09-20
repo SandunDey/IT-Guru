@@ -48,7 +48,7 @@ export default function LoginPage() {
 
       const token = res?.data?.token;
       if (token) {
-        if (remember) localStorage.setItem("itguru_token", token);
+        if (remember) localStorage.setItem("itguru_token", token),localStorage.setItem(user);
         else sessionStorage.setItem("itguru_token", token);
 
         // you can also persist basic student info if needed:

@@ -9,7 +9,7 @@ import ITGURULogo from "./assets/logo.jpg";
 import LoginBG from "./assets/background.jpg";
 
 export default function AdminLoginPage() {
-  const [role, setRole] = useState("student"); // default -> student
+  const [role, setRole] = useState("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -30,23 +30,28 @@ export default function AdminLoginPage() {
 
   async function onSubmit(e) {
     e.preventDefault();
+    if (loading) return; // prevent double submit
     setError("");
+
     const v = validate();
     if (v) return setError(v);
+
     try {
       setLoading(true);
-      const { token, user } = await loginByRole(role, { email, password });
+      const normalizedRole = (role || "").toLowerCase();
+      const { token, user } = await loginByRole(normalizedRole, { email, password });
+
       if (!token) throw new Error("Login failed: missing token");
-      // Ensure role attached (some backends may not return it inside user)
-      const finalUser = { role: role.toLowerCase(), ...(user || {}), email };
+
+      // ensure we always store a role + email
+      const finalUser = { role: normalizedRole, email, ...(user || {}) };
       storeAuth(token, finalUser, remember);
 
-      // Navigate by role
-      const r = role.toLowerCase();
-      if (r === "admin") navigate("/admin/dashboard", { replace: true });
-      else if (r === "student") navigate("/StudentDashboard", { replace: true, state: { user: finalUser } });
-      else if (r === "staff") navigate("/staff", { replace: true });
-      else if (r === "teacher") navigate("/teacher", { replace: true });
+      // navigate by role (keep these in sync with your router)
+      if (normalizedRole === "admin") navigate("/admin/dashboard/*", { replace: true });
+      else if (normalizedRole === "student") navigate("/StudentDashboard", { replace: true, state: { user: finalUser } });
+      else if (normalizedRole === "staff") navigate("/staff", { replace: true });
+      else if (normalizedRole === "teacher") navigate("/teacher", { replace: true });
       else navigate("/", { replace: true });
     } catch (err) {
       setError(err?.response?.data?.message || err?.message || "Login failed");
@@ -56,7 +61,7 @@ export default function AdminLoginPage() {
   }
 
   function onCreateAccount() {
-    // for now, only student signup route exists
+    // currently only student signup? keep role in URL for future use
     navigate(`/signup?role=${encodeURIComponent(role)}`);
   }
 
@@ -142,6 +147,7 @@ export default function AdminLoginPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full rounded-xl border border-black/10 bg-white pl-10 pr-3 py-2 text-sm outline-none transition focus:border-[#1D9BF0]/40 focus:ring-2 focus:ring-[#1D9BF0]/20"
                       autoComplete="email"
+                      required
                     />
                   </div>
                 </div>
@@ -166,6 +172,7 @@ export default function AdminLoginPage() {
                       onChange={(e) => setPassword(e.target.value)}
                       className="w-full rounded-xl border border-black/10 bg-white pl-10 pr-10 py-2 text-sm outline-none transition focus:border-[#1D9BF0]/40 focus:ring-2 focus:ring-[#1D9BF0]/20"
                       autoComplete="current-password"
+                      required
                     />
                     <button
                       type="button"

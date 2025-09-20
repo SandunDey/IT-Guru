@@ -21,87 +21,82 @@ export async function saveStudent(req, res) {
       
     } = req.body;
 
-    // 1) validate password match BEFORE hashing
     if (password !== confirmPassword) {
-      return res
-        .status(400)
-        .json({ message: "Password and Confirm Password do not match" });
+      return res.status(400).json({ message: "Password and Confirm Password do not match" });
     }
 
-    // 2) hash
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
 
-    // 3) create & save
     const student = new Student({
       studentId,
       name,
       address,
-      year,          // Number (see model)
+      year,
       nic,
       birthday,
       gender,
       email,
       password: hashedPassword,
       phonenumber,
-         // String (see model)
     });
 
     await student.save();
 
-    return res.status(201).json({
-      message: "Student saved successfully",
-      student,
-    });
+    return res.status(201).json({ message: "Student saved successfully", student });
   } catch (err) {
-    return res.status(500).json({
-      message: "Error saving student",
-      error: err.message,
-    });
+    return res.status(500).json({ message: "Error saving student", error: err.message });
   }
 }
 
 export function getAllStudents(req, res) {
   Student.find()
     .then((students) => res.json(students))
-    .catch(() =>
-      res.status(500).json({
-        message: "Error searching students",
-      })
-    );
+    .catch(() => res.status(500).json({ message: "Error searching students" }));
 }
 
-export function updateStudent(req, res) {
-  Student.findOneAndUpdate({ studentId: req.params.studentId }, req.body, {
-    new: true,
-  })
+// NEW: fetch a single student by their public studentId
+export function getStudentById(req, res) {
+  Student.findOne({ studentId: req.params.studentId })
     .then((student) => {
-      if (!student) {
-        return res.status(404).json({ message: "Student not found" });
-      }
-      return res.json({ message: "Student updated successfully", student });
+      if (!student) return res.status(404).json({ message: "Student not found" });
+      return res.json(student);
     })
-    .catch(() =>
-      res.status(500).json({
-        message: "Error updating student",
-      })
+    .catch(() => res.status(500).json({ message: "Error fetching student" }));
+}
+
+// Improved: hash password if provided, strip confirmPassword, keep validators on
+export async function updateStudent(req, res) {
+  try {
+    const update = { ...req.body };
+    delete update.confirmPassword;
+
+    if (update.password) {
+      const salt = bcrypt.genSaltSync(10);
+      update.password = bcrypt.hashSync(update.password, salt);
+    }
+
+    const student = await Student.findOneAndUpdate(
+      { studentId: req.params.studentId },
+      update,
+      { new: true, runValidators: true }
     );
+
+    if (!student) return res.status(404).json({ message: "Student not found" });
+
+    return res.json({ message: "Student updated successfully", student });
+  } catch (e) {
+    return res.status(500).json({ message: "Error updating student" });
+  }
 }
 
 export function deleteStudent(req, res) {
-  // NOTE: If you add auth later, enforce it here.
   Student.findOneAndDelete({ studentId: req.params.studentId })
     .then((student) => {
-      if (!student) {
-        return res.status(404).json({ message: "Student not found" });
-      }
+      if (!student) return res.status(404).json({ message: "Student not found" });
       return res.json({ message: "Student deleted successfully" });
     })
-    .catch(() =>
-      res.status(500).json({
-        message: "Error deleting student",
-      })
-    );
+    .catch(() => res.status(500).json({ message: "Error deleting student" }));
 }
 
 export function loginStudent(req, res) {
@@ -119,32 +114,21 @@ export function loginStudent(req, res) {
         return res.json({ message: "Incorrect password" });
       }
 
-      // never put hashed password in token payload sent back
       const studentData = {
         studentId: student.studentId,
         name: student.name,
         address: student.address,
         year: student.year,
-        nic: student.nic,          // fixed from student.name
+        nic: student.nic,
         birthday: student.birthday,
         gender: student.gender,
         email: student.email,
         phonenumber: student.phonenumber,
       };
 
-      const token = jwt.sign({ sub: student._id, ...studentData }, process.env.JWT_KEY, {
-        expiresIn: "7d",
-      });
+      const token = jwt.sign({ sub: student._id, ...studentData }, process.env.JWT_KEY, { expiresIn: "7d" });
 
-      return res.json({
-        message: "Login successful",
-        token,
-        student: studentData,
-      });
+      return res.json({ message: "Login successful", token, student: studentData });
     })
-    .catch(() =>
-      res.status(500).json({
-        message: "Login failed",
-      })
-    );
+    .catch(() => res.status(500).json({ message: "Login failed" }));
 }

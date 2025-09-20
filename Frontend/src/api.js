@@ -1,38 +1,116 @@
 // src/api.js
 import axios from "axios";
 
-/** Base URL (strip trailing slash) */
-const RAW = import.meta.env?.VITE_API_BASE_URL || "http://localhost:4000";
-export const API_BASE = RAW.replace(/\/$/, "");
 
+
+/**
+ * Base URL
+ * - Prefer setting: VITE_API_BASE_URL=http://localhost:3000/api
+ * - If you only provide host (e.g., http://localhost:3000), we'll append /api automatically.
+ */
+const RAW = (import.meta.env?.VITE_API_BASE_URL || "http://localhost:3000/api").replace(/\/$/, "");
+export const API_BASE = RAW.endsWith("/api") ? RAW : `${RAW}/api`;
+
+// Axios instance
 export const api = axios.create({
   baseURL: API_BASE,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
 
-/* -------------------- STUDENTS -------------------- */
-export const signUpStudent = (payload) => api.post("/api/Student", payload);
-// NOTE: backend route uses 'loging'
-export const loginStudent = (payload) => api.post("/api/Student/login", payload);
+// ---- Auth header: attach Bearer token if you store it in localStorage under "app_auth"
+api.interceptors.request.use((config) => {
+  try {
+    const stored = JSON.parse(localStorage.getItem("app_auth") || "{}");
+    if (stored?.token) {
+      config.headers.Authorization = `Bearer ${stored.token}`;
+    }
+  } catch {
+    /* ignore */
+  }
+  return config;
+});
 
+// ---- Small helper to try a primary path and fall back to a legacy/alt path (e.g., /loging)
+async function tryPaths(primaryCall, fallbackCall) {
+  try {
+    return await primaryCall();
+  } catch (err) {
+    const status = err?.response?.status;
+    // Only fall back on clear routing issues
+    if (status === 404 || status === 405) {
+      return await fallbackCall();
+    }
+    throw err;
+  }
+}
 
-/* -------------------- STAFF -------------------- */
-export const registerStaff = (payload) => api.post("/api/Staff/register", payload);
-export const loginStaff = (payload) => api.post("/api/Staff/loging", payload);
-export const getAllStaff = () => api.get("/api/Staff/viewStaffmember");
-export const getStaffById = (staffId) => api.get(`/api/Staff/viewStaffmember/${encodeURIComponent(staffId)}`);
-export const updateStaffById = (staffId, payload) => api.put(`/api/Staff/updateStaffmember/${encodeURIComponent(staffId)}`, payload);
-export const deleteStaffById = (staffId) => api.delete(`/api/Staff/deleteStaffmember/${encodeURIComponent(staffId)}`);
+/* ==================== STUDENTS ==================== */
+// POST /api/student (signup)
+export const signUpStudent = (payload) => api.post(`/student`, payload);
 
-/* -------------------- ADMIN & TEACHER (add if your backend exposes these) -------------------- */
-// keep same 'loging' pattern for consistency with your codebase
-export const adminLoging = (payload) => api.post("/api/Admin/login", payload);
-export const loginTeacher = (payload) => api.post("/api/Teacher/login", payload);
+// POST /api/student/login  (fallback: /api/student/loging)
+export const loginStudent = (payload) =>
+  tryPaths(
+    () => api.post(`/student/login`, payload),
+    () => api.post(`/student/loging`, payload)
+  );
 
-/* Generic role helper */
+// GET /api/student/:studentId
+export const getStudentById = (studentId) =>
+  api.get(`/student/${encodeURIComponent(studentId)}`);
+
+// PUT /api/student/:studentId
+export const updateStudentById = (studentId, payload) =>
+  api.put(`/student/${encodeURIComponent(studentId)}`, payload);
+
+/* ===================== STAFF ====================== */
+// POST /api/staff/register
+export const registerStaff = (payload) => api.post(`/staff/register`, payload);
+
+// POST /api/staff/login  (fallback: /api/staff/loging)
+export const loginStaff = (payload) =>
+  tryPaths(
+    () => api.post(`/staff/login`, payload),
+    () => api.post(`/staff/loging`, payload)
+  );
+
+// GET /api/staff/viewStaffmember
+export const getAllStaff = () => api.get(`/staff/viewStaffmember`);
+
+// GET /api/staff/viewStaffmember/:id
+export const getStaffById = (staffId) =>
+  api.get(`/staff/viewStaffmember/${encodeURIComponent(staffId)}`);
+
+// PUT /api/staff/updateStaffmember/:id
+export const updateStaffById = (staffId, payload) =>
+  api.put(`/staff/updateStaffmember/${encodeURIComponent(staffId)}`, payload);
+
+// DELETE /api/staff/deleteStaffmember/:id
+export const deleteStaffById = (staffId) =>
+  api.delete(`/staff/deleteStaffmember/${encodeURIComponent(staffId)}`);
+
+/* ================= ADMIN & TEACHER ================= */
+// POST /api/admin/login (fallback keeps legacy casing)
+export const adminLogin = (payload) =>
+  tryPaths(
+    () => api.post(`/admin/login`, payload),
+    () => api.post(`/Admin/login`, payload)
+  );
+
+// POST /api/teacher/login (if/when available)
+export const loginTeacher = (payload) =>
+  tryPaths(
+    () => api.post(`/teacher/login`, payload),
+    () => api.post(`/Teacher/login`, payload)
+  );
+
+// Convenience: GET /api/admin (protected list)
+export const getAdmins = () => api.get(`/admin`);
+
+/* ================== ROLE DISPATCH ================== */
 export async function loginByRole(role, creds) {
-  const r = role?.toLowerCase();
+  const r = (role || "").toLowerCase();
   if (r === "student") {
     const { data } = await loginStudent(creds);
     return { token: data?.token, user: { role: "student", ...(data?.student || data?.user || {}) } };
@@ -42,7 +120,7 @@ export async function loginByRole(role, creds) {
     return { token: data?.token, user: { role: "staff", ...(data?.staff || data?.user || {}) } };
   }
   if (r === "admin") {
-    const { data } = await adminLoging(creds);
+    const { data } = await adminLogin(creds);
     return { token: data?.token, user: { role: "admin", ...(data?.admin || data?.user || {}) } };
   }
   if (r === "teacher") {

@@ -143,10 +143,13 @@ export default function StudentDashboard() {
               <Bell className="h-5 w-5" />
             </button>
 
-            <div className="flex items-center gap-3 rounded-full bg-slate-100 px-3 py-1">
-              <img src={`https://i.pravatar.cc/40?u=${encodeURIComponent(displayName)}`} alt="avatar" className="h-8 w-8 rounded-full" />
-              <span className="hidden sm:block text-sm font-medium">{displayName}</span>
-            </div>
+            <div
+            className="flex items-center gap-3 rounded-full bg-slate-100 px-3 py-1 cursor-pointer hover:bg-slate-200"
+            onClick={() => navigate("/student/profile", { state: { user } })}
+            >
+            <img src={`https://i.pravatar.cc/40?u=${encodeURIComponent(displayName)}`} alt="avatar" className="h-8 w-8 rounded-full" />
+            <span className="hidden sm:block text-sm font-medium">{displayName}</span>
+        </div>
 
             <button className="rounded-xl p-2 hover:bg-slate-100" onClick={handleLogout}>
               <LogOut className="h-5 w-5" />
