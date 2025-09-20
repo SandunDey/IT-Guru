@@ -19,6 +19,7 @@ import MyTicketsPage from "./MyTicketsPage.jsx";
 import TicketDetailPage from "./TicketDetailPage.jsx";
 import StaffPage from "./StaffPage.jsx";
 import AdminLoginPage from "./loging.jsx";
+import FeedbackPage from './components/FeedbackPage';
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="/admin" element={<AdminLoginPage />} />
         <Route path="/staff" element={<StaffPage />} />
         <Route path="/admin/dashboard/*" element={<AdminPage />} />
+        <Route path="/feedback" element={<FeedbackPage />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>
