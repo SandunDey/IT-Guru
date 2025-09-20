@@ -9,19 +9,19 @@ import {
 
 const router = express.Router();
 
-// CREATE: POST /api/tickets
+// CREATE: POST /api/support-tickets
 router.post('/', createTicket);
 
-// READ: GET /api/tickets (Get all.)
+// READ: GET /api/support-tickets
 router.get('/', getAllTickets);
 
-// READ: GET /api/tickets/:id (Get one by ID)
+// READ: GET /api/support-tickets/:id
 router.get('/:id', getTicketById);
 
-// UPDATE: PUT /api/tickets/:id
+// UPDATE: PUT /api/support-tickets/:id
 router.put('/:id', updateTicket);
 
-// DELETE: DELETE /api/tickets/:id
+// DELETE: DELETE /api/support-tickets/:id
 router.delete('/:id', deleteTicket);
 
 export default router;
