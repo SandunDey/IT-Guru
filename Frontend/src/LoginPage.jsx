@@ -1,17 +1,17 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast"; // ✅ react-hot-toast import
 import Logo from "./assets/logo.jpg";
 
 // Prefer Vite env; fallback to common defaults
 const RAW_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||
   (typeof process !== "undefined" && process.env?.REACT_APP_API_BASE_URL) ||
-  "http://localhost:4000"; // sensible dev default
+  "http://localhost:4000";
 
-const API_BASE = RAW_BASE.replace(/\/$/, ""); // strip trailing slash
+const API_BASE = RAW_BASE.replace(/\/$/, "");
 
-// Optional: axios instance
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
@@ -28,7 +28,6 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // read flash from signup redirect
   const flash = location.state?.flash;
 
   async function handleSubmit(e) {
@@ -37,36 +36,39 @@ export default function LoginPage() {
 
     if (!email || !password) {
       setError("Please enter your email and password.");
+      toast.error("Please enter your email and password.");
       return;
     }
 
     try {
       setLoading(true);
 
-      // ✅ Correct path: /api/students/login
-      const res = await api.post("/api/students/login", { email, password });
+      const res = await api.post("/api/student/login", { email, password });
 
       const token = res?.data?.token;
       if (token) {
         if (remember) localStorage.setItem("itguru_token", token);
         else sessionStorage.setItem("itguru_token", token);
 
-        // you can also persist basic student info if needed:
-        // localStorage.setItem("student", JSON.stringify(res.data.student));
+        // ✅ Save logged-in student to localStorage for enrollment page
+        localStorage.setItem("student", JSON.stringify(res.data.student));
 
-        // ✅ Route that exists in your App.jsx
-        navigate("/", { replace: true });
+        // ✅ Show success toast
+        toast.success("Login successful!");
+
+        navigate("/enrollment", { replace: true });
         return;
       }
 
-      // fallback if no token returned
       setError(res?.data?.message || "Login failed. Please try again.");
+      toast.error(res?.data?.message || "Login failed. Please try again.");
     } catch (err) {
       const msg =
         err?.response?.data?.message ||
         err?.message ||
         "Login failed. Please try again.";
       setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -79,8 +81,8 @@ export default function LoginPage() {
         background: "linear-gradient(to right, #ffffff, #dbeafe, #1e40af)",
       }}
     >
+      <Toaster position="top-right" reverseOrder={false} /> {/* ✅ toast container */}
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-10">
-        {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <img
             src={Logo}
@@ -93,20 +95,15 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Flash from signup */}
         {flash && (
           <div className="mb-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
             {flash}
           </div>
         )}
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-semibold text-black"
-            >
+            <label htmlFor="email" className="block text-sm font-semibold text-black">
               Email
             </label>
             <input
@@ -122,10 +119,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-semibold text-black"
-            >
+            <label htmlFor="password" className="block text-sm font-semibold text-black">
               Password
             </label>
             <div className="relative mt-2">

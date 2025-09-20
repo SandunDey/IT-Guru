@@ -140,7 +140,7 @@ export default function AdminEnrollmentPage() {
 
           {/* Report Button */}
           <Link
-            to="/admin/dashboard/announcement-report"
+            to="/admin/dashboard/enrollment-report"
             className="flex items-center bg-blue-950 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-boardercolor transition-colors"
           >
             <TbReportAnalytics className="text-xl" />{" "}
@@ -159,6 +159,7 @@ export default function AdminEnrollmentPage() {
                 <th className="py-3 px-4 text-sm font-medium">Enrollment ID</th>
                 <th className="py-3 px-4 text-sm font-medium">Student ID</th>
                 <th className="py-3 px-4 text-sm font-medium">Year</th>
+                <th className="py-3 px-4 text-sm font-medium">Name</th>
                 <th className="py-3 px-4 text-sm font-medium">
                   Payment Status
                 </th>
@@ -179,13 +180,21 @@ export default function AdminEnrollmentPage() {
                   <td className="py-3 px-4 font-semibold text-secondary">
                     {item.enrollmentID}
                   </td>
-                  <td className="py-3 px-4">{item.studentId}</td>
-                  <td className="py-3 px-4">{item.year}</td>
-                  <td className="py-3 px-4">{item.paymentStatus}</td>
-                  <td className="py-3 px-4">{item.isActive}</td>
                   <td className="py-3 px-4">
-                    {new Date(item.enrollmentDate).toLocaleDateString()}
+                    {item.studentId?.studentId || "N/A"}
                   </td>
+                  <td className="py-3 px-4">{item.studentId?.year || "N/A"}</td>
+                  <td className="py-3 px-4">{item.studentId?.name || "N/A"}</td>
+                  <td className="py-3 px-4">{item.paymentStatus}</td>
+                  <td className="py-3 px-4">
+                    {item.isActive ? "Active" : "Inactive"}
+                  </td>
+                  <td className="py-3 px-4">
+                    {item.enrollmentDate
+                      ? new Date(item.enrollmentDate).toLocaleDateString()
+                      : "N/A"}
+                  </td>
+
                   <td className="py-3 px-4">
                     <div className="flex flex-row gap-4 justify-center items-center">
                       <FaRegEdit

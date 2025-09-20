@@ -8,6 +8,7 @@ export default function UpdateEnrollmentPage() {
 
   const [enrollmentID, setEnrollmentID] = useState(location.state.enrollmentID);
   const [studentId, setStudentId] = useState(location.state.studentId);
+  const [name, setName] = useState(location.state.name);
   const [year, setYear] = useState(location.state.year);
   const [paymentStatus, setPaymentStatus] = useState(
     location.state.paymentStatus
@@ -32,6 +33,7 @@ export default function UpdateEnrollmentPage() {
       const enrollment = {
         enrollmentID: enrollmentID,
         studentId: studentId,
+        name: name,
         year: year,
         paymentStatus: paymentStatus,
         isActive: isActive,
@@ -44,7 +46,7 @@ export default function UpdateEnrollmentPage() {
         enrollment,
         {
           //1-> yavann ona url ek , import
-          //2-> announcement
+          //2-> enrollment
           //3-> token
           headers: {
             Authorization: "Bearer " + token,
@@ -81,16 +83,32 @@ export default function UpdateEnrollmentPage() {
             />
           </div>
 
-          {/* Name */}
+          {/* StudentId */}
           <div>
             <label className="block text-sm font-medium text-shadow-indigo-950 mb-2">
               Student ID
             </label>
             <input
+              type="text"
               className="w-full p-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
-              placeholder="e.g., Diamond Shine Night Cream"
-              value={studentId}
+              placeholder="e.g., STU001"
+              disabled
+              value={studentId?.studentId || studentId || ""}
               onChange={(e) => setStudentId(e.target.value)}
+            />
+          </div>
+
+          {/* Name */}
+          <div>
+            <label className="block text-sm font-medium text-shadow-indigo-950 mb-2">
+              Student Name
+            </label>
+            <input
+              type="text"
+              className="w-full p-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
+              placeholder="e.g., John De Silva"
+              value={studentId?.name || name || ""}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 

@@ -20,6 +20,7 @@ import UpdateAnnouncementPage from "./admin/adminUpdateAnnouncement";
 import AnnouncementReport from "./announcementReport";
 import AdminEnrollmentPage from "./admin/adminEnrollmentPage";
 import UpdateEnrollmentPage from "./admin/adminUpdateEnrollment";
+import EnrollmentReport from "./enrollmentReport";
 
 export default function AdminPage() {
   return (
@@ -198,6 +199,7 @@ export default function AdminPage() {
               path="announcement-report"
               element={<AnnouncementReport />}
             />
+            <Route path="enrollment-report" element={<EnrollmentReport />} />
           </Routes>
         </div>
       </div>

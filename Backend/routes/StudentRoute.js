@@ -5,6 +5,7 @@ import {
   loginStudent,
   saveStudent,
   updateStudent,
+  verifyStudent,
 } from "../controller/StudentController.js";
 
 const StudentRoute = express.Router();
@@ -15,5 +16,5 @@ StudentRoute.get("/", getAllStudents);
 StudentRoute.put("/:studentId", updateStudent);
 StudentRoute.delete("/:studentId", deleteStudent);
 StudentRoute.post("/login", loginStudent);
-
+StudentRoute.get("/verify/:studentId",verifyStudent);
 export default StudentRoute;

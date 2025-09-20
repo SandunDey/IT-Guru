@@ -22,9 +22,9 @@ const enrollmentSchema = new mongoose.Schema(
         },
 
         year: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Student",
+            type: Number,
             required: true,
+            min: 2025,
         },
 
         enrollmentKey: {

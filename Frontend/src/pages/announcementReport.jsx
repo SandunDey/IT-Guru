@@ -123,7 +123,7 @@ export default function AnnouncementReport() {
           <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <h1 className="text-4xl font-extrabold bg-gradient-to-r from-accent to-boardercolor bg-clip-text text-transparent drop-shadow-sm">
-                📊 Announcement Reports
+                 Announcement Reports
               </h1>
               <p className="text-similar mt-3 text-lg font-medium">
                 Generate PDF reports with{" "}

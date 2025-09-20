@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import toast from "react-hot-toast";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+// ✅ Add API base URL
+const RAW_BASE =
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||
+  (typeof process !== "undefined" && process.env?.REACT_APP_API_BASE_URL) ||
+  "http://localhost:4000"; // fallback if env not set
+const API_BASE = RAW_BASE.replace(/\/$/, "");
 
 export default function UserEnrollmentPage() {
-  const { studentId } = useParams(); // get from route, e.g., /enroll/STU123
   const [student, setStudent] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
@@ -14,62 +19,70 @@ export default function UserEnrollmentPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    /** meka tikak balanna */
-    async function fetchStudent() {
-      try {
-        const res = await fetch(`/api/students/${studentId}`);
-        if (!res.ok) throw new Error("Failed to fetch student data");
-        const data = await res.json();
-        setStudent(data);
-      } catch (err) {
-        toast.error(err.message);
-      }
+    const savedStudent = JSON.parse(localStorage.getItem("student"));
+    if (savedStudent) {
+      setStudent(savedStudent);
     }
-    fetchStudent();
-  }, [studentId]);
+  }, []);
 
   function handleEnrollClick(year) {
-    if (!student) return;
-    if (student.year !== parseInt(year)) {
-      toast.error(
-        "You cannot enroll for a year different from your student year."
-      );
+    if (!student) {
+      toast.error("Please login first!");
       return;
     }
+
+    if (parseInt(student.year) !== year) {
+      toast.error(`You can only enroll for your year (${student.year} A/L).`);
+      return;
+    }
+
     setSelectedYear(year + " A/L");
     setEnrollmentKey("");
     setShowModal(true);
   }
 
-  function handleSubmit() {
-    if (!student) return;
-
+  async function handleSubmit() {
     if (!enrollmentKey) {
       toast.error("Please enter your enrollment key!");
       return;
     }
 
-    if (enrollmentKey !== student.studentId) {
-      toast.error("Enrollment key is incorrect!");
-      return;
+    try {
+      const key = enrollmentKey.trim().toUpperCase();
+
+      // 1️⃣ Verify student exists
+      const res = await fetch(`${API_BASE}/api/student/verify/${key}`);
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Enrollment key is invalid");
+      }
+      const verifiedStudent = await res.json();
+
+      // 2️⃣ Create a new enrollment
+      const enrollmentRes = await fetch(`${API_BASE}/api/enrollments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentID: verifiedStudent.studentId,
+          classYear: selectedYear,
+          enrollmentKey: key,
+        }),
+      });
+
+      const enrollmentData = await enrollmentRes.json();
+      if (!enrollmentRes.ok) throw new Error(enrollmentData.message);
+
+      toast.success(
+        `Enrolled successfully for ${selectedYear} with key: ${enrollmentKey}`
+      );
+      setShowModal(false);
+      setEnrollmentKey("");
+
+      navigate(`/learning-materials/${student.studentId}`);
+    } catch (err) {
+      toast.error(err.message);
     }
-
-    toast.success(
-      `Enrolled successfully for ${selectedYear} with key: ${enrollmentKey}`
-    );
-    setShowModal(false);
-    setEnrollmentKey("");
-
-    navigate(`/learning-materials/${student.studentId}`);
   }
-
-  //  if (!student) {
-  //   return (
-  //     <div className="min-h-screen flex items-center justify-center">
-  //       <p className="text-gray-600">Loading student data...</p>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-gray-100 flex flex-col">
@@ -78,19 +91,13 @@ export default function UserEnrollmentPage() {
       {/* Main Section */}
       <main className="flex-grow flex flex-col items-center justify-center px-6 pt-28 pb-16">
         <div className="text-center space-y-10 max-w-2xl mt-15">
-          {/* Heading */}
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
             Enroll for Your A/L Classes
           </h1>
-
-          {/* Description */}
           <p className="text-lg text-gray-600 leading-relaxed">
             Select your exam year below and start your learning journey with us.
-            Our expert teachers and study plans will guide you step by step
-            toward success.
           </p>
 
-          {/* Buttons */}
           <div className="flex flex-wrap justify-center gap-8 mt-15">
             {[2025, 2026, 2027].map((year) => (
               <button
