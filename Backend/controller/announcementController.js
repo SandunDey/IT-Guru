@@ -3,12 +3,12 @@ import { isAdmin } from "./adminController.js";
 
 export async function createAnnouncement(req, res) {
 
-    if (!isAdmin(req)) {
-        res.status(403).json({
-            message: "You are not authorized to create an Announcement"
-        });
-        return;
-    }
+    // if (!isAdmin(req)) {
+    //     res.status(403).json({
+    //         message: "You are not authorized to create an Announcement"
+    //     });
+    //     return;
+    // }
 
     try {
 

@@ -91,10 +91,10 @@ export async function getAllEnrollment(req, res) {
 }
 
 export async function deleteEnrollment(req, res) {
-    // if (!isAdmin(req)) {
-    //     res.status(403).json({ message: "You are not authorized to delete Enrollment" });
-    //     return;
-    // }
+    if (!isAdmin(req)) {
+        res.status(403).json({ message: "You are not authorized to delete Enrollment" });
+        return;
+    }
     try {
         const { enrollmentID } = req.params;
         const result = await Enrollment.findOneAndDelete({ enrollmentID });

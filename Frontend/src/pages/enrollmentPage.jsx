@@ -3,6 +3,7 @@ import Header from "../components/header";
 import Footer from "../components/footer";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { FaInfoCircle } from "react-icons/fa";
 
 // ✅ Add API base URL
 const RAW_BASE =
@@ -135,13 +136,29 @@ export default function UserEnrollmentPage() {
               Please enter your enrollment key to proceed.
             </p>
 
-            <input
-              type="text"
-              value={enrollmentKey}
-              onChange={(e) => setEnrollmentKey(e.target.value)}
-              placeholder="Enter enrollment key"
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none mb-6"
-            />
+            <div className="relative w-full mb-6">
+              <input
+                type="text"
+                value={enrollmentKey}
+                onChange={(e) => setEnrollmentKey(e.target.value)}
+                placeholder="Enter enrollment key"
+                className="w-full px-4 py-3 pr-10 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+
+              {/* Info Icon with Tooltip */}
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 group">
+                <FaInfoCircle
+                  className="text-gray-400 cursor-pointer"
+                  size={18}
+                />
+
+                {/* Tooltip */}
+                <div className="absolute bottom-full right-0 mb-2 hidden w-max max-w-xs rounded-lg bg-gray-800 text-white text-sm px-3 py-2 group-hover:block shadow-lg">
+                  Use your <span className="font-semibold">Student ID</span> as
+                  the enrollment key.
+                </div>
+              </div>
+            </div>
 
             <div className="flex justify-center gap-4">
               <button

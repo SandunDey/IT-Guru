@@ -11,6 +11,7 @@ export default function AddAnnouncementPage() {
   const [audience, setAudience] = useState([]);
   const [expiryDate, setExpiryDate] = useState("");
 
+  const [errors, setErrors] = useState({}); // form errors
   const navigate = useNavigate();
 
   // Fix: Handle Audience Checkboxes
@@ -23,7 +24,23 @@ export default function AddAnnouncementPage() {
     }
   }
 
+  // Form validation function
+  const validateForm = () => {
+    const newErrors = {};
+    if (!announcementID.trim())
+      newErrors.announcementID = "Announcement ID is required";
+    if (!title.trim()) newErrors.title = "Title is required";
+    if (!description.trim()) newErrors.description = "Description is required";
+    if (!type.trim()) newErrors.type = "Type is required";
+    if (!audience.length) newErrors.audience = "Select at least one audience";
+    if (!expiryDate) newErrors.expiryDate = "Expiry Date is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // valid if no errors
+  };
+
   async function addAnnouncement() {
+    if (!validateForm()) return;
     const token = localStorage.getItem("token");
 
     if (token == null) {
@@ -71,7 +88,7 @@ export default function AddAnnouncementPage() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Product ID */}
+          {/* Announcement ID */}
           {/*input eke value ek vidiyt thiyenna ona variable agaya*/}
           <div>
             <label className="block text-sm font-medium text-shadow-indigo-950 mb-2">
@@ -83,9 +100,10 @@ export default function AddAnnouncementPage() {
               value={announcementID}
               onChange={(e) => setAnnouncementID(e.target.value)}
             />
+            {errors.announcementID && <p className="text-red-600 text-sm italic mt-1">{errors.announcementID}</p>}
           </div>
 
-          {/* Name */}
+          {/* Title */}
           <div>
             <label className="block text-sm font-medium text-shadow-indigo-950 mb-2">
               Title
@@ -96,6 +114,7 @@ export default function AddAnnouncementPage() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
+            {errors.title && <p className="text-red-600 text-sm italic mt-1">{errors.title}</p>}
           </div>
 
           {/* Description */}
@@ -110,6 +129,7 @@ export default function AddAnnouncementPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
+            {errors.description && <p className="text-red-600 text-sm italic mt-1">{errors.description}</p>}
           </div>
 
           {/* Type */}
@@ -128,6 +148,7 @@ export default function AddAnnouncementPage() {
               <option value="System">System</option>
               <option value="General">General</option>
             </select>
+            {errors.type && <p className="text-red-600 text-sm italic mt-1">{errors.type}</p>}
           </div>
 
           {/* Audience */}
@@ -149,6 +170,7 @@ export default function AddAnnouncementPage() {
                 </label>
               ))}
             </div>
+            {errors.audience && <p className="text-red-600 text-sm italic mt-1">{errors.audience}</p>}
           </div>
 
           {/* Expiry Date */}
@@ -162,6 +184,7 @@ export default function AddAnnouncementPage() {
               value={expiryDate}
               onChange={(e) => setExpiryDate(e.target.value)}
             />
+            {errors.expiryDate && <p className="text-red-600 text-sm italic mt-1">{errors.expiryDate}</p>}
           </div>
         </div>
 
