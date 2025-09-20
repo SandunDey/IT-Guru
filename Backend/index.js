@@ -39,7 +39,7 @@ async function bootstrap() {
     cors({
       origin: [
         "http://localhost:5173", // Vite
-        "http://localhost:3000", // if you sometimes open frontend here
+        "http://localhost:4000", // if you sometimes open frontend here
       ],
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

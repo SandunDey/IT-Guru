@@ -11,12 +11,12 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="bg-accent text-white mt-12">
+    <footer className="bg-gradient-to-b from-blue-900 to-blue-800 text-white mt-12">
       <div className="max-w-7xl mx-auto py-12 px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* About Section */}
         <div>
           <h2 className="text-2xl font-bold mb-4">ITGuru</h2>
-          <p className="text-gray-200">
+          <p className="text-gray-300 text-sm leading-relaxed">
             Empowering students with the best IT knowledge and learning
             resources. Join us to enhance your skills and achieve success in
             your IT journey.
@@ -26,37 +26,34 @@ export default function Footer() {
         {/* Quick Links */}
         <div>
           <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
-          <ul className="space-y-2">
+          <ul className="space-y-2 text-sm">
             <li>
-              <Link to="/" className="hover:text-gray-300 transition">
+              <Link to="/" className="hover:text-gray-200 transition">
                 Home
               </Link>
             </li>
             <li>
-              <Link to="/materials" className="hover:text-gray-300 transition">
+              <Link to="/materials" className="hover:text-gray-200 transition">
                 Learning Materials
               </Link>
             </li>
             <li>
-              <Link
-                to="/performance"
-                className="hover:text-gray-300 transition"
-              >
+              <Link to="/performance" className="hover:text-gray-200 transition">
                 Performance
               </Link>
             </li>
             <li>
-              <Link to="/timetable" className="hover:text-gray-300 transition">
+              <Link to="/timetable" className="hover:text-gray-200 transition">
                 Time Table
               </Link>
             </li>
             <li>
-              <Link to="/quizzes" className="hover:text-gray-300 transition">
+              <Link to="/quizzes" className="hover:text-gray-200 transition">
                 Quizzes
               </Link>
             </li>
             <li>
-              <Link to="/aboutus" className="hover:text-gray-300 transition">
+              <Link to="/aboutus" className="hover:text-gray-200 transition">
                 About Us
               </Link>
             </li>
@@ -66,15 +63,15 @@ export default function Footer() {
         {/* Contact Info */}
         <div>
           <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
-          <ul className="space-y-3 text-gray-200">
+          <ul className="space-y-3 text-gray-300 text-sm">
             <li className="flex items-center gap-2">
-              <FaMapMarkerAlt /> 123 IT Street, Colombo, Sri Lanka
+              <FaMapMarkerAlt className="text-blue-400" /> 123 IT Street, Colombo, Sri Lanka
             </li>
             <li className="flex items-center gap-2">
-              <FaPhoneAlt /> +94 77 123 4567
+              <FaPhoneAlt className="text-blue-400" /> +94 77 123 4567
             </li>
             <li className="flex items-center gap-2">
-              <FaEnvelope /> info@itguru.com
+              <FaEnvelope className="text-blue-400" /> info@itguru.com
             </li>
           </ul>
         </div>

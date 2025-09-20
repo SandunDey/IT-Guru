@@ -18,6 +18,7 @@ export async function saveStudent(req, res) {
       password,
       confirmPassword,
       phonenumber,
+      
     } = req.body;
 
     // 1) validate password match BEFORE hashing
@@ -42,7 +43,8 @@ export async function saveStudent(req, res) {
       gender,
       email,
       password: hashedPassword,
-      phonenumber,   // String (see model)
+      phonenumber,
+         // String (see model)
     });
 
     await student.save();

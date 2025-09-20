@@ -33,36 +33,31 @@ export default function SignupForm() {
   };
 
   const validate = () => {
-    if (!form.studentId || !form.name || !form.address) return "Fill required fields";
+    if (!form.studentId || !form.name || !form.address) return "Please fill the required fields.";
     const yearNum = Number(form.year);
-    if (!Number.isInteger(yearNum) || yearNum < 2025) return "Year must be >= 2025";
-    if (!nicRegex.test(form.nic.toUpperCase())) return "Invalid NIC";
-    if (form.birthday && isNaN(Date.parse(form.birthday))) return "Invalid birthday";
-    if (!emailRegex.test(form.email)) return "Invalid email";
-    if (!phoneRegex.test(form.phonenumber)) return "Invalid phone number";
-    if (form.password.length < 6) return "Password must be at least 6 characters";
-    if (form.password !== form.confirmPassword) return "Passwords do not match";
+    if (!Number.isInteger(yearNum) || yearNum < 2025) return "Academic Year must be 2025 or later.";
+    if (!nicRegex.test(form.nic.toUpperCase())) return "Invalid NIC format.";
+    if (form.birthday && isNaN(Date.parse(form.birthday))) return "Invalid birthday.";
+    if (!emailRegex.test(form.email)) return "Invalid email address.";
+    if (!phoneRegex.test(form.phonenumber)) return "Invalid phone number.";
+    if (form.password.length < 6) return "Password must be at least 6 characters.";
+    if (form.password !== form.confirmPassword) return "Passwords do not match.";
     return null;
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
     const error = validate();
-    if (error) {
-      setMsg({ type: "error", text: error });
-      return;
-    }
+    if (error) return setMsg({ type: "error", text: error });
+
     setLoading(true);
     setMsg(null);
     try {
       const payload = { ...form, year: Number(form.year), nic: form.nic.toUpperCase() };
       const { message } = await signUpStudent(payload);
-      setMsg({ type: "success", text: message || "Signed up" });
+      setMsg({ type: "success", text: message || "Account created." });
       setForm(initial);
-      navigate("/login", {
-        replace: true,
-        state: { flash: "Account created. Please log in." },
-      });
+      navigate("/admin", { replace: true, state: { flash: "Account created. Please log in." } });
     } catch (err) {
       setMsg({ type: "error", text: err.message || "Something went wrong" });
     } finally {
@@ -73,91 +68,121 @@ export default function SignupForm() {
   const onClear = () => setForm(initial);
 
   return (
-    <div className="auth-wrapper">
-      <div className="card">
-        <header className="card__header">
-          <h1 className="card__title">Create your Student account</h1>
-          <p className="card__subtitle">Fill in your details to get started.</p>
-        </header>
-
-        {msg && (
-          <div
-            className={`alert ${msg.type === "success" ? "alert--success" : "alert--error"}`}
-            role="status"
-            aria-live="polite"
-          >
-            {msg.text}
+    <div className="auth-shell">
+      <section className="signup-layout">
+        {/* LEFT BLUE PANEL */}
+        <aside className="panel--info">
+          <h2>Welcome to IT GURU</h2>
+          <p>Create your student account to manage classes, results and profile in one place.</p>
+          <div className="panel-badges">
+            <span className="badge">Secure</span>
+            <span className="badge">Fast Signup</span>
+            <span className="badge">Student Portal</span>
           </div>
-        )}
+        </aside>
 
-        <form onSubmit={onSubmit} className="form" noValidate>
-          <div className="form-grid">
-            <div className="field">
-              <label className="label" htmlFor="studentId">Student ID</label>
-              <input className="input" id="studentId" name="studentId" value={form.studentId} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="name">Full Name</label>
-              <input className="input" id="name" name="name" value={form.name} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="address">Address</label>
-              <input className="input" id="address" name="address" value={form.address} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="year">Academic Year</label>
-              <input className="input" type="number" id="year" name="year" min={2025} value={form.year} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="nic">NIC</label>
-              <input className="input" id="nic" name="nic" placeholder="200012345678" value={form.nic} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="birthday">Birthday</label>
-              <input className="input" type="date" id="birthday" name="birthday" value={form.birthday} onChange={onChange} />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="gender">Gender</label>
-              <select className="input" id="gender" name="gender" value={form.gender} onChange={onChange} required>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="email">Email</label>
-              <input className="input" type="email" id="email" name="email" placeholder="you@example.com" value={form.email} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="password">Password</label>
-              <input className="input" type="password" id="password" name="password" value={form.password} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="confirmPassword">Confirm Password</label>
-              <input className="input" type="password" id="confirmPassword" name="confirmPassword" value={form.confirmPassword} onChange={onChange} required />
-            </div>
-            <div className="field">
-              <label className="label" htmlFor="phonenumber">Phone Number</label>
-              <input className="input" id="phonenumber" name="phonenumber" placeholder="+9471XXXXXXX" value={form.phonenumber} onChange={onChange} required />
-            </div>
-          </div>
+        {/* RIGHT FORM PANEL */}
+        <main className="panel--form">
+          <header>
+            <h1 className="card__title">Create your Student account</h1>
+            <p className="card__subtitle">Fill in your details to get started.</p>
+          </header>
 
-          <div className="form__footer">
-            <button type="button" className="btn btn--ghost" onClick={onClear} disabled={loading}>
-              {loading ? "…" : "Clear"}
-            </button>
-            <button type="submit" className="btn btn--primary" disabled={loading}>
-              {loading ? "Saving…" : "Create account"}
-            </button>
-          </div>
+          {msg && (
+            <div
+              className={`alert ${msg.type === "success" ? "alert--success" : "alert--error"}`}
+              role="status"
+              aria-live="polite"
+            >
+              {msg.text}
+            </div>
+          )}
 
-          <p className="fineprint">
-            By signing up, you agree to our{" "}
-            <a href="#" onClick={(e)=>e.preventDefault()}>Terms</a> and{" "}
-            <a href="#" onClick={(e)=>e.preventDefault()}>Privacy Policy</a>.
-          </p>
-        </form>
-      </div>
+          <form onSubmit={onSubmit} className="form" noValidate>
+            <div className="form-grid">
+              <div className="field">
+                <label className="label" htmlFor="studentId">Student ID</label>
+                <input className="input" id="studentId" name="studentId" value={form.studentId} onChange={onChange} required />
+              </div>
+
+              <div className="field">
+                <label className="label" htmlFor="name">Full Name</label>
+                <input className="input" id="name" name="name" value={form.name} onChange={onChange} required />
+              </div>
+
+              <div className="field">
+                <label className="label" htmlFor="address">Address</label>
+                <input className="input" id="address" name="address" value={form.address} onChange={onChange} required />
+              </div>
+
+              <div className="field">
+                <label className="label" htmlFor="year">Academic Year</label>
+                <input className="input" type="number" id="year" name="year" min={2025} value={form.year} onChange={onChange} required />
+              </div>
+
+              <div className="field">
+                <label className="label" htmlFor="nic">NIC</label>
+                <input className="input" id="nic" name="nic" placeholder="200012345678" value={form.nic} onChange={onChange} required />
+              </div>
+
+              <div className="field">
+                <label className="label" htmlFor="birthday">Birthday</label>
+                <input className="input" type="date" id="birthday" name="birthday" value={form.birthday} onChange={onChange} />
+              </div>
+
+              <div className="field">
+                <label className="label" htmlFor="gender">Gender</label>
+                <select className="input" id="gender" name="gender" value={form.gender} onChange={onChange} required>
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div className="field">
+                <label className="label" htmlFor="email">Email</label>
+                <input className="input" type="email" id="email" name="email" placeholder="you@example.com" value={form.email} onChange={onChange} required />
+              </div>
+
+              <div className="field">
+                <label className="label" htmlFor="password">Password</label>
+                <input className="input" type="password" id="password" name="password" value={form.password} onChange={onChange} required />
+              </div>
+
+              <div className="field">
+                <label className="label" htmlFor="confirmPassword">Confirm Password</label>
+                <input className="input" type="password" id="confirmPassword" name="confirmPassword" value={form.confirmPassword} onChange={onChange} required />
+              </div>
+
+              <div className="field">
+                <label className="label" htmlFor="phonenumber">Phone Number</label>
+                <input className="input" id="phonenumber" name="phonenumber" placeholder="+9471XXXXXXX" value={form.phonenumber} onChange={onChange} required />
+              </div>
+
+              {/* full-width text area (optional notes) */}
+              <div className="field" style={{ gridColumn: "1 / -1" }}>
+                <label className="label" htmlFor="notes">Additional Notes (optional)</label>
+                <textarea className="input" id="notes" name="notes" placeholder="Any special information…" />
+              </div>
+            </div>
+
+            <div className="form__footer">
+              <button type="button" className="btn btn--ghost" onClick={onClear} disabled={loading}>
+                {loading ? "…" : "Clear"}
+              </button>
+              <button type="submit" className="btn btn--primary" onclick={signUpStudent}disabled={loading}>
+                {loading ? "Saving…" : "Create account"}
+              </button>
+            </div>
+
+            <p className="fineprint">
+              By signing up, you agree to our{" "}
+              <a href="#" onClick={(e)=>e.preventDefault()}>Terms</a> and{" "}
+              <a href="#" onClick={(e)=>e.preventDefault()}>Privacy Policy</a>.
+            </p>
+          </form>
+        </main>
+      </section>
     </div>
   );
 }

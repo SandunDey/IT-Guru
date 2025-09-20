@@ -16,4 +16,5 @@ StudentRoute.put("/:studentId", updateStudent);
 StudentRoute.delete("/:studentId", deleteStudent);
 StudentRoute.post("/login", loginStudent);
 
+
 export default StudentRoute;

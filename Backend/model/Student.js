@@ -71,6 +71,12 @@ const studentSchema = new mongoose.Schema({
     trim: true,
     match: [/^\+?[0-9]{10,15}$/, "Invalid phone number"],
   },
+    role:{
+        type:String,
+        required:true,
+        default:"student"
+
+    }
 });
 
 const Student = mongoose.model("Student", studentSchema);

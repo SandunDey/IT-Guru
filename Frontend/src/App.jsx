@@ -8,7 +8,7 @@ import LoginPage from "./LoginPage.jsx";
 import SignupForm from "./StudentSignUpPage.jsx";
 
 import AdminPage from "./pages/adminPage.jsx";
-import AboutUs from "./pages/aboutUs.jsx";                // ✅ fixed path
+import AboutUs from "./pages/aboutUs.jsx";
 import UserAnnouncementPage from "./pages/announcementPage.jsx";
 import HomePage from "./pages/homePage.jsx";
 import AnnouncementReport from "./pages/announcementReport.jsx";
@@ -19,12 +19,25 @@ import MyTicketsPage from "./MyTicketsPage.jsx";
 import TicketDetailPage from "./TicketDetailPage.jsx";
 import StaffPage from "./StaffPage.jsx";
 import AdminLoginPage from "./loging.jsx";
+import StudentDashboard from "./pages/Studentdashbord.jsx";
+
+import ProtectedRoute from "./ProtectedRoute.jsx";
+
+function TeacherDashboard() {
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-semibold">Teacher Dashboard</h1>
+      <p className="text-slate-600 mt-2">Welcome, Teacher.</p>
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
       <Routes>
+        {/* Public */}
         <Route path="/" element={<HomePage />} />
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/payment" element={<PaymentsPage />} />
@@ -37,8 +50,24 @@ export default function App() {
         <Route path="/my-tickets" element={<MyTicketsPage />} />
         <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
         <Route path="/admin" element={<AdminLoginPage />} />
-        <Route path="/staff" element={<StaffPage />} />
-        <Route path="/admin/dashboard/*" element={<AdminPage />} />
+
+        {/* Protected by role */}
+        <Route element={<ProtectedRoute allow="student" />}>
+          <Route path="/StudentDashboard" element={<StudentDashboard />} />
+        </Route>
+
+        <Route element={<ProtectedRoute allow="staff" />}>
+          <Route path="/staff" element={<StaffPage />} />
+        </Route>
+
+        <Route element={<ProtectedRoute allow="teacher" />}>
+          <Route path="/teacher" element={<TeacherDashboard />} />
+        </Route>
+
+        <Route element={<ProtectedRoute allow="admin" />}>
+          <Route path="/admin/dashboard/*" element={<AdminPage />} />
+        </Route>
+
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>

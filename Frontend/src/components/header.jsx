@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BookOpenIcon, MenuIcon, XIcon } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import Logo from "../assets/logo.jpg";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,10 +16,14 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <BookOpenIcon className="h-8 w-8 text-blue-600" />
-            <span className="ml-2 text-xl font-bold text-gray-800">
+           
+                  <img
+                                     src={Logo}
+                                     alt="IT Guru Logo"
+                                     className="h-16 w-16 rounded-full object-cover shadow-lg"
+                                   />
               ITGURU
-            </span>
+            
           </div>
 
           {/* Desktop menu */}
@@ -44,7 +49,7 @@ const Navbar = () => {
             {/* ✅ Navigate to /signup */}
             <button
               className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300"
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/admin")}
             >
               Sign Up
             </button>
