@@ -27,7 +27,7 @@ const SubmitTicketPage = () => {
     setError(null);
     try {
       const response = await axios.post('/api/tickets', formData);
-      // On success, navigate to the "My Tickets" page
+      // On success, navigate to the "My Tickets" page to view the submitted ticket
       navigate('/my-tickets');
     } catch (err) {
       setError('Failed to submit ticket. Please check all fields.');

@@ -12,7 +12,7 @@ const router = express.Router();
 // CREATE: POST /api/tickets
 router.post('/', createTicket);
 
-// READ: GET /api/tickets (Get all)
+// READ: GET /api/tickets (Get all.)
 router.get('/', getAllTickets);
 
 // READ: GET /api/tickets/:id (Get one by ID)

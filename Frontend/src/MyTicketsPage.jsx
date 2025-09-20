@@ -45,7 +45,7 @@ const MyTicketsPage = () => {
           </Link>
         </div>
 
-        {isLoading && <p className="text-center">Loading tickets...</p>}
+        {isLoading && <p className="text-center">Loading tickets....</p>}
         {error && <p className="text-red-500 font-semibold">{error}</p>}
         
         <div className="space-y-4">
