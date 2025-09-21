@@ -40,7 +40,7 @@ export default function Header() {
             <Link to="/performance" className="hover:text-gray-200">
               Performance
             </Link>
-            <Link to="/timetable" className="hover:text-gray-200">
+            <Link to="/student/viewTimetable" className="hover:text-gray-200">
               Time Table
             </Link>
             <Link to="/quizzes" className="hover:text-gray-200">

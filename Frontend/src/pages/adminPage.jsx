@@ -23,6 +23,7 @@ import AdminEnrollmentPage from "./admin/adminEnrollmentPage";
 import UpdateEnrollmentPage from "./admin/adminUpdateEnrollment";
 import EnrollmentReport from "./enrollmentReport";
 import AdminTicketsPage from "./admin/AdminTicketsPage"; // Import the Support Tickets page
+import { createTimetable } from "../../../Backend/controller/timeTableController";
 
 export default function AdminPage() {
   return (
@@ -113,7 +114,7 @@ export default function AdminPage() {
         </Link>
 
         <Link
-          to="/admin/dashboard/timetable"
+          to="/admin/dashboard/timetable" // timtable eke path ek dann ona
           className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg 
              transition-all duration-300 ease-in-out
              hover:scale-105 hover:rounded-2xl 
@@ -184,7 +185,7 @@ export default function AdminPage() {
             <Route path="/payment" element={<h1>Payment</h1>} />
             <Route path="/announcements" element={<AdminAnnouncementPage />} />
             <Route path="/enrollment" element={<AdminEnrollmentPage />} />
-            <Route path="/timetable" element={<h1>Time Table</h1>} />
+            <Route path="/timetable" element={<createTimetable/>} />{/* timetable retrive part eka enna ona admin athule thiyena */}
             <Route path="/performance" element={<h1>performance</h1>} />
             <Route path="/feedback" element={<h1>feedback</h1>} />
             <Route path="/supportTicket" element={<AdminTicketsPage />} />

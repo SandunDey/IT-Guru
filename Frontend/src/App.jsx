@@ -1,6 +1,6 @@
 // src/App.jsx
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import PaymentsPage from "./Payment.jsx";
@@ -20,6 +20,9 @@ import TicketDetailPage from "./TicketDetailPage.jsx";
 import StaffPage from "./StaffPage.jsx";
 import AdminLoginPage from "./loging.jsx";
 import UserEnrollmentPage from "./pages/enrollmentPage.jsx";
+import CreateTimetable from "./pages/admin/createTimetable.jsx";
+import UpdateTimetablePage from "./pages/admin/UpdateTimetablePage.jsx";
+import StudentTimetable from "./pages/StudentTimetable.jsx";
 
 export default function App() {
   return (
@@ -42,7 +45,12 @@ export default function App() {
         <Route path="/admin" element={<AdminLoginPage />} />
         <Route path="/staff" element={<StaffPage />} />
         <Route path="/admin/dashboard/*" element={<AdminPage />} />
-        <Route path="*" element={<h1>404 Not Found</h1>} />
+        {/* <Route path="*" element={<h1>404 Not Found</h1>} /> */}
+
+        <Route path="/timetable" element={<CreateTimetable />} />
+        <Route path="/timetable/update/:timetableId" element={<UpdateTimetablePage />} />
+        <Route path="*" element={<Navigate to="/timetable" replace />} />
+        <Route path ="/student/viewTimetable" element={<StudentTimetable/>}/>
       </Routes>
     </BrowserRouter>
   );

@@ -15,6 +15,7 @@ import SupportTicketRoute from "./routes/SupportTicketRoute.js";//supportTicket(
 import announcementRouter from "./routes/announcementRouter.js";
 import enrollmentRouter from "./routes/enrollmentRouter.js";
 import verifyJWT from "./middleware/auth.js"
+import timeTableRouter from "./routes/timeTableRouter.js";
 
 
 
@@ -99,6 +100,8 @@ async function bootstrap() {
   app.use("/api/tickets", SupportTicketRoute);//supportTicket(Vishwa)
   app.use("/api/announcements", announcementRouter);
   app.use("/api/enrollments", enrollmentRouter);
+  app.get("/", (_req, res) => res.send("Timetable API OK"));
+app.use("/timetable", timeTableRouter);
 
 
   // 5) 404 + error handler
