@@ -8,7 +8,7 @@ import axios from "axios";
  * - Prefer setting: VITE_API_BASE_URL=http://localhost:3000/api
  * - If you only provide host (e.g., http://localhost:3000), we'll append /api automatically.
  */
-const RAW = (import.meta.env?.VITE_API_BASE_URL || "http://localhost:3000/api").replace(/\/$/, "");
+const RAW = (import.meta.env?.VITE_API_BASE_URL || "http://localhost:4000/api").replace(/\/$/, "");
 export const API_BASE = RAW.endsWith("/api") ? RAW : `${RAW}/api`;
 
 // Axios instance

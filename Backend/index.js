@@ -6,7 +6,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import cors from "cors";
 import compression from "compression";
-import authOptional, { withActor } from "./auth.js";
+
 
 // Routes
 import StudentRoute from "./routes/StudentRoute.js";
