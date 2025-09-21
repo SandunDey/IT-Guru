@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
+
+// Token helper utility
+const getToken = () => {
+  let token = localStorage.getItem('itguru_token');
+  if (!token) {
+    token = sessionStorage.getItem('itguru_token');
+  }
+  return token;
+};
 
 const TicketDetailPage = () => {
   const { ticketId } = useParams();
@@ -9,6 +18,7 @@ const TicketDetailPage = () => {
   const [ticket, setTicket] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [authError, setAuthError] = useState(false);
   
   const [isDownloading, setIsDownloading] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -17,10 +27,31 @@ const TicketDetailPage = () => {
     const fetchTicket = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`/api/tickets/${ticketId}`);
+        const token = getToken();
+        if (!token) {
+          setAuthError(true);
+          setError('Please log in to view ticket details.');
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await axios.get(`/api/tickets/${ticketId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setTicket(response.data);
       } catch (err) {
-        setError('Failed to fetch ticket details.');
+        if (err.response?.status === 401) {
+          setAuthError(true);
+          setError('Please log in to view ticket details.');
+        } else if (err.response?.status === 403) {
+          setError('Access denied. You can only view your own tickets.');
+        } else if (err.response?.status === 404) {
+          setError('Ticket not found.');
+        } else {
+          setError('Failed to fetch ticket details.');
+        }
         console.error('Error fetching ticket:', err);
       }
       setIsLoading(false);
@@ -146,7 +177,15 @@ const TicketDetailPage = () => {
     setShowConfirmModal(false);
     setIsLoading(true);
     try {
-      const response = await axios.put(`/api/tickets/${ticket._id}`, { status: 'Closed' });
+      const token = getToken();
+      const response = await axios.put(`/api/tickets/${ticket._id}`, 
+        { status: 'Closed' },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
       setTicket(response.data.ticket); 
     } catch (err) {
       setError('Failed to close ticket.');
@@ -155,8 +194,43 @@ const TicketDetailPage = () => {
     setIsLoading(false);
   };
 
+  // Show authentication required message
+  if (authError) {
+    return (
+      <div className="bg-gray-100 min-h-screen p-4 sm:p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center py-12">
+            <h1 className="text-3xl font-bold text-gray-800 mb-4">Authentication Required</h1>
+            <p className="text-gray-600 text-lg mb-6">Please log in to view ticket details.</p>
+            <Link
+              to="/login"
+              className="bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 inline-block"
+            >
+              Go to Login
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) return <p className="text-center mt-8">Loading ticket details...</p>;
-  if (error) return <p className="text-center mt-8 text-red-500">{error}</p>;
+  
+  if (error && !authError) {
+    return (
+      <div className="bg-gray-100 min-h-screen p-4 sm:p-8">
+        <div className="max-w-4xl mx-auto">
+          <button onClick={() => navigate('/my-tickets')} className="mb-4 text-indigo-600 hover:text-indigo-800">
+            &larr; Back to My Tickets
+          </button>
+          <div className="bg-red-50 border border-red-200 rounded-md p-6">
+            <p className="text-center text-red-700 font-semibold">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
   if (!ticket) return <p className="text-center mt-8">Ticket not found.</p>;
 
   return (
@@ -174,16 +248,31 @@ const TicketDetailPage = () => {
               onClick={handleDownloadPDF} 
               disabled={isDownloading || !ticket || !ticket.referenceCode} 
               className="p-2 bg-white rounded-md shadow-sm hover:bg-gray-200 disabled:bg-gray-300 disabled:cursor-not-allowed"
+              title="Download PDF"
             >
-              {isDownloading ? '...' : <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>}
+              {isDownloading ? (
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600"></div>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+              )}
             </button>
             {!['Resolved', 'Closed'].includes(ticket.status) && (
-                 <button onClick={() => setShowConfirmModal(true)} className="py-2 px-4 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
+                 <button 
+                   onClick={() => setShowConfirmModal(true)} 
+                   className="py-2 px-4 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+                 >
                     Close Ticket
                  </button>
             )}
-            <span className={`px-4 py-2 text-sm font-semibold text-white rounded-md ${ticket.status === 'Resolved' || ticket.status === 'Closed' ? 'bg-gray-500' : 'bg-green-500'}`}>
-              Ticket {ticket.status}
+            <span className={`px-4 py-2 text-sm font-semibold text-white rounded-md ${
+              ticket.status === 'Open' ? 'bg-green-500' :
+              ticket.status === 'In Progress' ? 'bg-yellow-500' :
+              ticket.status === 'Resolved' ? 'bg-blue-500' :
+              'bg-gray-500'
+            }`}>
+              {ticket.status}
             </span>
           </div>
         </div>
@@ -229,6 +318,7 @@ const TicketDetailPage = () => {
                 <div className="flex justify-between"><span className="font-semibold text-gray-600">Reg Number:</span> <span className="text-gray-800">{ticket.registrationNumber}</span></div>
                 <div className="flex justify-between"><span className="font-semibold text-gray-600">Contact:</span> <span className="text-gray-800">{ticket.contactNumber}</span></div>
                 <div className="flex justify-between"><span className="font-semibold text-gray-600">Course/Year:</span> <span className="text-gray-800">{ticket.courseOrExamYear}</span></div>
+                <div className="flex justify-between"><span className="font-semibold text-gray-600">Priority:</span> <span className="text-gray-800">{ticket.priority}</span></div>
                 <div className="flex justify-between"><span className="font-semibold text-gray-600">Department:</span> <span className="text-gray-800">Student Services</span></div>
               </div>
             </div>
@@ -242,8 +332,18 @@ const TicketDetailPage = () => {
             <h2 className="text-xl font-bold mb-4">Are you sure?</h2>
             <p className="text-gray-600 mb-6">You are about to close this ticket. This action cannot be undone.</p>
             <div className="flex justify-end space-x-4">
-              <button onClick={() => setShowConfirmModal(false)} className="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
-              <button onClick={handleConfirmClose} className="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700">Yes, Close Ticket</button>
+              <button 
+                onClick={() => setShowConfirmModal(false)} 
+                className="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleConfirmClose} 
+                className="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700"
+              >
+                Yes, Close Ticket
+              </button>
             </div>
           </div>
         </div>
