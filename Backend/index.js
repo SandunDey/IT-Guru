@@ -11,7 +11,7 @@ import StudentRoute from "./routes/StudentRoute.js";
 import adminrouter from "./routes/AdminRoute.js";
 import StaffRouter from "./routes/StaffRoute.js";
 import router from "./routes/paymentRoutes.js";
-import SupportTicketRoute from "./routes/SupportTicketRoute.js";//supportTicket(Vishwa)
+import SupportTicketRoute from "./routes/SupportTicketRoute.js";// supportTicket(Vishwa)
 import announcementRouter from "./routes/announcementRouter.js";
 import enrollmentRouter from "./routes/enrollmentRouter.js";
 import verifyJWT from "./middleware/auth.js"

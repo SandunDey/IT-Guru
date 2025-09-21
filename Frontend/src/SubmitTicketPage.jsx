@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 
-// Token helper utility
+//  Token helper utility
 const getToken = () => {
   let token = localStorage.getItem('itguru_token');
   if (!token) {

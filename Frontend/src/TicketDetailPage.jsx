@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 
-// Token helper utility
+//  Token helper utility
 const getToken = () => {
   let token = localStorage.getItem('itguru_token');
   if (!token) {

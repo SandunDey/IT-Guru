@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const supportTicketSchema = new mongoose.Schema(
   {
-    // --- අලුතින් එකතු වූ Fields ---
+    // -- අලුතින් එකතු වූ Fields --
     name: {
       type: String,
       required: [true, 'Name is required.'],

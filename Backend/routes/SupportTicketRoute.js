@@ -10,7 +10,7 @@ import {
 
 const router = express.Router();
 
-// CREATE: POST /api/tickets
+// CREATE : POST /api/tickets
 router.post('/', createTicket);
 
 // READ: GET /api/tickets (Admin/Staff only - gets all tickets)

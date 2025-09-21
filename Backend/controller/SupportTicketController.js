@@ -2,7 +2,7 @@ import { customAlphabet } from 'nanoid';
 // Ensure the path is correct (models, not model) - Corrected path below
 import SupportTicket from '../model/SupportTicketModel.js';
 
-// --- Create a new support ticket ---
+// -- Create a new support ticket --
 export const createTicket = async (req, res) => {
   try {
     // Check if user is authenticated
