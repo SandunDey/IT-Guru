@@ -1,10 +1,22 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast"; // ✅ react-hot-toast import
+import Logo from "./assets/logo.jpg";
 
-const API_BASE =
+// Prefer Vite env; fallback to common defaults
+const RAW_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||
   (typeof process !== "undefined" && process.env?.REACT_APP_API_BASE_URL) ||
-  "";
+  "http://localhost:4000";
+
+const API_BASE = RAW_BASE.replace(/\/$/, "");
+
+const api = axios.create({
+  baseURL: API_BASE,
+  withCredentials: true,
+  headers: { "Content-Type": "application/json" },
+});
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,6 +25,10 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const flash = location.state?.flash;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -20,99 +36,114 @@ export default function LoginPage() {
 
     if (!email || !password) {
       setError("Please enter your email and password.");
+      toast.error("Please enter your email and password.");
       return;
     }
 
     try {
       setLoading(true);
-      const res = await axios.post(
-        `${API_BASE}/api/Student/loging`,
-        { email, password, remember },
-        {
-          withCredentials: true,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
 
-      if (res?.data?.token) {
-        if (remember) localStorage.setItem("itguru_token", res.data.token);
-        else sessionStorage.setItem("itguru_token", res.data.token);
+      const res = await api.post("/api/student/login", { email, password });
+
+      const token = res?.data?.token;
+      if (token) {
+        if (remember) localStorage.setItem("itguru_token", token);
+        else sessionStorage.setItem("itguru_token", token);
+
+        // ✅ Save logged-in student to localStorage for enrollment page
+        localStorage.setItem("student", JSON.stringify(res.data.student));
+
+        // ✅ Show success toast
+        toast.success("Login successful!");
+
+        navigate("/enrollment", { replace: true });
+        return;
       }
 
-      window.location.href = "/dashboard";
+      setError(res?.data?.message || "Login failed. Please try again.");
+      toast.error(res?.data?.message || "Login failed. Please try again.");
     } catch (err) {
       const msg =
         err?.response?.data?.message ||
         err?.message ||
         "Login failed. Please try again.";
       setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700">
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{
+        background: "linear-gradient(to right, #ffffff, #dbeafe, #1e40af)",
+      }}
+    >
+      <Toaster position="top-right" reverseOrder={false} /> {/* ✅ toast container */}
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-10">
-        {/* Logo */}
         <div className="flex flex-col items-center mb-8">
-          <div className="flex items-center justify-center h-16 w-16 rounded-full bg-blue-600 text-white font-bold text-2xl shadow-lg">
-            IT
-          </div>
+          <img
+            src={Logo}
+            alt="IT Guru Logo"
+            className="h-16 w-16 rounded-full object-cover shadow-lg"
+          />
           <h1 className="mt-6 text-3xl font-bold text-black">Welcome back</h1>
           <p className="mt-2 text-sm text-gray-600">
-            Log in to your IT Guru account
+            Log in to your Student account
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email */}
+        {flash && (
+          <div className="mb-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            {flash}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-semibold text-black"
-            >
+            <label htmlFor="email" className="block text-sm font-semibold text-black">
               Email
             </label>
             <input
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="you@itguru.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-2 block w-full rounded-lg border border-gray-300 px-4 py-3 text-black placeholder-gray-400 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+              required
             />
           </div>
 
-          {/* Password */}
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-semibold text-black"
-            >
+            <label htmlFor="password" className="block text-sm font-semibold text-black">
               Password
             </label>
             <div className="relative mt-2">
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="block w-full rounded-lg border border-gray-300 px-4 py-3 pr-12 text-black placeholder-gray-400 focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
                 className="absolute inset-y-0 right-3 my-auto text-sm text-blue-600 font-medium hover:underline"
+                aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
           </div>
 
-          {/* Options */}
           <div className="flex items-center justify-between">
             <label className="inline-flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
               <input
@@ -131,14 +162,12 @@ export default function LoginPage() {
             </a>
           </div>
 
-          {/* Error */}
           {error && (
             <div className="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
               {error}
             </div>
           )}
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
@@ -148,21 +177,20 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Divider */}
         <div className="mt-8 flex items-center gap-3 text-sm text-gray-400">
           <div className="h-px flex-1 bg-gray-200" />
           <span>or</span>
           <div className="h-px flex-1 bg-gray-200" />
         </div>
 
-        {/* Secondary */}
         <div className="mt-6 grid grid-cols-2 gap-4">
-          <a
-            href="/register"
+          <button
+            type="button"
+            onClick={() => navigate("/signup")}
             className="rounded-lg border border-gray-300 py-2.5 text-center text-sm font-medium text-black hover:bg-gray-50"
           >
             Create account
-          </a>
+          </button>
           <a
             href="/support"
             className="rounded-lg border border-gray-300 py-2.5 text-center text-sm font-medium text-black hover:bg-gray-50"
@@ -171,7 +199,6 @@ export default function LoginPage() {
           </a>
         </div>
 
-        {/* Footer */}
         <p className="mt-8 text-center text-xs text-gray-500">
           By continuing you agree to IT Guru’s{" "}
           <a href="/terms" className="underline">

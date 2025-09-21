@@ -1,7 +1,10 @@
 import mongoose from "mongoose";
 import Payment from "../model/Payment.js";
+import Stripe from "stripe";
 
-export const createPayment = async (req, res, next) => {
+const stripe = new Stripe(process.env.SECRET_KEY);
+
+export const createPaymentsd = async (req, res, next) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -28,7 +31,33 @@ export const createPayment = async (req, res, next) => {
     session.endSession();
   }
 };
+export async function createPayment(req,res){
+    try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: [
+        {
+          price_data: {
+            currency: "usd",   // change to your currency
+            product_data: {
+              name: "Fitness Package",
+            },
+            unit_amount: 2000, // $20.00 (amount in cents)
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: "http://localhost:3000/success",
+      cancel_url: "http://localhost:3000/cancel",
+    });
 
+    res.json({ id: session.id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+
+}
 export const getPayments = async (req, res, next) => {
   try {
     const {
