@@ -63,6 +63,12 @@ const supportTicketSchema = new mongoose.Schema(
       default: 'Medium', // Student ට මේක select කරන්න බෑ, ඒත් default එකක් තියෙනවා
     },
 
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Student', // 'Student' model එකට සම්බන්ධ කරයි
+      required: true
+    },
+
     // --- නව replies field එකතු කිරීම ---
     replies: [
       {

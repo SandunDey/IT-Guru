@@ -6,8 +6,13 @@ import {
   updateTicket,
   deleteTicket,
 } from '../controller/SupportTicketController.js';
+import auth from '../middleware/auth.js'; // <-- 1. auth middleware එක import කරන්න
+
 
 const router = express.Router();
+
+router.use(auth); // මෙමගින් පහත ඇති සියලුම routes ආරක්ෂිත වේ
+
 
 // CREATE: POST /api/support-tickets
 router.post('/', createTicket);

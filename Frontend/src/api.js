@@ -15,6 +15,22 @@ export const api = axios.create({
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
 });
+// ===>>> මෙතනට පහත කොටස අලුතින් එක් කරන්න <<<===
+// API request එක යැවීමට පෙර මෙම කේතය ක්‍රියාත්මක වේ
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('itguru_token'); // localStorage එකෙන් token එක ලබාගනී
+    if (token) {
+      // token එක ඇත්නම්, එය Authorization header එකට එක් කරයි
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+// ===>>> වෙනස්කම මෙතැනින් අවසන් <<<===
 
 /* -------------------- STUDENTS -------------------- */
 /** These match your typical Student routes used elsewhere:

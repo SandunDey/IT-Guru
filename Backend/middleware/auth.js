@@ -12,7 +12,7 @@ function verifyJWT(req, res, next) {
     jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
       console.log(decoded);
       if (decoded != null) {
-        req.user = decoded;
+  req.user = { id: decoded.sub, ...decoded };
       }
     })
   }

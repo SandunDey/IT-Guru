@@ -33,7 +33,8 @@ export const createTicket = async (req, res) => {
         courseOrExamYear,
         subject,
         message,
-        referenceCode, // <-- THIS WAS THE MISSING LINE
+        referenceCode,
+  user: req.user.id, // <-- වෙනස්කම: user ID එක මෙතනට එක් කරන්න
     });
 
     const savedTicket = await newTicket.save();
@@ -47,8 +48,9 @@ export const createTicket = async (req, res) => {
 // --- Get all support tickets ---
 export const getAllTickets = async (req, res) => {
   try {
-    const tickets = await SupportTicket.find({}).sort({ createdAt: -1 }); // Show newest first
-    res.status(200).json(tickets);
+    // find({}) වෙනුවට find({ user: req.user.id }) ලෙස වෙනස් කරන්න
+  const tickets = await SupportTicket.find({ user: req.user.id }).sort({ createdAt: -1 });
+  res.status(200).json({ tickets });
   } catch (error) {
     res.status(500).json({ message: 'Server error while fetching tickets.', error: error.message });
   }
@@ -60,6 +62,10 @@ export const getTicketById = async (req, res) => {
     const ticket = await SupportTicket.findById(req.params.id);
     if (!ticket) {
       return res.status(404).json({ message: 'Ticket not found.' });
+    }
+    // --- අමතර ආරක්ෂාව සඳහා මෙම කොටස එක් කරන්න ---
+  if (ticket.user.toString() !== req.user.id) {
+        return res.status(403).json({ message: 'User not authorized' });
     }
     res.status(200).json(ticket);
   } catch (error) {

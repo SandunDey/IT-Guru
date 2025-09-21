@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+// 1. 'axios' වෙනුවට අපි සෑදූ 'api' instance එක import කරගන්න
+import api from './api'; 
 import { Link } from 'react-router-dom';
 
 const MyTicketsPage = () => {
@@ -10,11 +11,22 @@ const MyTicketsPage = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       setIsLoading(true);
+      setError(null);
       try {
-        const response = await axios.get('/api/tickets');
-        setTickets(response.data);
+        // 2. 'axios.get' වෙනුවට 'api.get' භාවිතා කරන්න සහ නිවැරදි endpoint එක යොදන්න
+        const response = await api.get('/api/support-tickets');
+        
+        // 3. Backend එකෙන් එන object එකෙන් 'tickets' array එක පමණක් ලබාගන්න
+        if (response.data && Array.isArray(response.data.tickets)) {
+          setTickets(response.data.tickets);
+        } else {
+          // Backend එකෙන් නිවැරදි දත්ත නොලැබුනහොත් tickets state එක හිස් array එකක් ලෙස සකසන්න
+          setTickets([]);
+          console.warn("API did not return a 'tickets' array:", response.data);
+        }
+
       } catch (err) {
-        setError('Failed to fetch tickets.');
+        setError('Failed to fetch tickets. You may not be logged in.');
         console.error('Error fetching tickets:', err);
       }
       setIsLoading(false);
@@ -36,7 +48,7 @@ const MyTicketsPage = () => {
     <div className="bg-gray-100 min-h-screen p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">All Support Tickets</h1>
+          <h1 className="text-3xl font-bold text-gray-800">My Support Tickets</h1>
           <Link
             to="/submit-ticket"
             className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
@@ -49,6 +61,7 @@ const MyTicketsPage = () => {
         {error && <p className="text-red-500 font-semibold">{error}</p>}
         
         <div className="space-y-4">
+          {/* මෙම කොටස දැන් නිවැරදිව ක්‍රියා කරයි */}
           {tickets.map(ticket => (
             <Link to={`/tickets/${ticket._id}`} key={ticket._id} className="block hover:bg-gray-50">
               <div className="bg-white p-5 rounded-lg shadow-md">
@@ -70,7 +83,7 @@ const MyTicketsPage = () => {
           ))}
         </div>
 
-        {tickets.length === 0 && !isLoading && (
+        {tickets.length === 0 && !isLoading && !error && (
           <div className="text-center py-12">
             <p className="text-gray-500 text-lg">No tickets found.</p>
             <Link
