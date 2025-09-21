@@ -51,6 +51,14 @@ const supportTicketSchema = new mongoose.Schema(
       uppercase: true,
     },
 
+    // Track who created the ticket for security
+    createdBy: {
+      type: String,
+      required: true,
+      trim: true,
+      lowercase: true,
+    },
+
     // --- පවතින Fields ---
     status: {
       type: String,
@@ -91,6 +99,10 @@ const supportTicketSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Add index for faster queries by user email
+supportTicketSchema.index({ email: 1, createdAt: -1 });
+supportTicketSchema.index({ createdBy: 1, createdAt: -1 });
 
 const SupportTicket = mongoose.model('SupportTicket', supportTicketSchema);
 
