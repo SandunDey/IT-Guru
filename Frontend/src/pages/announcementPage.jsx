@@ -3,12 +3,12 @@ import axios from "axios";
 import Header from "../components/header";
 
 export default function UserAnnouncementPage() {
-  const [announcements, setAnnouncements] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);//backend ekem genapu announcement list ek
   const [filteredAnnouncements, setFilteredAnnouncements] = useState([]);
-  const [typeFilter, setTypeFilter] = useState("All");
-  const [isLoading, setIsLoading] = useState(true);
+  const [typeFilter, setTypeFilter] = useState("All");//dropdown eke user select karapu filter type ek
+  const [isLoading, setIsLoading] = useState(true);//API call loading state handle
 
-  useEffect(() => {
+  useEffect(() => {//page ek load veddi run venva
     async function fetchAnnouncements() {
       try {
         const response = await axios.get(
@@ -28,10 +28,10 @@ export default function UserAnnouncementPage() {
 
   useEffect(() => {
     if (typeFilter === "All") {
-      setFilteredAnnouncements(announcements);
+      setFilteredAnnouncements(announcements);// filter type allnm full list ek
     } else {
       setFilteredAnnouncements(
-        announcements.filter((a) => a.type === typeFilter)
+        announcements.filter((a) => a.type === typeFilter)// filter karanva type ek anuva
       );
     }
   }, [typeFilter, announcements]);
@@ -47,7 +47,7 @@ export default function UserAnnouncementPage() {
         <h1 className="text-4xl font-bold text-center mb-10 mt-20 text-accent drop-shadow-md ">
           Announcements
         </h1>
-        {/* Filter Dropdown */}
+        {/* Filter Dropdown usert type ek select karann puluvam */}
         <div className="flex justify-center mb-6">
           <select
             className="p-3 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -63,9 +63,10 @@ export default function UserAnnouncementPage() {
           </select>
         </div>
         {/* Announcement Cards */}
-        {isLoading ? (
+
+        {isLoading ? (//is loading thrunm load announcement
           <p className="text-center text-gray-500">Loading announcements...</p>
-        ) : filteredAnnouncements.length === 0 ? (
+        ) : filteredAnnouncements.length === 0 ? (//data empty no announcement
           <p className="text-center text-gray-500">No announcements found.</p>
         ) : (
           <div className="grid gap-6 md:grid-cols-2">

@@ -8,9 +8,9 @@ import { Loder } from "../../components/loder";
 import { TbReportAnalytics } from "react-icons/tb";
 
 function AnnouncementDeleteConfirm(props) {
-  const announcementID = props.announcementID;
-  const close = props.close;
-  const refresh = props.refresh;
+  const announcementID = props.announcementID;// parent component eken pass kara delete karanna one announcement ID
+  const close = props.close;// parent eken pass karapu modal close karana function
+  const refresh = props.refresh; // parent eken pass karapu table refresh karana function
 
   function deleteAnnouncement() {
     const token = localStorage.getItem("token");
@@ -87,12 +87,12 @@ function AnnouncementDeleteConfirm(props) {
 }
 
 export default function AdminAnnouncementPage() {
-  const [announcements, setAnnouncements] = useState([]);
-  const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
+  const [announcements, setAnnouncements] = useState([]);// announcement list
+  const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);// modal visible da kiyala
   const [selectedAnnouncementID, setSelectedAnnouncementID] = useState(null); //delete karann ona product id ek
   const [isLoading, setIsLoading] = useState(true); //patam ganiddi loading vevi thiyenne e nisa true
 
-  const navigate = useNavigate();
+  const navigate = useNavigate();// react-router navigate hook
 
   useEffect(() => {
     //mek run venne page ek mul vathavt load venkot vitrayi

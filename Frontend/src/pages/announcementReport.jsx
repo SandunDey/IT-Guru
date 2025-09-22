@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import jsPDF from "jspdf";
+import jsPDF from "jspdf"; // Create PDF
 import autoTable from "jspdf-autotable"; // Added for table
 import toast from "react-hot-toast";
 import { FaRegFilePdf } from "react-icons/fa";
@@ -24,12 +24,12 @@ export default function AnnouncementReport() {
         const response = await axios.get(
           import.meta.env.VITE_API_BASE_URL + "/api/announcements"
         );
-        setAnnouncements(response.data);
-        setIsLoading(false);
+        setAnnouncements(response.data); // save data
+        setIsLoading(false); // stop loading
       } catch (err) {
         console.error("Error fetching announcements:", err);
         toast.error("Failed to fetch announcements");
-        setIsLoading(false);
+        setIsLoading(false); // stop loading
       }
     }
     fetchAnnouncements();
@@ -37,17 +37,18 @@ export default function AnnouncementReport() {
 
   const createPDFReport = () => {
     if (!announcements || announcements.length === 0) {
+      //announcement nathnm
       toast.error("No announcements to generate report!");
       return;
     }
 
     try {
-      const doc = new jsPDF();
-      const pageWidth = doc.internal.pageSize.width;
+      const doc = new jsPDF(); // new PDF file
+      const pageWidth = doc.internal.pageSize.width; // page width
 
       // --- Logo ---
       const logoUrl = "/logo.jpg"; // Put logo in public/ folder
-      doc.addImage(logoUrl, "PNG", 14, 10, 20, 20);
+      doc.addImage(logoUrl, "PNG", 14, 10, 20, 20); // x=14, y=10, size=20x20
 
       // --- ITGuru Info ---
       doc.setFontSize(18);
@@ -67,18 +68,20 @@ export default function AnnouncementReport() {
 
       // --- Table Data ---
       const tableData = announcements.map((ann, index) => [
-        ann.announcementID || `A${index + 1}`,
+        //announcements list eka loop karala item tika ganna
+        ann.announcementID || `A${index + 1}`, // announcement id thiyenvnm eka ganna nathnm default A1 , A2 vage ganna
         ann.title || "Untitled",
         ann.type || "General",
-        ann.expiryDate ? new Date(ann.expiryDate).toLocaleDateString() : "N/A",
+        ann.expiryDate ? new Date(ann.expiryDate).toLocaleDateString() : "N/A", //expiry date thiyenawanam date format karala ganna
         ann.description || "No description",
       ]);
 
       autoTable(doc, {
-        startY: 60,
+        //jsPDF-autotable library eken table ekak hadannava PDF vidiyt(doc)
+        startY: 60, //table ekata start karanna y-axis (height) 60th line eken.
         head: [["ID", "Title", "Type", "Expiry Date", "Description"]],
-        body: tableData,
-        theme: "grid",
+        body: tableData, // body ekt ganne table data kalin gatta
+        theme: "grid", //table ekata grid-style border denna.
         headStyles: { fillColor: colors.accent, textColor: 255 },
         styles: { fontSize: 9, cellPadding: 3 },
       });
@@ -86,6 +89,7 @@ export default function AnnouncementReport() {
       // --- Footer ---
       const pageCount = doc.internal.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
+        //page 1 to last page loop
         doc.setPage(i);
         doc.setFontSize(8);
         doc.setTextColor(...colors.similar);
@@ -104,6 +108,7 @@ export default function AnnouncementReport() {
 
       // --- Save ---
       const filename = `ITGuru_AnnouncementReport_${
+        //"ITGuru_AnnouncementReport_YYYY-MM-DD.pdf" format ekata save wenna.
         new Date().toISOString().split("T")[0]
       }.pdf`;
       doc.save(filename);
@@ -123,7 +128,7 @@ export default function AnnouncementReport() {
           <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
               <h1 className="text-4xl font-extrabold bg-gradient-to-r from-accent to-boardercolor bg-clip-text text-transparent drop-shadow-sm">
-                 Announcement Reports
+                Announcement Reports
               </h1>
               <p className="text-similar mt-3 text-lg font-medium">
                 Generate PDF reports with{" "}

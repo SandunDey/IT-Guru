@@ -42,10 +42,11 @@ export default function AddAnnouncementPage() {
   };
 
   async function addAnnouncement() {
-    if (!validateForm()) return;
-    const token = localStorage.getItem("token");
+    if (!validateForm()) return; //validation failnm stop karanva
+    const token = localStorage.getItem("token"); //local storage token ek gannva
 
     if (token == null) {
+      //token nathnm login page ekt navigate
       navigate("/login");
       return;
     }
@@ -100,9 +101,9 @@ export default function AddAnnouncementPage() {
               className="w-full p-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
               placeholder="e.g., AN001"
               value={announcementID}
-              onChange={(e) => setAnnouncementID(e.target.value)}
+              onChange={(e) => setAnnouncementID(e.target.value)} //Input field ekata type karana value eka, state variable announcementID ekata gannawa.
             />
-            {errors.announcementID && (
+            {errors.announcementID && ( //validation
               <p className="text-red-600 text-sm italic mt-1">
                 {errors.announcementID}
               </p>

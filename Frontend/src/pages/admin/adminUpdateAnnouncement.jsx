@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from "react";//input value manage hook
 import { useLocation, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -9,7 +9,7 @@ export default function UpdateAnnouncementPage() {
   const [announcementID, setAnnouncementID] = useState(
     location.state.announcementID
   );
-  const [title, setTitle] = useState(location.state.title);
+  const [title, setTitle] = useState(location.state.title);//location kiyanne navigate venakot state ekath ekk genapu data thiyen ekk
   const [description, setDescription] = useState(location.state.description);
   const [type, setType] = useState(location.state.type);
   const [audience, setAudience] = useState(location.state.audience);

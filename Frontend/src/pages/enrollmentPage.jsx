@@ -7,20 +7,20 @@ import { FaInfoCircle } from "react-icons/fa";
 
 // ✅ Add API base URL
 const RAW_BASE =
-  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||
-  (typeof process !== "undefined" && process.env?.REACT_APP_API_BASE_URL) ||
+  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||// get API URL from Vite env
+  (typeof process !== "undefined" && process.env?.REACT_APP_API_BASE_URL) ||// fallback if React env used
   "http://localhost:4000"; // fallback if env not set
-const API_BASE = RAW_BASE.replace(/\/$/, "");
+const API_BASE = RAW_BASE.replace(/\/$/, "");// remove trailing slash
 
 export default function UserEnrollmentPage() {
-  const [student, setStudent] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedYear, setSelectedYear] = useState("");
-  const [enrollmentKey, setEnrollmentKey] = useState("");
+  const [student, setStudent] = useState(null);// Logged-in student details
+  const [showModal, setShowModal] = useState(false);// Show/hide enrollment popup
+  const [selectedYear, setSelectedYear] = useState("");// Year selected
+  const [enrollmentKey, setEnrollmentKey] = useState("");// Key input by student
   const navigate = useNavigate();
 
   useEffect(() => {
-    const savedStudent = JSON.parse(localStorage.getItem("student"));
+    const savedStudent = JSON.parse(localStorage.getItem("student"));//localstorage ek check karala student load karagannva
     if (savedStudent) {
       setStudent(savedStudent);
     }
@@ -32,14 +32,14 @@ export default function UserEnrollmentPage() {
       return;
     }
 
-    if (parseInt(student.year) !== year) {
+    if (parseInt(student.year) !== year) {// mismatch year
       toast.error(`You can only enroll for your year (${student.year} A/L).`);
       return;
     }
 
-    setSelectedYear(year + " A/L");
-    setEnrollmentKey("");
-    setShowModal(true);
+    setSelectedYear(year + " A/L");// set selected year
+    setEnrollmentKey("");// clear input field
+    setShowModal(true);// show popup
   }
 
   async function handleSubmit() {
@@ -57,7 +57,7 @@ export default function UserEnrollmentPage() {
         const data = await res.json();
         throw new Error(data.message || "Enrollment key is invalid");
       }
-      const verifiedStudent = await res.json();
+      const verifiedStudent = await res.json();// valid student data
 
       // 2️⃣ Create a new enrollment
       const enrollmentRes = await fetch(`${API_BASE}/api/enrollments`, {
@@ -73,6 +73,7 @@ export default function UserEnrollmentPage() {
       const enrollmentData = await enrollmentRes.json();
       if (!enrollmentRes.ok) throw new Error(enrollmentData.message);
 
+      // Already enrolled case
       if (enrollmentData.alreadyEnrolled) {
         toast("You are already enrolled. Redirecting...");
       } else {
