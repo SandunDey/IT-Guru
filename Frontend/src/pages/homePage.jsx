@@ -39,7 +39,7 @@ export default function HomePage() {
         <Route path="/timetable" element={<h1>Time Table</h1>} />
         <Route path="/quizzes" element={<h1>Quizzes</h1>} />
         <Route path="/aboutus" element={<AboutUs />} />
-        <Route path="/enrollment" element={<Enrollment />} />
+        {/* <Route path="/enrollment" element={<Enrollment />} /> */}
         <Route path="/*" element={<h1>404 Not Found</h1>} />
         </Routes>
       <Footer/>

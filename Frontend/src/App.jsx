@@ -1,46 +1,39 @@
-//  src/App.jsx
+// src/App.jsx
 import React from "react";
-import { BrowserRouter, Routes, Route , Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
-import SubmitTicketPage from "./SubmitTicketPage.jsx";
-import MyTicketsPage from "./MyTicketsPage.jsx";
-import TicketDetailPage from "./TicketDetailPage.jsx";
+// pages/StudentQuizPage.jsx
+import { useParams } from "react-router-dom";
 
-// ===>>> මෙම PrivateRoute component එක අලුතින් එක් කරන්න <<<===
-const PrivateRoute = ({ children }) => {
-  // localStorage සහ sessionStorage යන දෙකෙන්ම 'itguru_token' එක සොයන්න
-  const token = localStorage.getItem("itguru_token") || sessionStorage.getItem("itguru_token");
-  
-  // token එකක් ඇත්නම්, ඉල්ලූ පිටුව පෙන්වන්න. නැත්නම්, '/login' පිටුවට යොමු කරන්න.
-  return token ? children : <Navigate to="/login" />;
-};
+import PaymentsPage from "/Payment.jsx";
 
-import PaymentsPage from "./Payment.jsx";
-import LoginPage from "./LoginPage.jsx";
 import SignupForm from "./StudentSignUpPage.jsx";
 
-import AdminPage from "./pages/adminPage.jsx";
-import AboutUs from "./pages/aboutUs.jsx"; // ✅ fixed path
-import UserAnnouncementPage from "./pages/announcementPage.jsx";
-import HomePage from "./pages/homePage.jsx";
-import AnnouncementReport from "./pages/announcementReport.jsx";
+import AdminPage from "../pages/adminPage.jsx";
+import AboutUs from "/pages/aboutUs.jsx";
+import UserAnnouncementPage from "/pages/announcementPage.jsx";
+import HomePage from "/pages/homePage.jsx";
+import AnnouncementReport from "/pages/announcementReport.jsx";
 
 import HelpCenterPage from "./HelpCenterPage.jsx";
-//import SubmitTicketPage from "./SubmitTicketPage.jsx";
-//import MyTicketsPage from "./MyTicketsPage.jsx";
-//import TicketDetailPage from "./TicketDetailPage.jsx";
+
 import StaffPage from "./StaffPage.jsx";
 import AdminLoginPage from "./loging.jsx";
+import StudentDashboard from "/pages/Studentdashbord.jsx";
+import StudentProfile from "./pages/StudentProfile.jsx";
+import TeacherDashboard from "./pages/TeacherDashboard.jsx";
+import QuizPlayer from "./components/QuizPlayer.jsx";
+import ProtectedRoute from "./ProtectedRoute.jsx";
+import UserVideos from "./pages/UserVideos.jsx"
 
-import FeedbackPage from './components/FeedbackPage';
-import UserEnrollmentPage from "./pages/enrollmentPage.jsx";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
       <Routes>
+        {/* Public */}
         <Route path="/" element={<HomePage />} />
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/payment" element={<PaymentsPage />} />
@@ -48,39 +41,50 @@ export default function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/announcement" element={<UserAnnouncementPage />} />
         <Route path="/announcement/report" element={<AnnouncementReport />} />
-        <Route path="/enrollment" element={<UserEnrollmentPage />} />
-        <Route path="/enrollment/report" element={<h1>Report</h1>} />
         <Route path="/support" element={<HelpCenterPage />} />
+        <Route path="/submit-ticket" element={<SubmitTicketPage />} />
+        <Route path="/my-tickets" element={<MyTicketsPage />} />
+        <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
         <Route path="/admin" element={<AdminLoginPage />} />
-        <Route path="/staff" element={<StaffPage />} />
-        <Route path="/admin/dashboard/*" element={<AdminPage />} />
-        <Route path="/feedback" element={<FeedbackPage />} />
+        <Route path="/Uservideos" element={<UserVideos />} />
+
+        {/* Protected by role */}
+     <Route element={<ProtectedRoute allow="student" />}>
+  <Route path="/StudentDashboard" element={<StudentDashboard />} />
+  <Route path="/student/profile" element={<StudentProfile />} />
+</Route>
+
+        <Route element={<ProtectedRoute allow="staff" />}>
+          <Route path="/staff" element={<StaffPage />} />
+        </Route>
+
+        <Route element={<ProtectedRoute allow="teacher" />}>
+          <Route path="/teacher" element={<TeacherDashboard />} />
+        </Route>
+
+        <Route element={<ProtectedRoute allow="admin" />}>
+          <Route path="/admin/dashboard/*" element={<AdminPage />} />
+        </Route>
+
+         {/* Teacher area */}
+          <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+
+          {/* Student quiz play */}
+          <Route path="/quiz/:id" element={<StudentQuizPage />} />
+
+        <Route path="/StudentDashboard/quiz/:quizId" element={<StudentQuizPage />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
-        <Route
-          path="/submit-ticket"
-          element={
-            <PrivateRoute>
-              <SubmitTicketPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/my-tickets"
-          element={
-            <PrivateRoute>
-              <MyTicketsPage />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/tickets/:ticketId"
-          element={
-            <PrivateRoute>
-              <TicketDetailPage />
-            </PrivateRoute>
-          }
-        />
       </Routes>
     </BrowserRouter>
+  );
+}
+function StudentQuizPage() {
+  const { id } = useParams();
+  // plug in your real student id after auth:
+  const studentId = localStorage.getItem("studentId") || "student-demo-001";
+  return (
+    <div className="min-h-screen bg-blue-50 p-4">
+      <QuizPlayer quizId={id} studentId={studentId} />
+    </div>
   );
 }
