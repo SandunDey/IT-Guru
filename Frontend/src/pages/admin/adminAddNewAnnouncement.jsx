@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import axios from "axios";
+import { useState } from "react";//React built-in hook handle data state
+import { useNavigate } from "react-router-dom";//React Router DOM hook navigate karanva
+import toast from "react-hot-toast";//react-hot-toast library eken, notification pennanna
+import axios from "axios";//HTTP requests karanna library.
 
-export default function AddAnnouncementPage() {
-  const [announcementID, setAnnouncementID] = useState("");
+export default function AddAnnouncementPage() {//form eke variable handle karanava useState valin
+  const [announcementID, setAnnouncementID] = useState(""); //default empty string
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [type, setType] = useState("Academic");
@@ -14,19 +14,19 @@ export default function AddAnnouncementPage() {
   const [errors, setErrors] = useState({}); // form errors
   const navigate = useNavigate();
 
-  // Fix: Handle Audience Checkboxes
-  function handleAudienceChange(e) {
-    const value = e.target.value;
+  // Audience checkbox select/deselect karana function
+  function handleAudienceChange(e) {// e-> event parameter 
+    const value = e.target.value;// checkbox ekem ena value gannva
     if (e.target.checked) {
-      setAudience([...audience, value]);
+      setAudience([...audience, value]);//select unanm kalim audiance list ekat new value add karanva
     } else {
-      setAudience(audience.filter((a) => a !== value));
+      setAudience(audience.filter((a) => a !== value));// unselect nm remove karanva
     }
   }
 
   // Form validation function
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors = {};// empty error object
     if (!announcementID.trim())
       newErrors.announcementID = "Announcement ID is required";
     if (!title.trim()) newErrors.title = "Title is required";

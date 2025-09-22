@@ -1,7 +1,7 @@
 import Counter from "../model/counter.js";
 import Enrollment from "../model/enroll.js";
 import Student from "../model/Student.js";
-import mongoose from "mongoose"; 
+import mongoose from "mongoose";
 
 export async function createEnrollment(req, res) {
     const { studentID, classYear, enrollmentKey } = req.body; // Extract fields(studentID, classYear, enrollmentKey) from request body
@@ -56,19 +56,19 @@ export async function createEnrollment(req, res) {
 
     try {
         await enrollment.save();// save db
-        res.json({ message: "Enrollment created successfully", enrollment }); // ✅ FIX: return created enrollment for easier debugging
+        res.json({ message: "Enrollment created successfully", enrollment }); // return created enrollment 
     } catch (err) {
-        console.error(" Enrollment creation error:", err); //  FIX: more descriptive log
-        res.status(500).json({ message: "Failed to create enrollment", error: err.message }); // ✅ FIX: send actual error to frontend
+        console.error(" Enrollment creation error:", err);
+        res.status(500).json({ message: "Failed to create enrollment", error: err.message }); //send actual error to frontend
     }
 }
 
 export function getEnrollmentByYear(req, res) {
     const classYear = req.params.classYear.replace(/-/g, "/"); //request para convert 2026A-L -> 2026A/L
 
-    Enrollment.find({ classYear })
-        .then((enrollment) => {
-            if (enrollment.length == 0) {
+    Enrollment.find({ classYear })//enrollment eka hoyanava year ekat
+        .then((enrollment) => {//hoyagaththoth
+            if (enrollment.length == 0) {//enrollment data nathnm
                 return res.status(404).json({ message: "No enrollments found for this year" });
             }
             res.json(enrollment);
@@ -82,7 +82,7 @@ export function getEnrollmentByYear(req, res) {
 export async function getAllEnrollment(req, res) {
     try {
         const enrollments = await Enrollment.find()
-            .populate("studentId", "studentId year name"); // populate only the fields you need
+            .populate("studentId", "studentId year name"); // studentId field ekata link wela thiyena Student collection eken data fetch karanawa.
         res.json(enrollments);
     } catch (err) {
         console.error(err);
@@ -96,8 +96,8 @@ export async function deleteEnrollment(req, res) {
         return;
     }
     try {
-        const { enrollmentID } = req.params;
-        const result = await Enrollment.findOneAndDelete({ enrollmentID });
+        const { enrollmentID } = req.params;//URL parameter ekedi thiyena enrollmentID extract karala id eka vitrak gannva
+        const result = await Enrollment.findOneAndDelete({ enrollmentID });//findOneAndDelete → first matching document delete karanawa
         if (!result) {
             return res.status(404).json({ message: "Enrollment not found" });
         }
@@ -115,15 +115,15 @@ export async function updateEnrollment(req, res) {
     }
 
     try {
-        const enrollmentID = req.params.enrollmentID;
-        const { paymentStatus, isActive, year, enrollmentDate } = req.body;
+        const enrollmentID = req.params.enrollmentID;//url parameter eke thiyena enrollment id eka gannava
+        const { paymentStatus, isActive, year, enrollmentDate } = req.body;//frontend ekem yawan update data vala avashsha data tika vitrak extract karagannva
 
         // validate isActive properly
-        if (typeof isActive !== "boolean") {
+        if (typeof isActive !== "boolean") {//isactive eke type ek boolean nemenm
             return res.status(400).json({ message: "Invalid active status value" });
         }
 
-        const updated = await Enrollment.findOneAndUpdate(
+        const updated = await Enrollment.findOneAndUpdate(// first matching enrollment id eka update karanava
             { enrollmentID },
             {
                 paymentStatus,
@@ -131,7 +131,7 @@ export async function updateEnrollment(req, res) {
                 year,
                 enrollmentDate,
             },
-            { new: true } // return updated doc
+            { new: true } // return updated document
         );
 
         if (!updated) {
