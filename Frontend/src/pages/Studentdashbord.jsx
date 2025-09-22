@@ -32,10 +32,11 @@ import {
   PieChart as RPPieChart,
   Cell,
 } from "recharts";
+import { motion } from "framer-motion"; // ✨ animations (UI only)
 import { useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
 import { loadAuth } from "../api"; // single source of truth for user+token
-
+import Footer from "../components/footer";
 // ---------- MOCK DASH METRICS (keep these until real data) ----------
 const stats = [
   { label: "Enrolled Courses", value: 5 },
@@ -81,7 +82,14 @@ const assignmentVelocity = [
   { week: "W5", completed: 9 },
 ];
 
-const COLORS = ["#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe"]; // Tailwind blues
+const COLORS = ["#2563eb", "#3b82f6", "#60a5fa", "#93c5fd"]; // Tailwind blues
+
+// Small animation presets
+const fadeUp = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
+const pop = { whileHover: { y: -2 }, whileTap: { y: 0 } };
 
 // ---------- COMPONENT ----------
 export default function StudentDashboard() {
@@ -107,12 +115,10 @@ export default function StudentDashboard() {
       setUser(user || null);
     };
 
-    // fired when localStorage changes in another tab/window
     const onStorage = (e) => {
       if (e.key === "app_auth") syncFromStorage();
     };
 
-    // custom event fired in same tab after profile save/avatar change
     window.addEventListener("auth:updated", syncFromStorage);
     window.addEventListener("storage", onStorage);
     return () => {
@@ -122,7 +128,6 @@ export default function StudentDashboard() {
   }, []);
 
   const handleLogout = () => {
-    // clear new and legacy keys
     localStorage.removeItem("app_auth");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -135,32 +140,32 @@ export default function StudentDashboard() {
   const studentId = user?.studentId || user?._id || user?.id;
 
   return (
-    <div className="min-h-screen w-full bg-slate-50">
+    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-blue-100">
       {/* Topbar */}
-      <header className="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
+      <header className="sticky top-0 z-40 w-full border-b border-blue-100 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
-            <button className="md:hidden rounded-xl p-2 hover:bg-slate-100" onClick={() => setSidebarOpen(true)}>
+            <button className="rounded-xl p-2 text-blue-700/80 hover:bg-blue-50 md:hidden" onClick={() => setSidebarOpen(true)}>
               <Menu className="h-5 w-5" />
             </button>
             <div className="flex items-center gap-2">
-              <img src={Logo} alt="IT Guru Logo" className="h-16 w-16 rounded-full object-cover shadow-lg" />
-              <span className="text-lg font-semibold">ITGuru</span>
+              <img src={Logo} alt="IT Guru Logo" className="h-10 w-10 rounded-full object-cover shadow-md ring-2 ring-blue-100" />
+              <span className="text-lg font-semibold text-blue-900">ITGuru</span>
             </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-2 rounded-2xl border bg-white px-3 py-2 shadow-sm w-80">
-            <Search className="h-4 w-4 text-slate-400" />
-            <input className="w-full bg-transparent text-sm outline-none" placeholder="Search courses, assignments…" />
+          <div className="hidden w-80 items-center gap-2 rounded-2xl border border-blue-100 bg-white px-3 py-2 text-blue-900 shadow-sm md:flex">
+            <Search className="h-4 w-4 text-blue-400" />
+            <input className="w-full bg-transparent text-sm outline-none placeholder-blue-300" placeholder="Search courses, assignments…" />
           </div>
 
           <div className="flex items-center gap-3">
-            <button className="rounded-xl p-2 hover:bg-slate-100">
+            <button className="rounded-xl p-2 text-blue-700/80 transition hover:bg-blue-50">
               <Bell className="h-5 w-5" />
             </button>
 
             <div
-              className="flex items-center gap-3 rounded-full bg-slate-100 px-3 py-1 cursor-pointer hover:bg-slate-200"
+              className="cursor-pointer items-center gap-3 rounded-full bg-blue-50/80 px-3 py-1 backdrop-blur-sm transition hover:bg-blue-100 hidden sm:flex"
               onClick={() =>
                 navigate("/student/profile", {
                   state: { studentId },
@@ -170,12 +175,12 @@ export default function StudentDashboard() {
               <img
                 src={`https://i.pravatar.cc/40?u=${encodeURIComponent(displayName)}`}
                 alt="avatar"
-                className="h-8 w-8 rounded-full"
+                className="h-8 w-8 rounded-full ring-2 ring-white shadow"
               />
-              <span className="hidden sm:block text-sm font-medium">{displayName}</span>
+              <span className="text-sm font-medium text-blue-900">{displayName}</span>
             </div>
 
-            <button className="rounded-xl p-2 hover:bg-slate-100" onClick={handleLogout}>
+            <button className="rounded-xl p-2 text-blue-700/80 transition hover:bg-blue-50" onClick={handleLogout}>
               <LogOut className="h-5 w-5" />
             </button>
           </div>
@@ -183,19 +188,26 @@ export default function StudentDashboard() {
       </header>
 
       {/* Body */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-[240px_1fr] gap-6 py-6">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-6 sm:px-6 lg:px-8 md:grid-cols-[240px_1fr]">
         {/* Sidebar */}
-        <aside className={`fixed inset-0 z-50 bg-black/30 md:static md:bg-transparent ${sidebarOpen ? "block" : "hidden md:block"}`}>
-          <div className={`h-full w-72 md:w-auto md:h-auto md:block bg-white md:bg-transparent shadow-xl md:shadow-none ${sidebarOpen ? "animate-in fade-in zoom-in" : ""}`}>
-            <nav className="md:sticky md:top-20 md:h[calc(100vh-6rem)] rounded-2xl bg-white p-4 shadow-sm md:shadow md:block">
+        <aside className={`fixed inset-0 z-50 md:static ${sidebarOpen ? "block" : "hidden md:block"}`}>
+          {/* overlay on mobile */}
+          {sidebarOpen && <div className="absolute inset-0 bg-black/30" onClick={() => setSidebarOpen(false)} />}
+          <motion.div
+            initial={{ x: -16, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 0.35 }}
+            className="relative h-full w-72 overflow-hidden rounded-r-2xl md:w-auto md:rounded-2xl"
+          >
+            <nav className="h-full rounded-2xl bg-gradient-to-b from-blue-700 to-blue-800 p-4 text-blue-50 shadow-2xl md:sticky md:top-20 md:h-[calc(100vh-6rem)]">
               <div className="mb-2 flex items-center justify-between md:hidden">
                 <span className="text-base font-semibold">Menu</span>
-                <button onClick={() => setSidebarOpen(false)} className="rounded-lg p-2 hover:bg-slate-100">
+                <button onClick={() => setSidebarOpen(false)} className="rounded-lg p-2 hover:bg-white/10">
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <SidebarLink icon={<Home className="h-5 w-5" />} label="Dashboard" active />
-              <SidebarLink icon={<BookOpen className="h-5 w-5" />} label="Class"  />
+              <SidebarLink icon={<Home className="h-5 w-5" />} label="Dashboard" onClick={() => navigate("/StudentDashboard")} />
+              <SidebarLink icon={<BookOpen className="h-5 w-5" />} label="Class" onClick={() => navigate("/Uservideos")} />
               <SidebarLink icon={<ClipboardList className="h-5 w-5" />} label="Assignments" />
               <SidebarLink icon={<Megaphone className="h-5 w-5" />} label="Announcements" />
               <SidebarLink icon={<MessagesSquare className="h-5 w-5" />} label="Messages" />
@@ -203,49 +215,53 @@ export default function StudentDashboard() {
               <SidebarLink icon={<Settings className="h-5 w-5" />} label="Settings" />
               <SidebarLink icon={<HelpCircle className="h-5 w-5" />} label="Help" />
             </nav>
-          </div>
+          </motion.div>
         </aside>
 
         {/* Main */}
         <main className="space-y-6">
           {/* Welcome + basic identity from login */}
-          <section className="rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-sm">
-            <h1 className="text-2xl font-semibold">Welcome back, {displayName}! 🎓</h1>
-            <p className="mt-1 text-slate-600">
+          <motion.section variants={fadeUp} initial="hidden" animate="show" className="rounded-2xl bg-gradient-to-r from-blue-50 to-white p-6 shadow-sm ring-1 ring-blue-100/60">
+            <h1 className="text-2xl font-semibold text-blue-900">Welcome back, {displayName}! 🎓</h1>
+            <p className="mt-1 text-blue-800/80">
               {studentId ? (
                 <>Student ID: <span className="font-semibold">{studentId}</span></>
               ) : (
                 <>You have completed <span className="font-semibold">3</span> out of <span className="font-semibold">5</span> courses.</>
               )}
             </p>
-          </section>
+          </motion.section>
 
           {/* Quick Stats */}
-          <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <section className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {stats.map((s) => (
-              <div key={s.label} className="rounded-2xl border bg-white p-4 shadow-sm">
-                <p className="text-sm text-slate-500">{s.label}</p>
-                <p className="mt-2 text-2xl font-semibold">{s.value}</p>
-              </div>
+              <motion.div
+                key={s.label}
+                {...pop}
+                className="rounded-2xl border border-blue-100 bg-white p-4 shadow-sm transition hover:shadow-md hover:ring-1 hover:ring-blue-200"
+              >
+                <p className="text-sm text-blue-700/80">{s.label}</p>
+                <p className="mt-2 text-2xl font-semibold text-blue-900">{s.value}</p>
+              </motion.div>
             ))}
           </section>
 
           {/* Content Grid */}
-          <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <section className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {/* Courses */}
-            <div className="lg:col-span-2 space-y-4">
+            <div className="space-y-4 lg:col-span-2">
               <Card title="Enrolled Courses">
                 <div className="space-y-3">
                   {courseProgress.map((c) => (
-                    <div key={c.title} className="rounded-xl border p-3">
+                    <motion.div key={c.title} {...pop} className="rounded-xl border border-blue-100/70 bg-white p-3 shadow-sm">
                       <div className="flex items-center justify-between">
-                        <p className="font-medium">{c.title}</p>
-                        <span className="text-sm text-slate-600">{c.progress}%</span>
+                        <p className="font-medium text-blue-900">{c.title}</p>
+                        <span className="text-sm text-blue-700/80">{c.progress}%</span>
                       </div>
-                      <div className="mt-2 h-2 w-full rounded-full bg-slate-200">
-                        <div className="h-2 rounded-full bg-blue-500" style={{ width: `${c.progress}%` }} />
+                      <div className="mt-2 h-2 w-full rounded-full bg-blue-100">
+                        <div className="h-2 rounded-full bg-blue-600" style={{ width: `${c.progress}%` }} />
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </Card>
@@ -253,11 +269,11 @@ export default function StudentDashboard() {
               <Card title="Recent Announcements">
                 <ul className="space-y-3">
                   {announcements.map((a, i) => (
-                    <li key={i} className="rounded-xl border p-3">
-                      <p className="font-medium">{a.title}</p>
-                      <p className="text-sm text-slate-600">{a.body}</p>
-                      <p className="mt-1 text-xs text-slate-500">{a.time}</p>
-                    </li>
+                    <motion.li key={i} {...pop} className="rounded-xl border border-blue-100/70 bg-white p-3 shadow-sm">
+                      <p className="font-medium text-blue-900">{a.title}</p>
+                      <p className="text-sm text-blue-800/80">{a.body}</p>
+                      <p className="mt-1 text-xs text-blue-600/70">{a.time}</p>
+                    </motion.li>
                   ))}
                 </ul>
               </Card>
@@ -265,19 +281,19 @@ export default function StudentDashboard() {
 
             {/* Right rail: Calendar + Insights */}
             <div className="space-y-4">
-              <Card title="April 2024" icon={<CalendarIcon className="h-4 w-4" />}>
+              <Card title="April 2024" icon={<CalendarIcon className="h-4 w-4 text-blue-700" />}>
                 <MiniCalendar />
               </Card>
 
               {/* INSIGHTS */}
-              <Card title="Study Insights" icon={<TrendingUp className="h-4 w-4" />}>
+              <Card title="Study Insights" icon={<TrendingUp className="h-4 w-4 text-blue-700" />}>
                 <div className="space-y-6">
                   {/* Activity trend */}
-                  <WidgetTitle icon={<Activity className="h-4 w-4" />} text="Weekly Study Minutes" />
+                  <WidgetTitle icon={<Activity className="h-4 w-4 text-blue-600" />} text="Weekly Study Minutes" />
                   <div className="h-32">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={activitySeries} margin={{ left: 0, right: 0, top: 10, bottom: 0 }}>
-                        <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                        <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "#1e3a8a" }} />
                         <YAxis hide />
                         <Tooltip cursor={{ opacity: 0.2 }} />
                         <Area dataKey="minutes" type="monotone" stroke="#60a5fa" fill="#bfdbfe" />
@@ -286,11 +302,11 @@ export default function StudentDashboard() {
                   </div>
 
                   {/* Assignment velocity */}
-                  <WidgetTitle icon={<ClipboardList className="h-4 w-4" />} text="Assignments Completed per Week" />
+                  <WidgetTitle icon={<ClipboardList className="h-4 w-4 text-blue-600" />} text="Assignments Completed per Week" />
                   <div className="h-36">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={assignmentVelocity}>
-                        <XAxis dataKey="week" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} />
+                        <XAxis dataKey="week" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "#1e3a8a" }} />
                         <YAxis hide />
                         <Tooltip cursor={{ opacity: 0.2 }} />
                         <Bar dataKey="completed" radius={[8, 8, 8, 8]} fill="#3b82f6" />
@@ -299,7 +315,7 @@ export default function StudentDashboard() {
                   </div>
 
                   {/* Grade distribution */}
-                  <WidgetTitle icon={<PieChart className="h-4 w-4" />} text="Grade Distribution" />
+                  <WidgetTitle icon={<PieChart className="h-4 w-4 text-blue-600" />} text="Grade Distribution" />
                   <div className="h-40">
                     <ResponsiveContainer width="100%" height="100%">
                       <RPPieChart>
@@ -323,37 +339,42 @@ export default function StudentDashboard() {
 }
 
 // ---------- REUSABLES ----------
-function SidebarLink({ icon, label, active }) {
+function SidebarLink({ icon, label, active = false, onClick }) {
   return (
-    <a
-      href="#"
-      className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium hover:bg-slate-100 ${
-        active ? "bg-slate-100 text-slate-900" : "text-slate-700"
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group w-full text-left flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition ${
+        active ? "bg-white/15 text:white" : "text-blue-50/90 hover:bg-white/10 hover:text-white"
       }`}
-      onClick={active}
     >
-      {icon}
+      <span className="grid h-8 w-8 place-items-center rounded-lg bg-white/10 text-white/90 ring-1 ring-white/10">{icon}</span>
       <span>{label}</span>
-    </a>
+      <span className="ml-auto hidden text-xs opacity-0 transition group-hover:opacity-100 md:block">›</span>
+    </button>
   );
 }
-              <SidebarLink icon={<BookOpen className="h-5 w-5" />} label="Class" active={() => navigate("/Uservideos")} />
 
 function Card({ title, children, icon }) {
   return (
-    <div className="rounded-2xl border bg-white p-4 shadow-sm">
+    <motion.div
+      variants={fadeUp}
+      initial="hidden"
+      animate="show"
+      className="rounded-2xl border border-blue-100 bg:white p-4 shadow-sm transition hover:shadow-md"
+    >
       <div className="mb-3 flex items-center gap-2">
         {icon}
-        <h3 className="text-base font-semibold">{title}</h3>
+        <h3 className="text-base font-semibold text-blue-900">{title}</h3>
       </div>
       {children}
-    </div>
+    </motion.div>
   );
 }
 
 function WidgetTitle({ icon, text }) {
   return (
-    <div className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
+    <div className="mb-2 flex items-center gap-2 text-sm font-medium text-blue-900">
       {icon}
       <span>{text}</span>
     </div>
@@ -367,7 +388,7 @@ function MiniCalendar() {
 
   return (
     <div>
-      <div className="grid grid-cols-7 gap-1 text-center text-xs text-slate-500">
+      <div className="grid grid-cols-7 gap-1 text-center text-xs text-blue-700/80">
         {days.map((d) => (
           <div key={d} className="py-1">
             {d}
@@ -381,12 +402,15 @@ function MiniCalendar() {
         {dates.map((d) => (
           <button
             key={d}
-            className={`aspect-square rounded-xl text-sm ${d === selected ? "bg-blue-600 text-white" : "hover:bg-slate-100"}`}
+            className={`aspect-square rounded-xl text-sm transition ${
+              d === selected ? "bg-blue-600 text-white shadow" : "text-blue-900 hover:bg-blue-50"
+            }`}
           >
             {d}
           </button>
         ))}
       </div>
     </div>
+    
   );
 }

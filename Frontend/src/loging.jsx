@@ -1,12 +1,13 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { studentApi } from "./api"; // NOTE: ../api (not ./api)
+import { motion } from "framer-motion";
+import { studentApi } from "./api";
 
 export default function Login() {
   const nav = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
-  const [role, setRole] = useState("Student"); // dropdown eka visible nam
+  const [role, setRole] = useState("Student");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
@@ -15,34 +16,22 @@ export default function Login() {
   async function onLogin(e) {
     e.preventDefault();
     setErr("");
-
-    // optional: ensure we only allow Student from this screen
     if (role.toLowerCase() !== "student") {
       return setErr("Please select role: Student to sign in here.");
     }
-
     setLoading(true);
     try {
-      // Backend: POST /api/student/login -> { token, student }
       const { data } = await studentApi.post("/login", form);
       const token = data?.token;
       const student = data?.student;
-
       if (!token || !student) throw new Error("Invalid login response");
-
-      // Save in the exact shape the dashboard expects
       localStorage.setItem(
         "app_auth",
         JSON.stringify({ token, user: { role: "student", ...student } })
       );
-      // (legacy keys if other parts still read them)
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify({ role: "student", ...student }));
-
-      // Let other tabs / components know auth changed
       window.dispatchEvent(new Event("auth:updated"));
-
-      // Go to student dashboard
       nav("/StudentDashboard", { replace: true });
     } catch (e) {
       setErr(e?.response?.data?.message || e?.message || "Login failed");
@@ -51,75 +40,103 @@ export default function Login() {
     }
   }
 
+  const fadeUp = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.6 } },
+  };
+
   return (
-    <div className="min-h-screen grid md:grid-cols-2 bg-slate-50">
-      {/* left side hero (optional) */}
-      <div className="hidden md:block relative">
-        {/* ... your hero image / branding ... */}
-      </div>
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-blue-900 via-blue-700 to-white">
+      {/* Animated fade background blobs */}
+      <motion.div
+        className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-blue-400/20 blur-3xl"
+        animate={{ x: [0, 40, 0], y: [0, 20, 0], scale: [1, 1.1, 1] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute -bottom-24 -right-24 h-[28rem] w-[28rem] rounded-full bg-blue-200/30 blur-3xl"
+        animate={{ x: [0, -30, 0], y: [0, -15, 0], scale: [1, 1.08, 1] }}
+        transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+      />
 
-      {/* right side form */}
-      <div className="flex items-center justify-center p-6">
-        <form onSubmit={onLogin} className="w-full max-w-md bg-white rounded-2xl p-6 shadow">
-          <div className="text-center mb-4">
-            <div className="mx-auto h-12 w-12 rounded-xl bg-red-100 grid place-items-center mb-2">🛡️</div>
-            <h1 className="text-2xl font-bold">Sign In</h1>
-            <p className="text-slate-500 text-sm">Access your dashboard</p>
+      {/* Centered form only */}
+      <motion.form
+        onSubmit={onLogin}
+        className="relative z-10 w-full max-w-md rounded-3xl border border-white/10 bg-white/90 p-6 shadow-2xl backdrop-blur-xl md:p-8"
+        initial="hidden"
+        animate="show"
+        variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+      >
+        <motion.div variants={fadeUp} className="mb-6 text-center">
+          <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-blue-200 ring-1 ring-white/10">
+            <span className="text-xl">🛡️</span>
           </div>
+          <h1 className="text-2xl font-bold text-blue-900">Sign In</h1>
+          <p className="text-sm text-blue-700">Access your dashboard</p>
+        </motion.div>
 
-          {/* Role (if you show it) */}
-          <label className="block text-sm font-medium mb-1">Role</label>
+        <motion.div variants={fadeUp} className="mb-4">
+          <label className="mb-1 block text-sm font-medium text-blue-900">Role</label>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full mb-3 rounded-xl border px-3 py-2"
+            className="w-full rounded-2xl border border-blue-200 bg-white px-3 py-2 text-blue-900 shadow-inner outline-none focus:ring-2 focus:ring-blue-400"
           >
             <option>Student</option>
             <option>Teacher</option>
             <option>Admin</option>
           </select>
+        </motion.div>
 
-          <label className="block text-sm font-medium mb-1">Email</label>
+        <motion.div variants={fadeUp} className="mb-4">
+          <label className="mb-1 block text-sm font-medium text-blue-900">Email</label>
           <input
             type="email"
             value={form.email}
             onChange={change("email")}
             required
-            className="w-full mb-3 rounded-xl border px-3 py-2"
             placeholder="you@email.com"
+            className="w-full rounded-2xl border border-blue-200 bg-white px-3 py-2 text-blue-900 placeholder-blue-400 shadow-inner outline-none focus:ring-2 focus:ring-blue-400"
           />
+        </motion.div>
 
-          <label className="block text-sm font-medium mb-1">Password</label>
+        <motion.div variants={fadeUp} className="mb-4">
+          <label className="mb-1 block text-sm font-medium text-blue-900">Password</label>
           <input
             type="password"
             value={form.password}
             onChange={change("password")}
             required
-            className="w-full mb-3 rounded-xl border px-3 py-2"
             placeholder="••••••••"
+            className="w-full rounded-2xl border border-blue-200 bg-white px-3 py-2 text-blue-900 placeholder-blue-400 shadow-inner outline-none focus:ring-2 focus:ring-blue-400"
           />
+        </motion.div>
 
-          {err && (
-            <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-red-700 text-sm">
-              {err}
-            </div>
-          )}
+        {err && (
+          <motion.div variants={fadeUp} className="mb-4 rounded-2xl border border-red-300 bg-red-100 px-3 py-2 text-sm text-red-700">
+            {err}
+          </motion.div>
+        )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-xl bg-blue-600 text-white font-semibold py-3 hover:bg-blue-700 disabled:opacity-60"
+        <motion.button
+          type="submit"
+          disabled={loading}
+          variants={fadeUp}
+          className="group relative mt-2 w-full overflow-hidden rounded-2xl bg-blue-600 px-4 py-3 font-semibold text-white shadow-lg outline-none transition hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 disabled:opacity-60"
+        >
+          <span className="relative z-10">{loading ? "Signing in…" : "Sign in"}</span>
+          <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition group-hover:translate-x-0" />
+        </motion.button>
+
+        <motion.div variants={fadeUp} className="mt-6 text-center text-sm">
+          <Link
+            to="/signup"
+            className="inline-block w-full rounded-2xl border border-blue-200 bg-white px-4 py-3 text-blue-700 transition hover:bg-blue-50"
           >
-            {loading ? "Signing in…" : "Sign in"}
-          </button>
-
-          <div className="mt-4 text-center text-sm">
-            <Link to="/signup" className="inline-block w-full border rounded-xl py-3 hover:bg-slate-50">
-              Create account
-            </Link>
-          </div>
-        </form>
-      </div>
+            Create account
+          </Link>
+        </motion.div>
+      </motion.form>
     </div>
   );
 }
