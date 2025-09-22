@@ -1,9 +1,10 @@
-import { useState } from "react";//React built-in hook handle data state
-import { useNavigate } from "react-router-dom";//React Router DOM hook navigate karanva
-import toast from "react-hot-toast";//react-hot-toast library eken, notification pennanna
-import axios from "axios";//HTTP requests karanna library.
+import { useState } from "react"; //React built-in hook handle data state
+import { useNavigate } from "react-router-dom"; //React Router DOM hook navigate karanva
+import toast from "react-hot-toast"; //react-hot-toast library eken, notification pennanna
+import axios from "axios"; //HTTP requests karanna library.
 
-export default function AddAnnouncementPage() {//form eke variable handle karanava useState valin
+export default function AddAnnouncementPage() {
+  //form eke variable handle karanava useState valin
   const [announcementID, setAnnouncementID] = useState(""); //default empty string
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -15,18 +16,19 @@ export default function AddAnnouncementPage() {//form eke variable handle karana
   const navigate = useNavigate();
 
   // Audience checkbox select/deselect karana function
-  function handleAudienceChange(e) {// e-> event parameter 
-    const value = e.target.value;// checkbox ekem ena value gannva
+  function handleAudienceChange(e) {
+    // e-> event parameter
+    const value = e.target.value; // checkbox ekem ena value gannva
     if (e.target.checked) {
-      setAudience([...audience, value]);//select unanm kalim audiance list ekat new value add karanva
+      setAudience([...audience, value]); //select unanm kalim audiance list ekat new value add karanva
     } else {
-      setAudience(audience.filter((a) => a !== value));// unselect nm remove karanva
+      setAudience(audience.filter((a) => a !== value)); // unselect nm remove karanva
     }
   }
 
   // Form validation function
   const validateForm = () => {
-    const newErrors = {};// empty error object
+    const newErrors = {}; // empty error object
     if (!announcementID.trim())
       newErrors.announcementID = "Announcement ID is required";
     if (!title.trim()) newErrors.title = "Title is required";
@@ -100,7 +102,11 @@ export default function AddAnnouncementPage() {//form eke variable handle karana
               value={announcementID}
               onChange={(e) => setAnnouncementID(e.target.value)}
             />
-            {errors.announcementID && <p className="text-red-600 text-sm italic mt-1">{errors.announcementID}</p>}
+            {errors.announcementID && (
+              <p className="text-red-600 text-sm italic mt-1">
+                {errors.announcementID}
+              </p>
+            )}
           </div>
 
           {/* Title */}
@@ -114,7 +120,9 @@ export default function AddAnnouncementPage() {//form eke variable handle karana
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
-            {errors.title && <p className="text-red-600 text-sm italic mt-1">{errors.title}</p>}
+            {errors.title && (
+              <p className="text-red-600 text-sm italic mt-1">{errors.title}</p>
+            )}
           </div>
 
           {/* Description */}
@@ -129,7 +137,11 @@ export default function AddAnnouncementPage() {//form eke variable handle karana
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
-            {errors.description && <p className="text-red-600 text-sm italic mt-1">{errors.description}</p>}
+            {errors.description && (
+              <p className="text-red-600 text-sm italic mt-1">
+                {errors.description}
+              </p>
+            )}
           </div>
 
           {/* Type */}
@@ -148,7 +160,9 @@ export default function AddAnnouncementPage() {//form eke variable handle karana
               <option value="System">System</option>
               <option value="General">General</option>
             </select>
-            {errors.type && <p className="text-red-600 text-sm italic mt-1">{errors.type}</p>}
+            {errors.type && (
+              <p className="text-red-600 text-sm italic mt-1">{errors.type}</p>
+            )}
           </div>
 
           {/* Audience */}
@@ -170,7 +184,11 @@ export default function AddAnnouncementPage() {//form eke variable handle karana
                 </label>
               ))}
             </div>
-            {errors.audience && <p className="text-red-600 text-sm italic mt-1">{errors.audience}</p>}
+            {errors.audience && (
+              <p className="text-red-600 text-sm italic mt-1">
+                {errors.audience}
+              </p>
+            )}
           </div>
 
           {/* Expiry Date */}
@@ -184,7 +202,11 @@ export default function AddAnnouncementPage() {//form eke variable handle karana
               value={expiryDate}
               onChange={(e) => setExpiryDate(e.target.value)}
             />
-            {errors.expiryDate && <p className="text-red-600 text-sm italic mt-1">{errors.expiryDate}</p>}
+            {errors.expiryDate && (
+              <p className="text-red-600 text-sm italic mt-1">
+                {errors.expiryDate}
+              </p>
+            )}
           </div>
         </div>
 
