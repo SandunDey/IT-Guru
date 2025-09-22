@@ -62,6 +62,24 @@ const supportTicketSchema = new mongoose.Schema(
       enum: ['Low', 'Medium', 'High', 'Urgent'],
       default: 'Medium', // Student ට මේක select කරන්න බෑ, ඒත් default එකක් තියෙනවා
     },
+
+    // --- නව replies field එකතු කිරීම ---
+    replies: [
+      {
+        text: {
+          type: String,
+          required: true
+        },
+        repliedBy: {
+          type: String,
+          required: true
+        },
+        repliedAt: {
+          type: Date,
+          default: Date.now
+        }
+      }
+    ]
   },
   {
     timestamps: true,

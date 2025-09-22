@@ -17,9 +17,6 @@ import HomePage from "./pages/homePage.jsx";
 import AnnouncementReport from "./pages/announcementReport.jsx";
 
 import HelpCenterPage from "./HelpCenterPage.jsx";
-import SubmitTicketPage from "./SubmitTicketPage.jsx";
-import MyTicketsPage from "./MyTicketsPage.jsx";
-import TicketDetailPage from "./TicketDetailPage.jsx";
 import StaffPage from "./StaffPage.jsx";
 import AdminLoginPage from "./loging.jsx";
 import StudentDashboard from "./pages/Studentdashbord.jsx";
@@ -27,7 +24,11 @@ import StudentProfile from "./pages/StudentProfile.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import QuizPlayer from "./components/QuizPlayer.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
-import UserVideos from "./pages/UserVideos.jsx"
+import UserVideos from "./pages/UserVideos.jsx";
+
+import MyTicketsPage from './components/MyTicketsPage.jsx';
+import SubmitTicketPage from './components/SubmitTicketPage.jsx';
+import TicketDetailPage from './components/TicketDetailPage.jsx';
 
 
 export default function App() {

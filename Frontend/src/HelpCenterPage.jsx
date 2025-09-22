@@ -1,40 +1,77 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const HelpCenterPage = () => {
+  const navigate = useNavigate();
+
+  const handleSupportClick = () => {
+    const auth = localStorage.getItem('app_auth');
+    if (!auth) {
+      // Redirect to /admin (login page) instead of /login
+      navigate('/admin');
+    } else {
+      navigate('/submit-ticket');
+    }
+  };
+
   return (
-    <div className="bg-gray-50 min-h-screen">
-      {/* Blue Header Section inspired by the image */}
-      <div className="bg-blue-700 p-8 sm:p-16 text-center text-white shadow-lg">
-        <h1 className="text-4xl font-bold mb-4">How can we help you today?</h1>
-        <div className="mt-6 flex justify-center">
-            <input 
-              type="search" 
-              placeholder="Search..."
-              className="w-full max-w-2xl p-4 rounded-full text-gray-800 border-2 border-transparent focus:outline-none focus:border-blue-300"
-            />
-        </div>
-      </div>
-
-      {/* Navigation Cards Section */}
-      <div className="max-w-5xl mx-auto p-4 sm:p-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          
-          <Link to="/submit-ticket" className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center">
-            <h2 className="text-xl font-bold text-gray-800 mb-2">Submit a Ticket</h2>
-            <p className="text-gray-600">Got a problem? Create a new support ticket and our team will get back to you.</p>
-          </Link>
-
-          <Link to="/my-tickets" className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center">
-            <h2 className="text-xl font-bold text-gray-800 mb-2">My Tickets</h2>
-            <p className="text-gray-600">Check the status and history of the tickets you have submitted.</p>
-          </Link>
-
-          <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center text-center">
-            <h2 className="text-xl font-bold text-gray-800 mb-2">Knowledgebase</h2>
-            <p className="text-gray-600">Browse articles and find answers to frequently asked questions.</p>
+    <div className="bg-gray-100 min-h-screen p-4 sm:p-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">Help Center</h1>
+        
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold mb-4">Get Support</h2>
+            <p className="text-gray-600 mb-4">
+              Having issues with your course, payments, or technical problems? 
+              Submit a support ticket and our team will help you.
+            </p>
+            <button 
+              onClick={handleSupportClick}
+              className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 w-full"
+            >
+              Get Support
+            </button>
           </div>
 
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-semibold mb-4">View My Tickets</h2>
+            <p className="text-gray-600 mb-4">
+              Check the status of your existing support tickets and communicate with our support team.
+            </p>
+            <button 
+              onClick={() => {
+                const auth = localStorage.getItem('app_auth');
+                if (!auth) {
+                  navigate('/admin');
+                } else {
+                  navigate('/my-tickets');
+                }
+              }}
+              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 w-full"
+            >
+              View My Tickets
+            </button>
+          </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mt-12 bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
+          <div className="space-y-4">
+            <div className="border-b pb-4">
+              <h3 className="font-semibold text-lg">How long does it take to get a response?</h3>
+              <p className="text-gray-600">We typically respond within 24-48 hours during business days.</p>
+            </div>
+            <div className="border-b pb-4">
+              <h3 className="font-semibold text-lg">Can I update my ticket after submission?</h3>
+              <p className="text-gray-600">Yes, you can view and update your tickets from the "My Tickets" section.</p>
+            </div>
+            <div className="border-b pb-4">
+              <h3 className="font-semibold text-lg">What information should I include?</h3>
+              <p className="text-gray-600">Please include your registration number, course details, and a clear description of the issue.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
