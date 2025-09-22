@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const enrollmentSchema = new mongoose.Schema(
+const enrollmentSchema = new mongoose.Schema(// Create new schema
     {
 
         enrollmentID: {
@@ -10,8 +10,8 @@ const enrollmentSchema = new mongoose.Schema(
         },
 
         studentId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Student",
+            type: mongoose.Schema.Types.ObjectId,// Reference to another document in mongo db (ObjectId)
+            ref: "Student",// Refers to Student module
             required: true,
             unique: true,
         },
@@ -25,7 +25,7 @@ const enrollmentSchema = new mongoose.Schema(
         year: {
             type: Number,
             required: true,
-            min: 2025,
+            min: 2025,// Minimum year 2025
         },
 
         enrollmentKey: {
@@ -36,7 +36,7 @@ const enrollmentSchema = new mongoose.Schema(
         paymentStatus: {
             type: String,
             enum: ["pending", "succeeded", "failed", "refunded", "cancelled"],
-            index: true,
+            // index: true,
             default: "succeeded"
         },
 
@@ -47,18 +47,19 @@ const enrollmentSchema = new mongoose.Schema(
 
         enrollmentDate: {
             type: Date,
-            default: Date.now
+            default: Date.now// Default current date/time
         },
     },
-    { timestamps: true }
+    { timestamps: true }// Auto add createdAt & updatedAt
 )
 
+// Define a method "canEnroll" inside schema
 enrollmentSchema.methods.canEnroll = function (studentYear) {
     return (
-        this.classYear == studentYear &&
-        this.enrollmentKey == this.studentId &&
-        this.paymentStatus == "PAID" &&
-        this.isActive
+        this.classYear == studentYear &&// Must match class year
+        this.enrollmentKey == this.studentId &&// Enrollment key must equal studentId
+        this.paymentStatus == "PAID" &&// Payment must be "PAID"
+        this.isActive // Enrollment must be active
     )
 }
 

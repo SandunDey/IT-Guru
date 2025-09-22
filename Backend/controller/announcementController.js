@@ -3,24 +3,24 @@ import { isAdmin } from "./adminController.js";
 
 export async function createAnnouncement(req, res) {
 
-    // if (!isAdmin(req)) {
-    //     res.status(403).json({
-    //         message: "You are not authorized to create an Announcement"
-    //     });
-    //     return;
-    // }
+    if (!isAdmin(req)) {
+        res.status(403).json({
+            message: "You are not authorized to create an Announcement"
+        });
+        return;// Stop function execution
+    }
 
     try {
 
-        const announcementData = req.body;
+        const announcementData = req.body;//request body ekem announcement details gannva
 
-        const announcement = new Announcement(announcementData);
+        const announcement = new Announcement(announcementData);// gaththa announcement data valim new announcement object ekk hadanva
 
-        await announcement.save();
+        await announcement.save();// Save the new announcement to the database
 
         res.json({
             message: "Announcement created successfully",
-            announcement: announcement,
+            announcement: announcement, // save announcement ekath ekk success ek yavanne
         });
 
     } catch (err) {
@@ -33,8 +33,8 @@ export async function createAnnouncement(req, res) {
 
 export async function getAnnouncement(req, res) {
     try {
-        const announcements = await Announcement.find()
-        res.json(announcements);
+        const announcements = await Announcement.find()//database ekem all announcement gannva
+        res.json(announcements);// ganna announcements response ekk vidiyt send karanva
     } catch (err) {
         console.error(err);
         res.status(500).json({
@@ -44,21 +44,22 @@ export async function getAnnouncement(req, res) {
 }
 
 export async function deleteAnnouncement(req, res) {
-    console.log(req.user)
-    // if (!isAdmin(req)) {
-    //     res.status(403).json({
-    //         message: "You are not authorized to delete an Announcement"
-    //     });
-    //     return;
-    // }
+
+    if (!isAdmin(req)) {
+        res.status(403).json({
+            message: "You are not authorized to delete an Announcement"
+        });
+        return;
+    }
     try {
 
-        const announcementID = req.params.announcementID
+        const announcementID = req.params.announcementID // Get announcementID from URL parameter
+
 
 
         await Announcement.deleteOne({
             announcementID: announcementID
-        })
+        })//announcement ID ekt adalv DB ekem delete karanva
 
         res.json({
             message: "Announcement deleted successfully"
@@ -72,12 +73,12 @@ export async function deleteAnnouncement(req, res) {
 }
 
 export async function updateAnnouncement(req, res) {
-    // if (!isAdmin(req)) {
-    //     res.status(403).json({
-    //         message: "You are not authorized to update an Announcement"
-    //     });
-    //     return;
-    // }
+    if (!isAdmin(req)) {
+        res.status(403).json({
+            message: "You are not authorized to update an Announcement"
+        });
+        return;
+    }
 
     try {
         const announcementID = req.params.announcementID;
@@ -87,7 +88,7 @@ export async function updateAnnouncement(req, res) {
         await Announcement.updateOne(
             { announcementID: announcementID },
             updatedData
-        );
+        );// Update announcement in DB using ID
 
         res.json({
             message: "Announcement updated successfully"
@@ -108,13 +109,13 @@ export async function getAnnouncementID(req, res) {
             {
                 announcementID: announcementID
             }
-        )
-        if (announcement == null) {
+        )// Find one announcement by ID
+        if (announcement == null) {// no anno: found
             res.status(404).json({
                 message: "Announcement not found"
             });
         } else {
-            res.json(announcement);
+            res.json(announcement); // Send found announcement
         }
     } catch (err) {
         console.error(err);

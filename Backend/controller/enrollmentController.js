@@ -1,13 +1,13 @@
 import Counter from "../model/counter.js";
 import Enrollment from "../model/enroll.js";
 import Student from "../model/Student.js";
-import mongoose from "mongoose"; // if not already imported
+import mongoose from "mongoose"; 
 
 export async function createEnrollment(req, res) {
-    const { studentID, classYear, enrollmentKey } = req.body;
+    const { studentID, classYear, enrollmentKey } = req.body; // Extract fields(studentID, classYear, enrollmentKey) from request body
 
     // Ensure student can only enroll in their own year
-    const student = await Student.findOne({ studentId: studentID });
+    const student = await Student.findOne({ studentId: studentID });// check using student id the student exist in db
     if (!student) {
         return res.status(404).json({ message: "Student not found" });
     }
@@ -32,30 +32,30 @@ export async function createEnrollment(req, res) {
         });
     }
 
-    //Generate auto increment Enrollment ID
+    //Generate auto increment Enrollment ID use Counter model
     let counter = await Counter.findOne({ id: "enrollmentID" });
     if (!counter) {
-        counter = new Counter({ id: "enrollmentID", seq: 0 });
-        await counter.save();
+        counter = new Counter({ id: "enrollmentID", seq: 0 });// counter ekak nathnm new counter ekak hdanva
+        await counter.save();// counter save venakam innva
     }
-    counter.seq += 1;
-    await counter.save();
+    counter.seq += 1;//counter increase
+    await counter.save();// update counter save
 
-    const newEnrollmentID = "ENR" + counter.seq.toString().padStart(3, "0"); // ENR001, ENR002
+    const newEnrollmentID = "ENR" + counter.seq.toString().padStart(3, "0"); // Enrollment ID generate karanawa (ENR001)
 
     const enrollment = new Enrollment({
-        enrollmentID: newEnrollmentID,
-        studentId: student._id,
+        enrollmentID: newEnrollmentID,//add auto generate enrollment id
+        studentId: student._id,// Student id student reference
         classYear,
         enrollmentKey,
         paymentStatus: "succeeded",
         isActive: true,
-        year: student.year,
+        year: student.year,// Student year
 
     });
 
     try {
-        await enrollment.save();
+        await enrollment.save();// save db
         res.json({ message: "Enrollment created successfully", enrollment }); // ✅ FIX: return created enrollment for easier debugging
     } catch (err) {
         console.error(" Enrollment creation error:", err); //  FIX: more descriptive log
@@ -64,7 +64,7 @@ export async function createEnrollment(req, res) {
 }
 
 export function getEnrollmentByYear(req, res) {
-    const classYear = req.params.classYear.replace(/-/g, "/"); // convert 2026A-L -> 2026A/L
+    const classYear = req.params.classYear.replace(/-/g, "/"); //request para convert 2026A-L -> 2026A/L
 
     Enrollment.find({ classYear })
         .then((enrollment) => {
@@ -108,11 +108,11 @@ export async function deleteEnrollment(req, res) {
 }
 
 export async function updateEnrollment(req, res) {
-    // if (!isAdmin(req)) {
-    //     res.status(403).json({ message: "You are not authorized to update Enrollment" });
-    //     console.log(res.data);
-    //     return;
-    // }
+    if (!isAdmin(req)) {
+        res.status(403).json({ message: "You are not authorized to update Enrollment" });
+        console.log(res.data);
+        return;
+    }
 
     try {
         const enrollmentID = req.params.enrollmentID;

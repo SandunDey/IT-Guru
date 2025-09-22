@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose";// mongoose modele ekem mongoose DB data hadann ona libry ek import karanva
 
-const announcementschema = new mongoose.Schema(
+const announcementschema = new mongoose.Schema(//new mongoose schema class create
     {
         announcementID :{
             type: String,
@@ -17,7 +17,7 @@ const announcementschema = new mongoose.Schema(
         },
         type : {
             type : String,
-            enum:["Academic","Payment","Event","System", "General"],
+            enum:["Academic","Payment","Event","System", "General"], // predefined list ekakinma denna puluwan
             required : true
         },
         audience : {
@@ -32,9 +32,9 @@ const announcementschema = new mongoose.Schema(
     },
 
     {
-        timestamps : true
+        timestamps : true// createdAt saha updatedAt fields automaticma database eke add wenawa
     }
 )
 
-const Announcement = mongoose.model("Announcement", announcementschema)
-export default Announcement
+const Announcement = mongoose.model("Announcement", announcementschema)//mongoose eke model ekk hadanva model name and schema name dala 
+export default Announcement // nexport model
