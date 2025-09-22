@@ -14,10 +14,14 @@ import adminrouter from "./routes/AdminRoute.js";
 import StaffRouter from "./routes/StaffRoute.js";
 import paymentRouter from "./routes/paymentRoutes.js";
 import SupportTicketRoute from "./routes/SupportTicketRoute.js";
+import materialRoutes from "./routes/materialRoutes.js";
+import videoRoutes from "./routes/videoRoutes.js";
+import quizRoutes from "./routes/quizRoutes.js";
+
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 const MONGO_URI = process.env.DB_url || process.env.MONGO_URI;
 
 if (!MONGO_URI) {
@@ -109,6 +113,10 @@ async function bootstrap() {
   app.use("/api/staff", StaffRouter);
   app.use("/api/payment", paymentRouter);
   app.use("/api/tickets", SupportTicketRoute);
+  app.get('/api/health', (_req, res) => res.json({ ok: true }));
+  app.use("/api/materials", materialRoutes);
+  app.use("/api/videos", videoRoutes);
+  app.use("/api/quizzes", quizRoutes);
 
   // 6) 404 + error handler
   app.use((req, res) => res.status(404).json({ message: "Route not found" }));

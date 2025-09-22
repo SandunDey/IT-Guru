@@ -3,6 +3,9 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
+// pages/StudentQuizPage.jsx
+import { useParams } from "react-router-dom";
+
 import PaymentsPage from "./Payment.jsx";
 import LoginPage from "./LoginPage.jsx";
 import SignupForm from "./StudentSignUpPage.jsx";
@@ -21,17 +24,11 @@ import StaffPage from "./StaffPage.jsx";
 import AdminLoginPage from "./loging.jsx";
 import StudentDashboard from "./pages/Studentdashbord.jsx";
 import StudentProfile from "./pages/StudentProfile.jsx";
-
+import TeacherDashboard from "./pages/TeacherDashboard.jsx";
+import QuizPlayer from "./components/QuizPlayer.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
+import UserVideos from "./pages/UserVideos.jsx"
 
-function TeacherDashboard() {
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold">Teacher Dashboard</h1>
-      <p className="text-slate-600 mt-2">Welcome, Teacher.</p>
-    </div>
-  );
-}
 
 export default function App() {
   return (
@@ -51,6 +48,7 @@ export default function App() {
         <Route path="/my-tickets" element={<MyTicketsPage />} />
         <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
         <Route path="/admin" element={<AdminLoginPage />} />
+        <Route path="/Uservideos" element={<UserVideos />} />
 
         {/* Protected by role */}
      <Route element={<ProtectedRoute allow="student" />}>
@@ -70,8 +68,25 @@ export default function App() {
           <Route path="/admin/dashboard/*" element={<AdminPage />} />
         </Route>
 
+         {/* Teacher area */}
+          <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+
+          {/* Student quiz play */}
+          <Route path="/quiz/:id" element={<StudentQuizPage />} />
+
+        <Route path="/StudentDashboard/quiz/:quizId" element={<StudentQuizPage />} />
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>
+  );
+}
+function StudentQuizPage() {
+  const { id } = useParams();
+  // plug in your real student id after auth:
+  const studentId = localStorage.getItem("studentId") || "student-demo-001";
+  return (
+    <div className="min-h-screen bg-blue-50 p-4">
+      <QuizPlayer quizId={id} studentId={studentId} />
+    </div>
   );
 }

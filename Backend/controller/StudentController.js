@@ -7,7 +7,7 @@ dotenv.config();
 export async function saveStudent(req, res) {
   try {
     const {
-      studentId,
+    
       name,
       address,
       year,
@@ -29,7 +29,7 @@ export async function saveStudent(req, res) {
     const hashedPassword = bcrypt.hashSync(password, salt);
 
     const student = new Student({
-      studentId,
+    
       name,
       address,
       year,
@@ -131,4 +131,15 @@ export function loginStudent(req, res) {
       return res.json({ message: "Login successful", token, student: studentData });
     })
     .catch(() => res.status(500).json({ message: "Login failed" }));
+}
+export async function getMe(req, res) {
+  try {
+    const id = req.user?.sub; // token payload: sub = student._id
+    if (!id) return res.status(401).json({ message: "Unauthenticated" });
+    const student = await Student.findById(id);
+    if (!student) return res.status(404).json({ message: "Student not found" });
+    return res.json(student);
+  } catch (e) {
+    return res.status(500).json({ message: "Error fetching profile" });
+  }
 }

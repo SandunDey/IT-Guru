@@ -32,10 +32,11 @@ import {
   PieChart as RPPieChart,
   Cell,
 } from "recharts";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
+import { loadAuth } from "../api"; // single source of truth for user+token
 
-// ---------- MOCK DASH METRICS (keep these until you plug real data) ----------
+// ---------- MOCK DASH METRICS (keep these until real data) ----------
 const stats = [
   { label: "Enrolled Courses", value: 5 },
   { label: "Completed Assignments", value: 12 },
@@ -85,29 +86,44 @@ const COLORS = ["#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe"]; // Tailwind blues
 // ---------- COMPONENT ----------
 export default function StudentDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const location = useLocation();
   const navigate = useNavigate();
 
-  // Prefer the user passed via navigation; otherwise fall back to stored session
-  const storedUser =
-    (sessionStorage.getItem("user") && JSON.parse(sessionStorage.getItem("user"))) ||
-    (localStorage.getItem("user") && JSON.parse(localStorage.getItem("user"))) ||
-    null;
-
-  const user = location.state?.user || storedUser;
+  // Single source of truth: app_auth.user
+  const [user, setUser] = useState(() => loadAuth().user || null);
 
   // Guard: only allow students with a token
   useEffect(() => {
-    const token = sessionStorage.getItem("token") || localStorage.getItem("token");
+    const { token, user } = loadAuth();
     const role = (user?.role || "").toLowerCase();
-
     if (!token || role !== "student") {
-      // bounce to login if missing or wrong role
-      navigate("/admin", { replace: true });
+      navigate("/login", { replace: true });
     }
-  }, [navigate, user]);
+  }, [navigate]);
+
+  // react to profile/auth updates (this tab + other tabs)
+  useEffect(() => {
+    const syncFromStorage = () => {
+      const { user } = loadAuth();
+      setUser(user || null);
+    };
+
+    // fired when localStorage changes in another tab/window
+    const onStorage = (e) => {
+      if (e.key === "app_auth") syncFromStorage();
+    };
+
+    // custom event fired in same tab after profile save/avatar change
+    window.addEventListener("auth:updated", syncFromStorage);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("auth:updated", syncFromStorage);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
 
   const handleLogout = () => {
+    // clear new and legacy keys
+    localStorage.removeItem("app_auth");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     sessionStorage.removeItem("token");
@@ -116,7 +132,7 @@ export default function StudentDashboard() {
   };
 
   const displayName = user?.name || user?.fullName || user?.email || "Student";
-  const studentId = user?._id || user?.id || user?.studentId;
+  const studentId = user?.studentId || user?._id || user?.id;
 
   return (
     <div className="min-h-screen w-full bg-slate-50">
@@ -144,12 +160,20 @@ export default function StudentDashboard() {
             </button>
 
             <div
-            className="flex items-center gap-3 rounded-full bg-slate-100 px-3 py-1 cursor-pointer hover:bg-slate-200"
-            onClick={() => navigate("/student/profile", { state: { user } })}
+              className="flex items-center gap-3 rounded-full bg-slate-100 px-3 py-1 cursor-pointer hover:bg-slate-200"
+              onClick={() =>
+                navigate("/student/profile", {
+                  state: { studentId },
+                })
+              }
             >
-            <img src={`https://i.pravatar.cc/40?u=${encodeURIComponent(displayName)}`} alt="avatar" className="h-8 w-8 rounded-full" />
-            <span className="hidden sm:block text-sm font-medium">{displayName}</span>
-        </div>
+              <img
+                src={`https://i.pravatar.cc/40?u=${encodeURIComponent(displayName)}`}
+                alt="avatar"
+                className="h-8 w-8 rounded-full"
+              />
+              <span className="hidden sm:block text-sm font-medium">{displayName}</span>
+            </div>
 
             <button className="rounded-xl p-2 hover:bg-slate-100" onClick={handleLogout}>
               <LogOut className="h-5 w-5" />
@@ -171,7 +195,7 @@ export default function StudentDashboard() {
                 </button>
               </div>
               <SidebarLink icon={<Home className="h-5 w-5" />} label="Dashboard" active />
-              <SidebarLink icon={<BookOpen className="h-5 w-5" />} label="Courses" />
+              <SidebarLink icon={<BookOpen className="h-5 w-5" />} label="Class"  />
               <SidebarLink icon={<ClipboardList className="h-5 w-5" />} label="Assignments" />
               <SidebarLink icon={<Megaphone className="h-5 w-5" />} label="Announcements" />
               <SidebarLink icon={<MessagesSquare className="h-5 w-5" />} label="Messages" />
@@ -189,9 +213,7 @@ export default function StudentDashboard() {
             <h1 className="text-2xl font-semibold">Welcome back, {displayName}! 🎓</h1>
             <p className="mt-1 text-slate-600">
               {studentId ? (
-                <>
-                  Student ID: <span className="font-semibold">{studentId}</span>
-                </>
+                <>Student ID: <span className="font-semibold">{studentId}</span></>
               ) : (
                 <>You have completed <span className="font-semibold">3</span> out of <span className="font-semibold">5</span> courses.</>
               )}
@@ -308,12 +330,14 @@ function SidebarLink({ icon, label, active }) {
       className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium hover:bg-slate-100 ${
         active ? "bg-slate-100 text-slate-900" : "text-slate-700"
       }`}
+      onClick={active}
     >
       {icon}
       <span>{label}</span>
     </a>
   );
 }
+              <SidebarLink icon={<BookOpen className="h-5 w-5" />} label="Class" active={() => navigate("/Uservideos")} />
 
 function Card({ title, children, icon }) {
   return (

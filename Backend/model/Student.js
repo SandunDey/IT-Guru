@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
 
 const studentSchema = new mongoose.Schema({
-  studentId: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
+studentId: {
+  type: String,
+  unique: true,
+  trim: true,
+  default: () => `STU-${Date.now()}`
+},
   name: {
     type: String,
     required: true,
@@ -18,15 +18,15 @@ const studentSchema = new mongoose.Schema({
 
   // ✅ store academic year as a Number (not Date)
   year: {
-    type: Number,
+    type: String,
     required: true,
-    min: 2025,
+    
   },
 
   nic: {
     type: String,
     required: true,
-    unique: true,
+
     trim: true,
     uppercase: true,
     index: true,
@@ -67,7 +67,7 @@ const studentSchema = new mongoose.Schema({
   phonenumber: {
     type: String,
     required: true,
-    unique: true,
+
     trim: true,
     match: [/^\+?[0-9]{10,15}$/, "Invalid phone number"],
   },
