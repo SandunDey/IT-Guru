@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import Header from "../components/header";
 import Footer from "../components/footer";
+import ChatBot from "../components/ChatBot/chatBot";
 
 export default function AboutUs() {
   return (
@@ -131,6 +132,7 @@ export default function AboutUs() {
       </section>
 
       <Footer/>
+      <ChatBot/>
     </div>
   );
 }

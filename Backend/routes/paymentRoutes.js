@@ -1,23 +1,20 @@
 // routes/paymentRoutes.js
 import { Router } from "express";
 import {
-  createPayment,
-  getPayments,
-  getPaymentById,
-  updatePayment,
-  softDeletePayment
+  createPayment
+  
 } from "../controller/paymentController.js"; // NOTE: 'controller' (singular)
 
-const router = Router();
+const paymentRouter = Router();
 
 // Quick health check to verify mount
-router.get("/health", (req, res) => res.json({ ok: true }));
+paymentRouter.get("/health", (req, res) => res.json({ ok: true }));
 
 // CRUD
-router.post("/", createPayment);       // POST /api/payment
-router.get("/", getPayments);          // GET  /api/payment
-router.get("/:id", getPaymentById);    // GET  /api/payment/:id
-router.patch("/:id", updatePayment);   // PATCH /api/payment/:id
-router.delete("/:id", softDeletePayment); // DELETE /api/payment/:id
+paymentRouter.post("/add/:id", createPayment);       // POST /api/payment
+// router.get("/", getPayments);          // GET  /api/payment
+// router.get("/:id", getPaymentById);    // GET  /api/payment/:id
+// router.patch("/:id", updatePayment);   // PATCH /api/payment/:id
+// router.delete("/:id", softDeletePayment); // DELETE /api/payment/:id
 
-export default router;
+export default paymentRouter;

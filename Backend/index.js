@@ -17,7 +17,7 @@ import SupportTicketRoute from "./routes/SupportTicketRoute.js";
 import materialRoutes from "./routes/materialRoutes.js";
 import videoRoutes from "./routes/videoRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
-
+import cardRoute from "./routes/cardRoute.js";
 
 dotenv.config();
 
@@ -117,7 +117,7 @@ async function bootstrap() {
   app.use("/api/materials", materialRoutes);
   app.use("/api/videos", videoRoutes);
   app.use("/api/quizzes", quizRoutes);
-
+app.use("/api/card", cardRoute);
   // 6) 404 + error handler
   app.use((req, res) => res.status(404).json({ message: "Route not found" }));
   // eslint-disable-next-line no-unused-vars

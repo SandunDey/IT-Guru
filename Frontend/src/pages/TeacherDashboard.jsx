@@ -27,14 +27,15 @@ function NavBtn({ active, onClick, icon, children }) {
   return (
     <button
       onClick={onClick}
-      className={`group relative overflow-hidden px-4 py-2 rounded-md text-left transition
-        ${active ? "bg-blue-900 shadow-inner" : "hover:bg-blue-800"}`}
+      className={`flex items-center gap-3 px-4 py-2 rounded-xl transition
+        ${
+          active
+            ? "bg-white/10 text-white shadow-sm ring-1 ring-white/20"
+            : "text-blue-100 hover:bg-white/5 hover:text-white"
+        }`}
     >
-      <span className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-500 bg-white/5" />
-      <span className="inline-flex items-center gap-2">
-        <span className="transition-transform group-hover:translate-x-0.5">{icon}</span>
-        <span>{children}</span>
-      </span>
+      <span className="opacity-90">{icon}</span>
+      <span className="font-medium">{children}</span>
     </button>
   );
 }
@@ -45,7 +46,7 @@ function FancyButton({ className = "", children, ...props }) {
       whileTap={{ scale: 0.98 }}
       whileHover={{ y: -1 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg shadow-sm
+      className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl shadow-sm
                   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300 ${className}`}
       {...props}
     >
@@ -71,12 +72,10 @@ export default function TeacherDashboard() {
   const [tab, setTab] = useState("overview");
   const [store] = useRealtimeStore();
 
-  // Sanitize store arrays before using them anywhere
   const materials = clean(store?.materials);
   const quizzes = clean(store?.quizzes);
   const videos = clean(store?.videos);
 
-  // Map store → report data (robust to nulls/missing fields)
   const reportData = useMemo(() => {
     return {
       overview: {
@@ -115,27 +114,16 @@ export default function TeacherDashboard() {
 
   /* --------------------------- Render --------------------------------- */
   return (
-    <div className="relative flex min-h-screen w-full bg-gradient-to-br from-blue-50 via-sky-50 to-blue-100">
-      {!prefersReduced && (
-        <div className="pointer-events-none fixed -z-10 inset-0 opacity-40">
-          <motion.div
-            className="absolute -top-32 -left-20 h-80 w-80 rounded-full bg-blue-300 blur-3xl"
-            animate={{ x: [0, 20, -10, 0], y: [0, -10, 15, 0] }}
-            transition={{ duration: 12, repeat: Infinity }}
-          />
-          <motion.div
-            className="absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-sky-200 blur-3xl"
-            animate={{ x: [0, -15, 10, 0], y: [0, 12, -8, 0] }}
-            transition={{ duration: 14, repeat: Infinity, delay: 1 }}
-          />
-        </div>
-      )}
-
+    <div className="relative flex min-h-screen w-full bg-gradient-to-b from-blue-50 via-white to-blue-50">
       {/* Sidebar */}
-      <aside className="w-64 bg-blue-700 text-white flex flex-col justify-between">
+      <aside className="w-64 bg-gradient-to-b from-blue-700 to-blue-800 text-white flex flex-col justify-between rounded-r-3xl shadow-md">
         <div>
           <div className="p-4 flex items-center gap-3">
-            <img src={logo} alt="ITGuru Logo" className="h-10 w-10 rounded-lg object-cover border" />
+            <img
+              src={logo}
+              alt="ITGuru Logo"
+              className="h-10 w-10 rounded-lg object-cover border"
+            />
             <div className="leading-tight">
               <div className="font-bold text-lg">Teacher Console</div>
               <div className="text-[11px] text-blue-100">ITGuru</div>
@@ -143,26 +131,49 @@ export default function TeacherDashboard() {
           </div>
 
           <nav className="mt-4 flex flex-col space-y-2">
-            <NavBtn active={tab === "overview"} onClick={() => setTab("overview")} icon={<GraduationCap size={18} />}>
+            <NavBtn
+              active={tab === "overview"}
+              onClick={() => setTab("overview")}
+              icon={<GraduationCap size={18} />}
+            >
               Overview
             </NavBtn>
-            <NavBtn active={tab === "materials"} onClick={() => setTab("materials")} icon={<BookOpen size={18} />}>
+            <NavBtn
+              active={tab === "materials"}
+              onClick={() => setTab("materials")}
+              icon={<BookOpen size={18} />}
+            >
               Learning Materials
             </NavBtn>
-            <NavBtn active={tab === "quizzes"} onClick={() => setTab("quizzes")} icon={<ClipboardList size={18} />}>
+            <NavBtn
+              active={tab === "quizzes"}
+              onClick={() => setTab("quizzes")}
+              icon={<ClipboardList size={18} />}
+            >
               Quizzes &amp; Assessments
             </NavBtn>
-            <NavBtn active={tab === "videos"} onClick={() => setTab("videos")} icon={<VideoIcon size={18} />}>
+            <NavBtn
+              active={tab === "videos"}
+              onClick={() => setTab("videos")}
+              icon={<VideoIcon size={18} />}
+            >
               Video Portal
             </NavBtn>
-            <NavBtn active={tab === "export"} onClick={() => setTab("export")} icon={<FileText size={18} />}>
+            <NavBtn
+              active={tab === "export"}
+              onClick={() => setTab("export")}
+              icon={<FileText size={18} />}
+            >
               Export / Import
             </NavBtn>
           </nav>
         </div>
 
         <div className="p-4">
-          <FancyButton onClick={() => alert("Logout clicked")} className="w-full bg-red-500 hover:bg-red-600 text-white">
+          <FancyButton
+            onClick={() => alert("Logout clicked")}
+            className="w-full bg-red-500 hover:bg-red-600 text-white rounded-xl shadow-sm"
+          >
             <LogOut size={16} /> Logout
           </FancyButton>
         </div>
@@ -171,13 +182,21 @@ export default function TeacherDashboard() {
       {/* Main */}
       <div className="flex-1 min-w-0">
         {/* Header */}
-        <header className="sticky top-0 z-40 bg-white/90 backdrop-blur shadow-sm">
+        <header className="sticky top-0 z-40 bg-white/85 backdrop-blur border-b border-slate-200">
           <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="ITGuru Logo" className="h-10 w-10 rounded-lg object-cover border" />
+              <img
+                src={logo}
+                alt="ITGuru Logo"
+                className="h-10 w-10 rounded-lg object-cover border"
+              />
               <div>
-                <h1 className="text-2xl font-bold text-blue-700">ITGuru Teacher Dashboard</h1>
-                <p className="text-xs text-gray-500">Manage materials, quizzes, and videos — in one place</p>
+                <h1 className="text-2xl font-bold text-blue-700">
+                  ITGuru Teacher Dashboard
+                </h1>
+                <p className="text-xs text-gray-500">
+                  Manage materials, quizzes, and videos — in one place
+                </p>
               </div>
             </div>
           </div>
@@ -188,24 +207,26 @@ export default function TeacherDashboard() {
           <AnimatePresence mode="wait">
             <motion.div
               key={tab}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={prefersReduced ? { duration: 0 } : { duration: 0.24, ease: "easeOut" }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={
+                prefersReduced
+                  ? { duration: 0 }
+                  : { duration: 0.2, ease: "easeOut" }
+              }
             >
               {tab === "overview" && <OverviewSection />}
-
               {tab === "materials" && <MaterialsSection />}
-
               {tab === "quizzes" && <QuizSection />}
-
               {tab === "videos" && <VideoSection />}
-
               {tab === "export" && (
                 <ExportImportBar
                   data={reportData}
                   onImport={(json) => console.log("Imported:", json)}
-                  onPdf={(payload, filename) => generatePdfReport(payload, filename)}
+                  onPdf={(payload, filename) =>
+                    generatePdfReport(payload, filename)
+                  }
                   defaultBatch="2025 A/L"
                 />
               )}

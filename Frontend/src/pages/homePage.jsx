@@ -13,6 +13,7 @@ import PricingSection from "../components/PricingSection";
 import FaqSection from "../components/FaqSection";
 import ContactSection from "../components/ContactSection";
 import Footer from "../components/footer";
+import ChatBot from "../components/ChatBot/chatBot";
 
 
 export default function HomePage() {
@@ -38,6 +39,7 @@ export default function HomePage() {
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/*" element={<h1>404 Not Found</h1>} />
       </Routes>
+      <ChatBot/>
       <Footer/>
     </div>
   );

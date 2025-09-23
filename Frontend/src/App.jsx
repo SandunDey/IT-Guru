@@ -1,21 +1,20 @@
 // src/App.jsx
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
-// pages/StudentQuizPage.jsx
+// ---- Splash (start UI) ----
+import Splash from "./components/Splash.jsx";
+
+// ---- Pages & components (as you had) ----
 import { useParams } from "react-router-dom";
-
 import PaymentsPage from "./Payment.jsx";
-import LoginPage from "./LoginPage.jsx";
 import SignupForm from "./StudentSignUpPage.jsx";
-
 import AdminPage from "./pages/adminPage.jsx";
 import AboutUs from "./pages/aboutUs.jsx";
 import UserAnnouncementPage from "./pages/announcementPage.jsx";
 import HomePage from "./pages/homePage.jsx";
 import AnnouncementReport from "./pages/announcementReport.jsx";
-
 import HelpCenterPage from "./HelpCenterPage.jsx";
 import SubmitTicketPage from "./SubmitTicketPage.jsx";
 import MyTicketsPage from "./MyTicketsPage.jsx";
@@ -27,10 +26,18 @@ import StudentProfile from "./pages/StudentProfile.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
 import QuizPlayer from "./components/QuizPlayer.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
-import UserVideos from "./pages/UserVideos.jsx"
-
+import UserVideos from "./pages/UserVideos.jsx";
+import ClassCardList from "./pages/client/classCardView.jsx";
+import SettingsPage from "./pages/SettingsPage.jsx";
 
 export default function App() {
+  const [ready, setReady] = useState(false);
+
+  if (!ready) {
+    // Show the start UI (blue fade + animated loader)
+    return <Splash onDone={() => setReady(true)} minDelay={1800} />;
+  }
+
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
@@ -39,7 +46,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/payment" element={<PaymentsPage />} />
-        <Route path="/login" element={<LoginPage />} />
+        {/* <Route path="/login" element={<LoginPage />} /> */}
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/announcement" element={<UserAnnouncementPage />} />
         <Route path="/announcement/report" element={<AnnouncementReport />} />
@@ -49,12 +56,13 @@ export default function App() {
         <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
         <Route path="/admin" element={<AdminLoginPage />} />
         <Route path="/Uservideos" element={<UserVideos />} />
+        <Route path="/settings" element={<SettingsPage />} />
 
         {/* Protected by role */}
-     <Route element={<ProtectedRoute allow="student" />}>
-  <Route path="/StudentDashboard" element={<StudentDashboard />} />
-  <Route path="/student/profile" element={<StudentProfile />} />
-</Route>
+        <Route element={<ProtectedRoute allow="student" />}>
+          <Route path="/StudentDashboard" element={<StudentDashboard />} />
+          <Route path="/student/profile" element={<StudentProfile />} />
+        </Route>
 
         <Route element={<ProtectedRoute allow="staff" />}>
           <Route path="/staff" element={<StaffPage />} />
@@ -68,18 +76,20 @@ export default function App() {
           <Route path="/admin/dashboard/*" element={<AdminPage />} />
         </Route>
 
-         {/* Teacher area */}
-          <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+        {/* Teacher area (unprotected shortcut, keep if you really need both) */}
+        <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
 
-          {/* Student quiz play */}
-          <Route path="/quiz/:id" element={<StudentQuizPage />} />
-
-        <Route path="/StudentDashboard/quiz/:quizId" element={<StudentQuizPage />} />
+        {/* Student quiz play */}
+        <Route path="/quiz/:id" element={<StudentQuizPage />} />
+        <Route path="/classcard" element={<ClassCardList />} />
+        {/* 404 */}
         <Route path="*" element={<h1>404 Not Found</h1>} />
       </Routes>
     </BrowserRouter>
   );
 }
+
+/* ---------- Inline page for quiz player as you had ---------- */
 function StudentQuizPage() {
   const { id } = useParams();
   // plug in your real student id after auth:

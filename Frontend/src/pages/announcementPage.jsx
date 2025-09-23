@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../components/header";
+import ChatBot from "../components/ChatBot/chatBot";
 
 export default function UserAnnouncementPage() {
   const [announcements, setAnnouncements] = useState([]);
@@ -96,6 +97,7 @@ export default function UserAnnouncementPage() {
           </div>
         )}
       </div>
+      <ChatBot/>
     </div>
   );
 }

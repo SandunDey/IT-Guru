@@ -15,10 +15,12 @@ router.delete("/:id", deleteQuiz);
 router.post("/:id/toggle-publish", togglePublish);
 
 // student
-router.get("/:id/take", getQuizForStudent);  // ?studentId=abc
-router.post("/:id/submit", submitQuiz);
 
 // attempts (teacher)
 router.get("/:id/attempts", listAttemptsForQuiz);
+
+router.get("/:id/take", getQuizForStudent);
+router.post("/:id/submit", submitQuiz);
+
 
 export default router;

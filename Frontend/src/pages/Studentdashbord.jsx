@@ -37,6 +37,7 @@ import { useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.jpg";
 import { loadAuth } from "../api"; // single source of truth for user+token
 import Footer from "../components/footer";
+import ChatBot from "../components/ChatBot/chatBot";
 // ---------- MOCK DASH METRICS (keep these until real data) ----------
 const stats = [
   { label: "Enrolled Courses", value: 5 },
@@ -327,13 +328,17 @@ export default function StudentDashboard() {
                         <Tooltip />
                       </RPPieChart>
                     </ResponsiveContainer>
+
                   </div>
                 </div>
               </Card>
+          
             </div>
+            
           </section>
         </main>
       </div>
+<ChatBot/>
     </div>
   );
 }

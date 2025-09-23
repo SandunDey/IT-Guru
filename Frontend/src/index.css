@@ -203,3 +203,12 @@ textarea.input { min-height: 96px; resize: vertical; }
 .fineprint { margin:12px 0 0; font-size:12px; color: var(--color-ink-muted); }
 .fineprint a { color: var(--color-brand); text-decoration: underline; text-underline-offset: 3px; }
 .fineprint a:hover { filter: brightness(.9); }
+
+.noise-texture {
+  background-image:
+    radial-gradient(1px 1px at 25% 20%, rgba(255,255,255,.25) 0, transparent 100%),
+    radial-gradient(1px 1px at 60% 40%, rgba(255,255,255,.2) 0, transparent 100%),
+    radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,.15) 0, transparent 100%),
+    radial-gradient(1px 1px at 80% 80%, rgba(255,255,255,.1) 0, transparent 100%);
+  background-size: 120px 120px, 140px 140px, 160px 160px, 180px 180px;
+}
