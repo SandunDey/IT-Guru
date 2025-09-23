@@ -31,6 +31,8 @@ import SubmitTicketPage from './components/SubmitTicketPage.jsx';
 import TicketDetailPage from './components/TicketDetailPage.jsx';
 import AdminTicketsPage from './pages/AdminTicketsPage.jsx';
 import FeedbackPage from './pages/FeedbackPage.jsx';
+import TempAdminDashboard from './pages/TempAdminDashboard.jsx';
+import TempFeedbackDashboard from './pages/TempFeedbackDashboard.jsx';
 
 
 export default function App() {
@@ -53,6 +55,10 @@ export default function App() {
         <Route path="/admin" element={<AdminLoginPage />} />
         <Route path="/Uservideos" element={<UserVideos />} />
         <Route path="/feedback" element={<FeedbackPage />} />
+        <Route path="/temp-admin-tickets" element={<TempAdminDashboard />} />
+        <Route path="/temp-admin-feedback" element={<TempFeedbackDashboard />} />
+        
+        
 
 
         {/* Protected by role */}
