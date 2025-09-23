@@ -98,7 +98,7 @@ export default function UpdateAnnouncementPage() {
             </label>
             <input
               className="w-full p-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
-              placeholder="e.g., Diamond Shine Night Cream"
+              placeholder="e.g., System maintain"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
@@ -136,10 +136,10 @@ export default function UpdateAnnouncementPage() {
             </select>
           </div>
 
-          {/* Audience */}
+          {/* Audience */}{/******************************************************************/}
           <div>
             <label className="block text-sm font-medium text-shadow-indigo-950 mb-2">
-              Audience
+              Audience      
             </label>
             <div className="flex flex-col gap-2">
               {["Student", "Parent", "Teacher", "Staff"].map((aud) => (

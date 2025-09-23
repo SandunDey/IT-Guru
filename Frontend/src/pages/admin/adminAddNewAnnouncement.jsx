@@ -92,11 +92,11 @@ export default function AddAnnouncementPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Announcement ID */}
-          {/*input eke value ek vidiyt thiyenna ona variable agaya*/}
+          
           <div>
             <label className="block text-sm font-medium text-shadow-indigo-950 mb-2">
               Announcement ID
-            </label>
+            </label>{/*input eke value ek vidiyt thiyenna ona variable agaya*/}
             <input
               className="w-full p-3 border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm transition"
               placeholder="e.g., AN001"

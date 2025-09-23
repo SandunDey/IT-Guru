@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Loder } from "../../components/loder";
 import { TbReportAnalytics } from "react-icons/tb";
 
-function AnnouncementDeleteConfirm(props) {
+function AnnouncementDeleteConfirm(props) {//************************************************************** */
   const announcementID = props.announcementID;// parent component eken pass kara delete karanna one announcement ID
   const close = props.close;// parent eken pass karapu modal close karana function
   const refresh = props.refresh; // parent eken pass karapu table refresh karana function
@@ -113,7 +113,7 @@ export default function AdminAnnouncementPage() {
   return (
     <div className="w-full h-full p-6 bg-primary">
       {
-        isDeleteConfirmVisible && ( //&& this is not and this is if  mek trueb nisa ithuru tika pennann
+        isDeleteConfirmVisible && ( //&& this is not and this is if  mek true nisa ithuru tika pennann
           <AnnouncementDeleteConfirm
             refresh={() => {
               setIsLoading(true);
