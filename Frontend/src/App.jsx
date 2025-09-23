@@ -20,7 +20,7 @@ import SubmitTicketPage from "./SubmitTicketPage.jsx";
 import MyTicketsPage from "./MyTicketsPage.jsx";
 import TicketDetailPage from "./TicketDetailPage.jsx";
 import StaffPage from "./StaffPage.jsx";
-import AdminLoginPage from "./loging.jsx";
+import LoginPage from "./loging.jsx";
 import StudentDashboard from "./pages/Studentdashbord.jsx";
 import StudentProfile from "./pages/StudentProfile.jsx";
 import TeacherDashboard from "./pages/TeacherDashboard.jsx";
@@ -29,6 +29,18 @@ import ProtectedRoute from "./ProtectedRoute.jsx";
 import UserVideos from "./pages/UserVideos.jsx";
 import ClassCardList from "./pages/client/classCardView.jsx";
 import SettingsPage from "./pages/SettingsPage.jsx";
+import ClassCards from "./pages/Classtype.jsx";
+import PaymentSuccess from "./pages/PaymentSuccess.jsx"
+import ClassView from "./pages/ClassView.jsx";
+import Class from "./pages/ClassCards";
+import UserEnrollmentPage from "./pages/enrollmentPage.jsx";
+import AdminEnrollmentPage from "./pages/admin/adminEnrollmentPage.jsx";
+import UpdateTimetablePage from "./pages/admin/UpdateTimetablePage.jsx";
+import StudentTimetable from "./pages/StudentTimetable.jsx";
+import TimetableList from "./pages/admin/TimetableList.jsx";
+import CreateTimetableForm from "./pages/admin/createTimetable.jsx";
+import TestMarks from "./pages/TestMarks.jsx";
+
 
 export default function App() {
   const [ready, setReady] = useState(false);
@@ -54,9 +66,14 @@ export default function App() {
         <Route path="/submit-ticket" element={<SubmitTicketPage />} />
         <Route path="/my-tickets" element={<MyTicketsPage />} />
         <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
-        <Route path="/admin" element={<AdminLoginPage />} />
+        <Route path="/admin" element={<LoginPage />} />
         <Route path="/Uservideos" element={<UserVideos />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/classtype" element={<ClassCards/>}/>
+        <Route path="/paymentSuccess" element={<PaymentSuccess />} />
+         <Route path="/enrollment" element={<UserEnrollmentPage />} />
+         <Route path="/admin/dashboard/enrollment" element={<AdminEnrollmentPage />} />
+          <Route path="/test-marks" element={<TestMarks />} />
 
         {/* Protected by role */}
         <Route element={<ProtectedRoute allow="student" />}>
@@ -68,22 +85,27 @@ export default function App() {
           <Route path="/staff" element={<StaffPage />} />
         </Route>
 
-        <Route element={<ProtectedRoute allow="teacher" />}>
+        <Route path="/" element={<Class />} />
+        <Route path="/class/:batchName" element={<ClassView />} />
+    
           <Route path="/teacher" element={<TeacherDashboard />} />
-        </Route>
 
-        <Route element={<ProtectedRoute allow="admin" />}>
           <Route path="/admin/dashboard/*" element={<AdminPage />} />
-        </Route>
-
+        
+         <Route path="/class/:id" element={<ClassView />} />
         {/* Teacher area (unprotected shortcut, keep if you really need both) */}
-        <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+        {/* <Route path="/teacher/dashboard" element={<TeacherDashboard />} /> */}
 
         {/* Student quiz play */}
         <Route path="/quiz/:id" element={<StudentQuizPage />} />
         <Route path="/classcard" element={<ClassCardList />} />
         {/* 404 */}
         <Route path="*" element={<h1>404 Not Found</h1>} />
+         <Route path="/timetable/update/:timetableId" element={<UpdateTimetablePage />} />
+        <Route path="/timetable/list" element={<TimetableList/>}/>
+        <Route path ="/student/viewTimetable" element={<StudentTimetable/>}/>
+        <Route path="/admin/dashboard/timetable/create" element={<CreateTimetableForm/>}/>
+
       </Routes>
     </BrowserRouter>
   );

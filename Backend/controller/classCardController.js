@@ -125,9 +125,9 @@ export function deletePlan(req, res) {
 }
 
 export function getSelectedPlan(req, res) {
-    const planId = req.params.id;
+    const class_name = req.params.class_name;
     MembershipPlan.findOne({
-        plan_id: planId
+        class_name: class_name
     })
         .then((plan) => {
             if (plan != null) {

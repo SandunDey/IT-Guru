@@ -6,6 +6,7 @@ const staffShema = new mongoose.Schema({
         required:true,
         unique: true,
         trim: true,
+        
 
     },
     name:{

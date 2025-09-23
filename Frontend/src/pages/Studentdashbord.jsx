@@ -208,13 +208,13 @@ export default function StudentDashboard() {
                 </button>
               </div>
               <SidebarLink icon={<Home className="h-5 w-5" />} label="Dashboard" onClick={() => navigate("/StudentDashboard")} />
-              <SidebarLink icon={<BookOpen className="h-5 w-5" />} label="Class" onClick={() => navigate("/Uservideos")} />
+              <SidebarLink icon={<BookOpen className="h-5 w-5" />} label="Class" onClick={() => navigate("/enrollment") }/>
               <SidebarLink icon={<ClipboardList className="h-5 w-5" />} label="Assignments" />
               <SidebarLink icon={<Megaphone className="h-5 w-5" />} label="Announcements" />
               <SidebarLink icon={<MessagesSquare className="h-5 w-5" />} label="Messages" />
               <SidebarLink icon={<CreditCard className="h-5 w-5" />} label="Payments" />
               <SidebarLink icon={<Settings className="h-5 w-5" />} label="Settings" />
-              <SidebarLink icon={<HelpCircle className="h-5 w-5" />} label="Help" />
+              <SidebarLink icon={<HelpCircle className="h-5 w-5" />} label="Performance"onClick={() => navigate("/test-marks") } />
             </nav>
           </motion.div>
         </aside>

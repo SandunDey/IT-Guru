@@ -18,6 +18,13 @@ import materialRoutes from "./routes/materialRoutes.js";
 import videoRoutes from "./routes/videoRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import cardRoute from "./routes/cardRoute.js";
+import teacherRoutes from "./routes/teacherRoutes.js";
+import webhookRoutes from "./routes/webHookRoute.js";
+import announcementRouter from "./routes/announcementRouter.js";
+import enrollmentRouter from "./routes/enrollmentRouter.js";
+import verifyJWT from "./middleware/auth.js"
+import timeTableRouter from "./routes/timeTableRouter.js";
+import testMarkRoutes from './routes/testMarkRoutes.js';
 
 dotenv.config();
 
@@ -65,6 +72,11 @@ async function bootstrap() {
       allowedHeaders: ["Content-Type", "Authorization"],
     })
   );
+  app.use(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  webhookRoutes
+);
 
   app.use(express.json({ limit: "1mb" }));
   app.use(express.urlencoded({ extended: true }));
@@ -117,7 +129,13 @@ async function bootstrap() {
   app.use("/api/materials", materialRoutes);
   app.use("/api/videos", videoRoutes);
   app.use("/api/quizzes", quizRoutes);
+  app.use('/api/test', testMarkRoutes);
+  app.use("/api/teacher", teacherRoutes);
+    app.use("/api/announcements", announcementRouter);
+  app.use("/api/enrollments", enrollmentRouter);
 app.use("/api/card", cardRoute);
+ app.get("/", (_req, res) => res.send("Timetable API OK"));//test route ekak,only prove backend server is running
+  app.use("/timetable", timeTableRouter);//Connect all timetable routes under /timetable
   // 6) 404 + error handler
   app.use((req, res) => res.status(404).json({ message: "Route not found" }));
   // eslint-disable-next-line no-unused-vars

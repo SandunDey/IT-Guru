@@ -58,14 +58,7 @@ export default function AdminPage() {
             Manage Users
           </Link>
 
-          <Link
-            to="/admin/dashboard/staff"
-            className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 hover:rounded-2xl shadow-sm hover:shadow-md"
-            style={{ background: "rgba(255,255,255,.10)" }}
-          >
-            <HiOutlineUserAdd className="text-xl" />
-            Manage Staff
-          </Link>
+         
 
           <Link
             to="/admin/dashboard/payment"
@@ -95,7 +88,7 @@ export default function AdminPage() {
           </Link>
 
           <Link
-            to="/admin/dashboard/timetable"
+            to="/timetable/list"
             className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 hover:rounded-2xl shadow-sm hover:shadow-md"
             style={{ background: "rgba(255,255,255,.10)" }}
           >
@@ -103,14 +96,7 @@ export default function AdminPage() {
             Manage Time Table
           </Link>
 
-          <Link
-            to="/admin/dashboard/performance"
-            className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 hover:rounded-2xl shadow-sm hover:shadow-md"
-            style={{ background: "rgba(255,255,255,.10)" }}
-          >
-            <MdSpeed className="text-xl" />
-            Manage Performance
-          </Link>
+       
 
           <Link
             to="/admin/dashboard/feedback"
@@ -154,7 +140,7 @@ export default function AdminPage() {
       >
         <div className="w-full max-w-full h-full max-h-full overflow-y-scroll bg-transparent">
           <Routes>
-            <Route path="/" element={<h1 className="p-6">Dashboard</h1>} />
+           <Route index element={<h1 className="p-6">Dashboard</h1>} />
             <Route path="/users" element={<h1 className="p-6">User</h1>} />
             <Route path="/staff" element={<h1 className="p-6">Staff</h1>} />
             <Route path="/payment" element={<h1 className="p-6">Payment</h1>} />

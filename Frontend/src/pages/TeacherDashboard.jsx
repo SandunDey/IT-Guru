@@ -9,6 +9,17 @@ import {
   LogOut,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 import OverviewSection from "../components/OverviewSection.jsx";
 import MaterialsSection from "../components/MaterialsSection.jsx";
@@ -75,6 +86,42 @@ export default function TeacherDashboard() {
   const materials = clean(store?.materials);
   const quizzes = clean(store?.quizzes);
   const videos = clean(store?.videos);
+
+  // Chart datasets from real quizzes
+  const avgScoresByWeek = useMemo(() => {
+    const grouped = {};
+    quizzes.forEach((q) => {
+      const d = q?.createdAt ? new Date(q.createdAt) : new Date();
+      const week = `${d.getFullYear()}-W${Math.ceil(d.getDate() / 7)}`;
+      if (!grouped[week]) grouped[week] = [];
+      grouped[week].push(Number(q?.avgScore) || 0);
+    });
+    return Object.entries(grouped).map(([week, arr]) => ({
+      week,
+      avg: arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0,
+    }));
+  }, [quizzes]);
+
+  const assessmentLoad = useMemo(() => {
+    const grouped = {};
+    quizzes.forEach((q) => {
+      const d = q?.createdAt ? new Date(q.createdAt) : new Date();
+      const month = d.toLocaleString("default", { month: "short" });
+      grouped[month] = (grouped[month] || 0) + 1;
+    });
+    return Object.entries(grouped).map(([month, count]) => ({
+      month,
+      count,
+    }));
+  }, [quizzes]);
+
+  const studentProgress = useMemo(() => {
+    // Demo: using attempts to show progress %
+    return quizzes.map((q, i) => ({
+      name: q?.title ?? `Quiz ${i + 1}`,
+      progress: Math.min(100, (q?.avgScore || 0) * 10),
+    }));
+  }, [quizzes]);
 
   const reportData = useMemo(() => {
     return {
@@ -216,7 +263,68 @@ export default function TeacherDashboard() {
                   : { duration: 0.2, ease: "easeOut" }
               }
             >
-              {tab === "overview" && <OverviewSection />}
+              {tab === "overview" && (
+                <div className="space-y-8">
+                  <OverviewSection />
+
+                  {/* 📊 Charts */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Average Scores by Week */}
+                    <div className="bg-white rounded-xl shadow p-4">
+                      <h2 className="text-lg font-semibold text-blue-700 mb-3">
+                        Average Scores by Week
+                      </h2>
+                      <ResponsiveContainer width="100%" height={250}>
+                        <LineChart data={avgScoresByWeek}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="week" stroke="#2563eb" />
+                          <YAxis stroke="#2563eb" />
+                          <Tooltip />
+                          <Line
+                            type="monotone"
+                            dataKey="avg"
+                            stroke="#2563eb"
+                            strokeWidth={2}
+                            dot={{ r: 4, fill: "#2563eb" }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    {/* Assessment Load */}
+                    <div className="bg-white rounded-xl shadow p-4">
+                      <h2 className="text-lg font-semibold text-blue-700 mb-3">
+                        Assessment Load (Monthly)
+                      </h2>
+                      <ResponsiveContainer width="100%" height={250}>
+                        <BarChart data={assessmentLoad}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                          <XAxis dataKey="month" stroke="#2563eb" />
+                          <YAxis stroke="#2563eb" />
+                          <Tooltip />
+                          <Bar dataKey="count" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  {/* Student Progress */}
+                  <div className="bg-white rounded-xl shadow p-4">
+                    <h2 className="text-lg font-semibold text-blue-700 mb-3">
+                      Student Progress
+                    </h2>
+                    <ResponsiveContainer width="100%" height={280}>
+                      <BarChart data={studentProgress}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                        <XAxis dataKey="name" stroke="#2563eb" />
+                        <YAxis stroke="#2563eb" />
+                        <Tooltip />
+                        <Bar dataKey="progress" fill="#1d4ed8" radius={[6, 6, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
               {tab === "materials" && <MaterialsSection />}
               {tab === "quizzes" && <QuizSection />}
               {tab === "videos" && <VideoSection />}

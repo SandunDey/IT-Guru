@@ -115,6 +115,7 @@ export function loginStudent(req, res) {
       }
 
       const studentData = {
+        _id: student._id,
         studentId: student.studentId,
         name: student.name,
         address: student.address,
@@ -134,7 +135,7 @@ export function loginStudent(req, res) {
 }
 export async function getMe(req, res) {
   try {
-    const id = req.user?.sub; // token payload: sub = student._id
+    const id = req.user?._id; // token payload: sub = student._id
     if (!id) return res.status(401).json({ message: "Unauthenticated" });
     const student = await Student.findById(id);
     if (!student) return res.status(404).json({ message: "Student not found" });

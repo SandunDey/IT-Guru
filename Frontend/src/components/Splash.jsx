@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import logo from "../assets/logo.jpg"; // put your logo at src/assets/logo.png
 
-export default function Splash({ onDone = () => {} , minDelay = 1800 }) {
+export default function Splash({ onDone = () => {}, minDelay = 1800 }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -49,7 +49,13 @@ export default function Splash({ onDone = () => {} , minDelay = 1800 }) {
             {/* Soft pulsing aura */}
             <motion.div
               className="absolute inset-0 -z-10 rounded-3xl"
-              animate={{ boxShadow: ["0 0 0 0 rgba(147,197,253,0.0)", "0 0 60px 10px rgba(147,197,253,0.35)", "0 0 0 0 rgba(147,197,253,0.0)"] }}
+              animate={{
+                boxShadow: [
+                  "0 0 0 0 rgba(147,197,253,0.0)",
+                  "0 0 60px 10px rgba(147,197,253,0.35)",
+                  "0 0 0 0 rgba(147,197,253,0.0)",
+                ],
+              }}
               transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
@@ -98,7 +104,12 @@ export default function Splash({ onDone = () => {} , minDelay = 1800 }) {
                 key={i}
                 className="inline-block h-2 w-2 rounded-full bg-white/80"
                 animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.12, ease: "easeInOut" }}
+                transition={{
+                  duration: 0.9,
+                  repeat: Infinity,
+                  delay: i * 0.12,
+                  ease: "easeInOut",
+                }}
               />
             ))}
           </div>
@@ -108,6 +119,7 @@ export default function Splash({ onDone = () => {} , minDelay = 1800 }) {
       {/* Corner accent shapes */}
       <AnimatePresence>
         <motion.div
+          key="top-left" // ✅ unique key
           className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-blue-400/10 blur-3xl"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -115,6 +127,7 @@ export default function Splash({ onDone = () => {} , minDelay = 1800 }) {
           transition={{ duration: 0.8 }}
         />
         <motion.div
+          key="bottom-right" // ✅ unique key
           className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-indigo-400/10 blur-3xl"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -125,3 +138,4 @@ export default function Splash({ onDone = () => {} , minDelay = 1800 }) {
     </div>
   );
 }
+

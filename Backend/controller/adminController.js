@@ -57,3 +57,17 @@ export async function listAdmins(_req, res) {
   const admins = await Admin.find().select("-password");
   return res.json(admins);
 }
+export function isAdmin(req) {
+
+    //only admin user can ->
+    if (req.user == null) {
+        return false; //pahala code tika run vena eka methanin ehat navathinva
+    }
+
+    if (req.user.role != "admin") {
+        return false;
+    }
+
+    return true;
+
+}
