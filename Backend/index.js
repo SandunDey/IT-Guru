@@ -25,6 +25,7 @@ import enrollmentRouter from "./routes/enrollmentRouter.js";
 import verifyJWT from "./middleware/auth.js"
 import timeTableRouter from "./routes/timeTableRouter.js";
 import testMarkRoutes from './routes/testMarkRoutes.js';
+import FeedbackRoute from './routes/FeedbackRoute.js';
 
 dotenv.config();
 
@@ -124,12 +125,13 @@ async function bootstrap() {
   app.use("/api/admin", adminrouter);
   app.use("/api/staff", StaffRouter);
   app.use("/api/payment", paymentRouter);
-  app.use("/api/tickets", SupportTicketRoute);
+    app.use("/api/tickets", SupportTicketRoute);
   app.get('/api/health', (_req, res) => res.json({ ok: true }));
   app.use("/api/materials", materialRoutes);
   app.use("/api/videos", videoRoutes);
   app.use("/api/quizzes", quizRoutes);
   app.use('/api/test', testMarkRoutes);
+    app.use("/api/feedback", FeedbackRoute);
   app.use("/api/teacher", teacherRoutes);
     app.use("/api/announcements", announcementRouter);
   app.use("/api/enrollments", enrollmentRouter);
