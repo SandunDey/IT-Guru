@@ -30,6 +30,7 @@ import MyTicketsPage from './components/MyTicketsPage.jsx';
 import SubmitTicketPage from './components/SubmitTicketPage.jsx';
 import TicketDetailPage from './components/TicketDetailPage.jsx';
 import AdminTicketsPage from './pages/AdminTicketsPage.jsx';
+import FeedbackPage from './pages/FeedbackPage.jsx';
 
 
 export default function App() {
@@ -51,6 +52,8 @@ export default function App() {
         <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
         <Route path="/admin" element={<AdminLoginPage />} />
         <Route path="/Uservideos" element={<UserVideos />} />
+        <Route path="/feedback" element={<FeedbackPage />} />
+
 
         {/* Protected by role */}
      <Route element={<ProtectedRoute allow="student" />}>

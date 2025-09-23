@@ -17,6 +17,7 @@ import SupportTicketRoute from "./routes/SupportTicketRoute.js";
 import materialRoutes from "./routes/materialRoutes.js";
 import videoRoutes from "./routes/videoRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
+import FeedbackRoute from './routes/FeedbackRoute.js';
 
 
 dotenv.config();
@@ -117,6 +118,7 @@ async function bootstrap() {
   app.use("/api/materials", materialRoutes);
   app.use("/api/videos", videoRoutes);
   app.use("/api/quizzes", quizRoutes);
+  app.use("/api/feedback", FeedbackRoute);
 
   // 6) 404 + error handler
   app.use((req, res) => res.status(404).json({ message: "Route not found" }));
