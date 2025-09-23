@@ -84,13 +84,14 @@ export const getTicketById = async (req, res) => {
   }
 };
 
-// --- Update a ticket by ID ---
+// Update a ticket by ID (For Admin/Staff use)
 export const updateTicket = async (req, res) => {
   try {
     const { subject, message, status, priority, reply, repliedBy } = req.body;
     
     const updateData = { subject, message, status, priority };
     
+    // If reply is provided, add it to the replies array
     if (reply && repliedBy) {
       updateData.$push = {
         replies: {
@@ -99,6 +100,11 @@ export const updateTicket = async (req, res) => {
           repliedAt: new Date()
         }
       };
+      
+      // If status is not provided and it's a reply, set to "In Progress"
+      if (!status) {
+        updateData.status = 'In Progress';
+      }
     }
 
     const updatedTicket = await SupportTicket.findByIdAndUpdate(

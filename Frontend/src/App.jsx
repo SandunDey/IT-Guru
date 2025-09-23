@@ -29,6 +29,7 @@ import UserVideos from "./pages/UserVideos.jsx";
 import MyTicketsPage from './components/MyTicketsPage.jsx';
 import SubmitTicketPage from './components/SubmitTicketPage.jsx';
 import TicketDetailPage from './components/TicketDetailPage.jsx';
+import AdminTicketsPage from './pages/AdminTicketsPage.jsx';
 
 
 export default function App() {
@@ -67,6 +68,7 @@ export default function App() {
 
         <Route element={<ProtectedRoute allow="admin" />}>
           <Route path="/admin/dashboard/*" element={<AdminPage />} />
+          <Route path="/admin/tickets" element={<AdminTicketsPage />} /> {/*vishwa */}
         </Route>
 
          {/* Teacher area */}
