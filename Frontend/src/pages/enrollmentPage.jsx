@@ -84,7 +84,7 @@ export default function UserEnrollmentPage() {
       setShowModal(false);
       setEnrollmentKey("");
 
-      navigate("/"); // mekat learning material page eka danna
+      navigate("/class/:id"); // mekat learning material page eka danna
     } catch (err) {
       toast.error(err.message);
     }

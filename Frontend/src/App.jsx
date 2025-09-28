@@ -16,9 +16,7 @@ import UserAnnouncementPage from "./pages/announcementPage.jsx";
 import HomePage from "./pages/homePage.jsx";
 import AnnouncementReport from "./pages/announcementReport.jsx";
 import HelpCenterPage from "./HelpCenterPage.jsx";
-import SubmitTicketPage from "./SubmitTicketPage.jsx";
-import MyTicketsPage from "./MyTicketsPage.jsx";
-import TicketDetailPage from "./TicketDetailPage.jsx";
+
 import StaffPage from "./StaffPage.jsx";
 import LoginPage from "./loging.jsx";
 import StudentDashboard from "./pages/Studentdashbord.jsx";
@@ -40,6 +38,17 @@ import StudentTimetable from "./pages/StudentTimetable.jsx";
 import TimetableList from "./pages/admin/TimetableList.jsx";
 import CreateTimetableForm from "./pages/admin/createTimetable.jsx";
 import TestMarks from "./pages/TestMarks.jsx";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
+import ContactUs from "./ContactUs.jsx"
+import MyTicketsPage from './components/MyTicketsPage.jsx';
+import SubmitTicketPage from './components/SubmitTicketPage.jsx';
+import TicketDetailPage from './components/TicketDetailPage.jsx';
+import AdminTicketsPage from './pages/AdminTicketsPage.jsx';
+import FeedbackPage from './pages/FeedbackPage.jsx';
+import TempAdminDashboard from './pages/TempAdminDashboard.jsx';
+import TempFeedbackDashboard from './pages/TempFeedbackDashboard.jsx';
+import FloatingButtons from "./components/FloatingButtons";
+
 
 
 export default function App() {
@@ -62,10 +71,9 @@ export default function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/announcement" element={<UserAnnouncementPage />} />
         <Route path="/announcement/report" element={<AnnouncementReport />} />
-        <Route path="/support" element={<HelpCenterPage />} />
-        <Route path="/submit-ticket" element={<SubmitTicketPage />} />
-        <Route path="/my-tickets" element={<MyTicketsPage />} />
-        <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
+        <Route path="/dashboard" element={<AdminDashboard />} />
+        <Route path="/contactus" element={<ContactUs />} />
+   
         <Route path="/admin" element={<LoginPage />} />
         <Route path="/Uservideos" element={<UserVideos />} />
         <Route path="/settings" element={<SettingsPage />} />
@@ -74,6 +82,14 @@ export default function App() {
          <Route path="/enrollment" element={<UserEnrollmentPage />} />
          <Route path="/admin/dashboard/enrollment" element={<AdminEnrollmentPage />} />
           <Route path="/test-marks" element={<TestMarks />} />
+          <Route path="/feedback" element={<FeedbackPage />} />
+        <Route path="/temp-admin-tickets" element={<TempAdminDashboard />} />
+        <Route path="/temp-admin-feedback" element={<TempFeedbackDashboard />} />
+           <Route path="/support" element={<HelpCenterPage />} />
+        <Route path="/submit-ticket" element={<SubmitTicketPage />} />
+        <Route path="/my-tickets" element={<MyTicketsPage />} />
+        <Route path="/tickets/:ticketId" element={<TicketDetailPage />} />
+       <Route path="/admin/tickets" element={<AdminTicketsPage />} />
 
         {/* Protected by role */}
         <Route element={<ProtectedRoute allow="student" />}>
@@ -101,14 +117,20 @@ export default function App() {
         <Route path="/classcard" element={<ClassCardList />} />
         {/* 404 */}
         <Route path="*" element={<h1>404 Not Found</h1>} />
-         <Route path="/timetable/update/:timetableId" element={<UpdateTimetablePage />} />
+         <Route path="/admin/dashboard/timetable/update/:timetableId" element={<UpdateTimetablePage />} />
         <Route path="/timetable/list" element={<TimetableList/>}/>
         <Route path ="/student/viewTimetable" element={<StudentTimetable/>}/>
         <Route path="/admin/dashboard/timetable/create" element={<CreateTimetableForm/>}/>
 
       </Routes>
+      {/* ✅ Floating Buttons appear on every page */}
+      <FloatingButtons
+        onSupportClick={() => (window.location.href = "/support")}
+        onFeedbackClick={() => (window.location.href = "/feedback")}
+      />
     </BrowserRouter>
-  );
+
+  ); 
 }
 
 /* ---------- Inline page for quiz player as you had ---------- */

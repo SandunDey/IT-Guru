@@ -81,7 +81,7 @@ export default function CreateTimetableForm({ onCreated }) {//time table form cr
       });
 
       onCreated?.(); // notify parent if passed
-      navigate("/admin/dashboard/timetable");
+      navigate("/timetable/list");
     } catch (e) {
       toast.error(e?.response?.data?.message || "Create failed");
     } finally {

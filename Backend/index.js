@@ -26,6 +26,7 @@ import verifyJWT from "./middleware/auth.js"
 import timeTableRouter from "./routes/timeTableRouter.js";
 import testMarkRoutes from './routes/testMarkRoutes.js';
 import FeedbackRoute from './routes/FeedbackRoute.js';
+import statsRoute from "./routes/statsRoute.js";
 
 dotenv.config();
 
@@ -133,6 +134,7 @@ async function bootstrap() {
   app.use('/api/test', testMarkRoutes);
     app.use("/api/feedback", FeedbackRoute);
   app.use("/api/teacher", teacherRoutes);
+  app.use("/api/stats", statsRoute);
     app.use("/api/announcements", announcementRouter);
   app.use("/api/enrollments", enrollmentRouter);
 app.use("/api/card", cardRoute);

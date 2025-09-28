@@ -144,3 +144,20 @@ export async function getMe(req, res) {
     return res.status(500).json({ message: "Error fetching profile" });
   }
 }
+
+export async function verifyStudent(req, res) {
+  try {
+    const enrollmentKey = req.params.studentId.trim().toUpperCase();
+
+    // Find student by studentId
+    const student = await Student.findOne({ studentId: enrollmentKey });
+    if (!student) {
+      return res.status(404).json({ message: "Enrollment key is invalid" });
+    }
+
+    // Return student info (frontend will handle creating enrollment)
+    res.json(student);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+}

@@ -9,13 +9,11 @@ import { useNavigate } from "react-router-dom";
 
 const backendURL = import.meta.env.VITE_API_BASE_URL;
 
-// ✅ Delete Confirmation Modal
+/* ---------- Delete Confirmation Modal ---------- */
 function TimetableDeleteConfirm({ timetableID, close, refresh }) {
   async function deleteTimetable() {
     try {
-      await axios.delete(
-        `${backendURL}/timetable/deleteTimetable/${timetableID}`
-      );
+      await axios.delete(`${backendURL}/timetable/deleteTimetable/${timetableID}`);
       toast.success("Timetable deleted successfully");
       refresh();
       close();
@@ -26,16 +24,14 @@ function TimetableDeleteConfirm({ timetableID, close, refresh }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-[100] flex justify-center items-center px-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md relative p-6">
-        {/* Close button */}
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-100 rounded-2xl shadow-xl w-full max-w-md relative p-6">
         <button
           onClick={close}
-          className="absolute top-[-42px] right-[-42px] w-[40px] h-[40px] bg-white hover:bg-red-500 rounded-full flex justify-center items-center"
+          className="absolute top-[-42px] right-[-42px] w-10 h-10 bg-white hover:bg-red-500 rounded-full flex justify-center items-center"
         >
           <IoClose className="text-gray-700 text-lg" />
         </button>
 
-        {/* Warning Icon */}
         <div className="flex justify-center mb-4">
           <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center">
             <IoTrashOutline className="text-2xl" />
@@ -45,11 +41,9 @@ function TimetableDeleteConfirm({ timetableID, close, refresh }) {
         <h2 className="text-xl font-semibold text-center mb-2 text-gray-800">
           Delete Timetable
         </h2>
-
         <p className="text-center text-gray-600 mb-6">
-          Are you sure you want to delete timetable{" "}
-          <span className="font-bold">{timetableID}</span>? This action cannot
-          be undone.
+          Are you sure you want to delete{" "}
+          <span className="font-bold">{timetableID}</span>? This can’t be undone.
         </p>
 
         <div className="flex justify-center gap-4">
@@ -71,6 +65,7 @@ function TimetableDeleteConfirm({ timetableID, close, refresh }) {
   );
 }
 
+/* ---------- Main Component ---------- */
 export default function TimetableList({ refreshKey }) {
   const [timetables, setTimetables] = useState([]);
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
@@ -87,7 +82,7 @@ export default function TimetableList({ refreshKey }) {
       } else {
         setTimetables([]);
       }
-    } catch (err) {
+    } catch {
       toast.error("Failed to load timetables");
       setTimetables([]);
     }
@@ -97,9 +92,8 @@ export default function TimetableList({ refreshKey }) {
     fetchTimetables();
   }, [refreshKey]);
 
-  // ✅ Styled PDF Export (same logic but UI like AnnouncementReport)
   function generateReport() {
-    if (!timetables || timetables.length === 0) {
+    if (!timetables.length) {
       toast.error("No timetables to generate report!");
       return;
     }
@@ -108,11 +102,9 @@ export default function TimetableList({ refreshKey }) {
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.width;
 
-      // --- Logo ---
-      const logoUrl = "/logo.jpg"; // put logo in public/ folder
+      const logoUrl = "/logo.jpg"; // place logo in public/
       doc.addImage(logoUrl, "PNG", 14, 10, 20, 20);
 
-      // --- ITGuru Info ---
       doc.setFontSize(18);
       doc.setTextColor(18, 65, 112);
       doc.text("ITGuru Tuition Center", 40, 18);
@@ -123,14 +115,12 @@ export default function TimetableList({ refreshKey }) {
       doc.text("Phone: +94 77 123 4567 | Email: info@itguru.lk", 40, 30);
       doc.text("Web: www.itguru.lk", 40, 35);
 
-      // --- Title ---
       doc.setFontSize(14);
       doc.setTextColor(0, 0, 0);
       doc.text("Timetable Report Summary", 14, 50);
 
-      // --- Table Data ---
-      const tableData = timetables.map((t, index) => [
-        t.timetableID || `TT${index + 1}`,
+      const tableData = timetables.map((t, i) => [
+        t.timetableID || `TT${i + 1}`,
         t.date ? new Date(t.date).toLocaleDateString() : "N/A",
         `${t.startTime} - ${t.endTime}`,
         t.subject || "N/A",
@@ -147,13 +137,11 @@ export default function TimetableList({ refreshKey }) {
         styles: { fontSize: 9, cellPadding: 3 },
       });
 
-      // --- Footer ---
       const pageCount = doc.internal.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
         doc.setFontSize(8);
         doc.setTextColor(34, 40, 49);
-
         doc.text(
           "ITGuru Tuition Center - Confidential Report",
           14,
@@ -166,22 +154,16 @@ export default function TimetableList({ refreshKey }) {
         );
       }
 
-      // --- Save ---
-      const filename = `ITGuru_TimetableReport_${
-        new Date().toISOString().split("T")[0]
-      }.pdf`;
-      doc.save(filename);
-
+      doc.save(`ITGuru_TimetableReport_${new Date().toISOString().split("T")[0]}.pdf`);
       toast.success("PDF report generated successfully!");
-    } catch (error) {
-      console.error("PDF creation failed:", error);
-      toast.error(`PDF creation failed: ${error.message}`);
+    } catch (err) {
+      console.error("PDF creation failed:", err);
+      toast.error(`PDF creation failed: ${err.message}`);
     }
   }
 
   return (
-    <div className="w-full h-full p-6 bg-primary">
-      {/* ✅ Delete Confirm */}
+    <div className="w-full h-full p-6 bg-gradient-to-br from-indigo-100 to-purple-200 min-h-screen">
       {isDeleteConfirmVisible && (
         <TimetableDeleteConfirm
           timetableID={selectedTimetableID}
@@ -190,23 +172,21 @@ export default function TimetableList({ refreshKey }) {
         />
       )}
 
-      {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-accent">Timetable Management</h1>
+        <h1 className="text-3xl font-bold text-indigo-800">Timetable Management</h1>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate("/admin/dashboard/timetable/create")}
-            className="flex items-center bg-blue-950 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-boardercolor transition-colors"
+            className="flex items-center bg-indigo-700 text-white font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-indigo-800 transition"
           >
             <FaRegEdit className="text-xl mr-2" /> Add Timetable
           </button>
 
-          {/* ✅ Styled Report Button */}
           <button
             onClick={generateReport}
-            disabled={timetables.length === 0}
-            className="relative flex items-center gap-3 bg-gradient-to-r from-accent to-boardercolor text-primary px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed"
+            disabled={!timetables.length}
+            className="relative flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed"
           >
             <FaRegFilePdf className="text-xl" />
             <span>Export PDF</span>
@@ -214,13 +194,12 @@ export default function TimetableList({ refreshKey }) {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="overflow-x-auto rounded-2xl shadow-lg border border-boardercolor">
+      <div className="overflow-x-auto rounded-2xl shadow-lg border border-indigo-300">
         {timetables.length === 0 ? (
           <p className="p-4 text-center text-gray-500">No timetables yet.</p>
         ) : (
           <table className="w-full border-collapse">
-            <thead className="bg-accent text-white font-bold">
+            <thead className="bg-indigo-600 text-white font-bold">
               <tr>
                 <th className="py-3 px-4 text-sm">ID</th>
                 <th className="py-3 px-4 text-sm">Date</th>
@@ -231,17 +210,15 @@ export default function TimetableList({ refreshKey }) {
                 <th className="py-3 px-4 text-sm">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-boardercolor bg-white">
+            <tbody className="divide-y divide-indigo-200 bg-white">
               {timetables.map((t) => {
-                const dateOnly = t.date
-                  ? new Date(t.date).toLocaleDateString()
-                  : "";
+                const dateOnly = t.date ? new Date(t.date).toLocaleDateString() : "";
                 return (
                   <tr
                     key={t.timetableID}
-                    className="hover:bg-primary transition-colors"
+                    className="hover:bg-indigo-50 transition"
                   >
-                    <td className="py-3 px-4 font-semibold text-secondary">
+                    <td className="py-3 px-4 font-semibold text-indigo-700">
                       {t.timetableID}
                     </td>
                     <td className="py-3 px-4">{dateOnly}</td>
@@ -264,14 +241,12 @@ export default function TimetableList({ refreshKey }) {
                     <td className="py-3 px-4">
                       <div className="flex gap-4 justify-center items-center">
                         <FaRegEdit
-                          className="cursor-pointer hover:text-blue-600 hover:scale-110 transition-transform"
+                          className="cursor-pointer hover:text-indigo-600 hover:scale-110 transition-transform"
                           title="Update"
                           onClick={() =>
                             navigate(
-                              `/admin/dashboard/timetable/update/${t.timetableID}`,
-                              {
-                                state: { timetable: t }, // ✅ pass full timetable object
-                              }
+                              `/admin/dashboard/timebale/update/${t.timetableID}`,
+                              { state: { timetable: t } }
                             )
                           }
                         />

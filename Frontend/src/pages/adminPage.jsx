@@ -7,7 +7,7 @@ import { FaRegCalendarTimes, FaRegMoneyBillAlt, FaSignOutAlt } from "react-icons
 import { TfiAnnouncement } from "react-icons/tfi";
 import { MdOutlineFeedback, MdOutlineVerifiedUser, MdSpeed } from "react-icons/md";
 import { BiSupport } from "react-icons/bi";
-
+import AdminDashboard from "./AdminDashboard.jsx";
 import AdminAnnouncementPage from "./admin/adminAnnouncementPage";
 import AddAnnouncementPage from "./admin/adminAddNewAnnouncement";
 import UpdateAnnouncementPage from "./admin/adminUpdateAnnouncement";
@@ -99,7 +99,7 @@ export default function AdminPage() {
        
 
           <Link
-            to="/admin/dashboard/feedback"
+            to="/temp-admin-feedback"
             className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 hover:rounded-2xl shadow-sm hover:shadow-md"
             style={{ background: "rgba(255,255,255,.10)" }}
           >
@@ -108,7 +108,7 @@ export default function AdminPage() {
           </Link>
 
           <Link
-            to="/admin/dashboard/supportTicket"
+            to="/temp-admin-tickets"
             className="w-[90%] flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out hover:scale-105 hover:rounded-2xl shadow-sm hover:shadow-md"
             style={{ background: "rgba(255,255,255,.10)" }}
           >
@@ -140,7 +140,7 @@ export default function AdminPage() {
       >
         <div className="w-full max-w-full h-full max-h-full overflow-y-scroll bg-transparent">
           <Routes>
-           <Route index element={<h1 className="p-6">Dashboard</h1>} />
+            <Route index element={<AdminDashboard />} />
             <Route path="/users" element={<h1 className="p-6">User</h1>} />
             <Route path="/staff" element={<h1 className="p-6">Staff</h1>} />
             <Route path="/payment" element={<h1 className="p-6">Payment</h1>} />
@@ -153,6 +153,7 @@ export default function AdminPage() {
             <Route path="add-announcements" element={<AddAnnouncementPage />} />
             <Route path="update-announcements" element={<UpdateAnnouncementPage />} />
             <Route path="announcement-report" element={<AnnouncementReport />} />
+            
           </Routes>
         </div>
       </div>

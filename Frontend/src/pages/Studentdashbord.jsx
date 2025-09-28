@@ -38,6 +38,7 @@ import Logo from "../assets/logo.jpg";
 import { loadAuth } from "../api"; // single source of truth for user+token
 import Footer from "../components/footer";
 import ChatBot from "../components/ChatBot/chatBot";
+import Navbar from "../components/header";
 // ---------- MOCK DASH METRICS (keep these until real data) ----------
 const stats = [
   { label: "Enrolled Courses", value: 5 },
@@ -142,6 +143,7 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-blue-100">
+    <Navbar/>
       {/* Topbar */}
       <header className="sticky top-0 z-40 w-full border-b border-blue-100 bg-white/70 backdrop-blur supports-[backdrop-filter]:bg-white/50">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -150,8 +152,8 @@ export default function StudentDashboard() {
               <Menu className="h-5 w-5" />
             </button>
             <div className="flex items-center gap-2">
-              <img src={Logo} alt="IT Guru Logo" className="h-10 w-10 rounded-full object-cover shadow-md ring-2 ring-blue-100" />
-              <span className="text-lg font-semibold text-blue-900">ITGuru</span>
+              {/* <img src={Logo} alt="IT Guru Logo" className="h-10 w-10 rounded-full object-cover shadow-md ring-2 ring-blue-100" /> */}
+              {/* <span className="text-lg font-semibold text-blue-900">ITGuru</span> */}
             </div>
           </div>
 
@@ -208,12 +210,12 @@ export default function StudentDashboard() {
                 </button>
               </div>
               <SidebarLink icon={<Home className="h-5 w-5" />} label="Dashboard" onClick={() => navigate("/StudentDashboard")} />
-              <SidebarLink icon={<BookOpen className="h-5 w-5" />} label="Class" onClick={() => navigate("/enrollment") }/>
+              <SidebarLink icon={<BookOpen className="h-5 w-5" />} label="Class" onClick={() => navigate("/classtype") }/>
               <SidebarLink icon={<ClipboardList className="h-5 w-5" />} label="Assignments" />
-              <SidebarLink icon={<Megaphone className="h-5 w-5" />} label="Announcements" />
+              <SidebarLink icon={<Megaphone className="h-5 w-5" />} label="Announcements" onClick={() => navigate("/announcement") } />
               <SidebarLink icon={<MessagesSquare className="h-5 w-5" />} label="Messages" />
               <SidebarLink icon={<CreditCard className="h-5 w-5" />} label="Payments" />
-              <SidebarLink icon={<Settings className="h-5 w-5" />} label="Settings" />
+              <SidebarLink icon={<Settings className="h-5 w-5" />} label="Time Table" onClick={() => navigate("/student/viewTimetable") }/>
               <SidebarLink icon={<HelpCircle className="h-5 w-5" />} label="Performance"onClick={() => navigate("/test-marks") } />
             </nav>
           </motion.div>
@@ -339,6 +341,7 @@ export default function StudentDashboard() {
         </main>
       </div>
 <ChatBot/>
+<Footer/>
     </div>
   );
 }

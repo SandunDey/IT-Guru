@@ -49,56 +49,72 @@ export default function PaymentSuccess() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-50 p-6">
-      <div className="max-w-2xl w-full bg-white shadow rounded-2xl p-6">
-        <h1 className="text-2xl font-bold text-green-700">Payment Successful ✅</h1>
-        <p className="text-gray-600 text-sm mb-4">Session ID: {sessionId}</p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
+      <div className="w-full max-w-4xl bg-white shadow-xl rounded-xl p-8">
+        {/* Header */}
+        <div className="flex items-center gap-4 border-b pb-4 mb-6">
+          <img
+            src="/logo.jpg" // place your ITGuru logo in public/logo.png
+            alt="ITGuru"
+            className="h-16 w-16 object-contain"
+          />
+          <div>
+            <h1 className="text-2xl font-bold text-blue-800">
+              ITGuru Tuition Center
+            </h1>
+            <p className="text-sm text-gray-600">
+              123 Main Street, Colombo, Sri Lanka
+            </p>
+            <p className="text-sm text-gray-600">
+              Phone: +94 77 123 4567 | Email: info@itguru.lk
+            </p>
+            <p className="text-sm text-gray-600">Web: www.itguru.lk</p>
+          </div>
+        </div>
+
+        {/* Title */}
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          Timetable Report Summary
+        </h2>
 
         {loading && <p>Loading details...</p>}
-        {details && (
-          <div className="overflow-x-auto">
-            <table className="min-w-full border text-sm">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="px-3 py-2 text-left">Field</th>
-                  <th className="px-3 py-2 text-left">Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="px-3 py-2 font-medium">Class</td>
-                  <td className="px-3 py-2">{details.payment?.class_name}</td>
-                </tr>
-                <tr>
-                  <td className="px-3 py-2 font-medium">Amount</td>
-                  <td className="px-3 py-2">
-                    {details.payment?.amount}{" "}
-                    {details.session?.currency?.toUpperCase()}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-3 py-2 font-medium">Status</td>
-                  <td className="px-3 py-2">{details.payment?.status}</td>
-                </tr>
-                <tr>
-                  <td className="px-3 py-2 font-medium">Customer</td>
-                  <td className="px-3 py-2">
-                    {details.session?.customer_details?.email || "—"}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="px-3 py-2 font-medium">Date</td>
-                  <td className="px-3 py-2">
-                    {details.payment?.createdAt
-                      ? new Date(details.payment.createdAt).toLocaleString()
-                      : "—"}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        )}
 
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="min-w-full border border-gray-200">
+            <thead className="bg-blue-900 text-white text-sm">
+              <tr>
+                <th className="px-4 py-2 text-left">ID</th>
+                <th className="px-4 py-2 text-left">Date</th>
+                <th className="px-4 py-2 text-left">Time</th>
+                <th className="px-4 py-2 text-left">Subject</th>
+                <th className="px-4 py-2 text-left">Type</th>
+                <th className="px-4 py-2 text-left">Status</th>
+              </tr>
+            </thead>
+            <tbody className="text-sm">
+              {/* Example static rows (replace with mapped data if needed) */}
+              <tr className="border-b">
+                <td className="px-4 py-2">TT25924101351</td>
+                <td className="px-4 py-2">9/24/2025</td>
+                <td className="px-4 py-2">08:00 AM - 10:00 AM</td>
+                <td className="px-4 py-2">Basic concept of ICT</td>
+                <td className="px-4 py-2">Theory</td>
+                <td className="px-4 py-2">Published</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2">TT25924013630</td>
+                <td className="px-4 py-2">9/29/2025</td>
+                <td className="px-4 py-2">05:30 AM - 07:00 AM</td>
+                <td className="px-4 py-2">Pas</td>
+                <td className="px-4 py-2">Revision</td>
+                <td className="px-4 py-2">Published</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Actions */}
         <div className="mt-6 flex gap-3">
           <button
             onClick={downloadReceipt}
@@ -107,17 +123,17 @@ export default function PaymentSuccess() {
             Download Receipt (PDF)
           </button>
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/class/:id")}
             className="px-4 py-2 rounded-lg border"
+          >
+            Go to Class
+          </button>
+          <button
+            onClick={() => navigate("/")}
+            className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
           >
             Home
           </button>
-          <button
-  onClick={() => navigate(`/class/${details.payment?.class_name}`)}
-  className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
->
-  Go to Class
-</button>
         </div>
       </div>
     </div>

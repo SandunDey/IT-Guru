@@ -32,17 +32,17 @@ const Navbar = () => {
               Home
             </a>
             <a href="#" className="text-gray-600 hover:text-blue-600 font-medium">
-              Courses
+              Classes
             </a>
-            <a href="#" className="text-gray-600 hover:text-blue-600 font-medium">
-              Tutors
+            <a href="/announcement" className="text-gray-600 hover:text-blue-600 font-medium">
+              Announcement
             </a>
-            <a href="#" className="text-gray-600 hover:text-blue-600 font-medium">
+             {/* <a href="#" className="text-gray-600 hover:text-blue-600 font-medium">
               Pricing
-            </a>
-            <a href="#" className="text-gray-600 hover:text-blue-600 font-medium">
+            </a> */}
+             <a href="/contactus" className="text-gray-600 hover:text-blue-600 font-medium">
               Contact
-            </a>
+            </a> 
             <a href="/aboutus" className="text-gray-600 hover:text-blue-600 font-medium">
               About Us
             </a>
@@ -72,10 +72,10 @@ const Navbar = () => {
               Home
             </a>
             <a href="#" className="block px-3 py-2 text-gray-600 hover:text-blue-600 font-medium">
-              Courses
+              Classes
             </a>
-            <a href="#" className="block px-3 py-2 text-gray-600 hover:text-blue-600 font-medium">
-              Tutors
+            <a href="/announcement" className="block px-3 py-2 text-gray-600 hover:text-blue-600 font-medium">
+              Announcement
             </a>
             <a href="#" className="block px-3 py-2 text-gray-600 hover:text-blue-600 font-medium">
               Pricing

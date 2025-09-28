@@ -219,6 +219,7 @@ export default function TeacherDashboard() {
         <div className="p-4">
           <FancyButton
             onClick={() => alert("Logout clicked")}
+            
             className="w-full bg-red-500 hover:bg-red-600 text-white rounded-xl shadow-sm"
           >
             <LogOut size={16} /> Logout

@@ -17,6 +17,8 @@ export default function AssessmentModal({ open, onClose, initial }) {
     questions: [{ text: "", options: ["", "", "", ""], correctIndex: 0 }],
   });
 
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     if (!open) return;
     if (initial) {
@@ -55,6 +57,7 @@ export default function AssessmentModal({ open, onClose, initial }) {
         questions: [{ text: "", options: ["", "", "", ""], correctIndex: 0 }],
       });
     }
+    setErrors({});
   }, [open, initial]);
 
   if (!open) return null;
@@ -78,7 +81,30 @@ export default function AssessmentModal({ open, onClose, initial }) {
       questions: f.questions.filter((_, idx) => idx !== i),
     }));
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!form.title.trim()) newErrors.title = "Title is required";
+    if (!form.schedule) newErrors.schedule = "Schedule date/time is required";
+    if (form.duration <= 0) newErrors.duration = "Duration must be greater than 0";
+    if (form.totalMarks <= 0) newErrors.totalMarks = "Total marks must be greater than 0";
+
+    form.questions.forEach((q, i) => {
+      if (!q.text.trim()) newErrors[`q-${i}`] = "Question text is required";
+      q.options.forEach((opt, oi) => {
+        if (!opt.trim()) newErrors[`q-${i}-opt-${oi}`] = "Option cannot be empty";
+      });
+    });
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const save = async () => {
+    if (!validateForm()) {
+      toast.error("Please fix the errors before saving");
+      return;
+    }
+
     try {
       if (!form.title.trim()) return toast.error("Title is required");
       if (!form.questions.length) return toast.error("Add at least one question");
@@ -124,7 +150,6 @@ export default function AssessmentModal({ open, onClose, initial }) {
 
       {/* wrapper */}
       <div className="absolute inset-0 flex items-start justify-center p-4 sm:p-6">
-        {/* PANEL: fixed height + grid rows (header / body / footer) */}
         <div
           className="
             w-[96%] max-w-4xl bg-white rounded-2xl shadow-lg overflow-hidden
@@ -150,7 +175,7 @@ export default function AssessmentModal({ open, onClose, initial }) {
             </div>
           </div>
 
-          {/* BODY (ONLY scroll area) */}
+          {/* BODY */}
           <div className="min-h-0 overflow-y-auto overscroll-contain px-6 py-5">
             <div className="grid md:grid-cols-2 gap-5">
               <div className="space-y-3">
@@ -159,9 +184,12 @@ export default function AssessmentModal({ open, onClose, initial }) {
                   <input
                     value={form.title}
                     onChange={(e) => setForm({ ...form, title: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
+                    className={`w-full border rounded-lg px-3 py-2 ${
+                      errors.title ? "border-red-500" : ""
+                    }`}
                     placeholder="e.g., SQL Joins Quiz"
                   />
+                  {errors.title && <p className="text-red-500 text-xs">{errors.title}</p>}
                 </div>
                 <div>
                   <label className="text-sm text-gray-600">Type *</label>
@@ -181,8 +209,11 @@ export default function AssessmentModal({ open, onClose, initial }) {
                     type="datetime-local"
                     value={form.schedule}
                     onChange={(e) => setForm({ ...form, schedule: e.target.value })}
-                    className="w-full border rounded-lg px-3 py-2"
+                    className={`w-full border rounded-lg px-3 py-2 ${
+                      errors.schedule ? "border-red-500" : ""
+                    }`}
                   />
+                  {errors.schedule && <p className="text-red-500 text-xs">{errors.schedule}</p>}
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -191,8 +222,11 @@ export default function AssessmentModal({ open, onClose, initial }) {
                       type="number"
                       value={form.duration}
                       onChange={(e) => setForm({ ...form, duration: Number(e.target.value) })}
-                      className="w-full border rounded-lg px-3 py-2"
+                      className={`w-full border rounded-lg px-3 py-2 ${
+                        errors.duration ? "border-red-500" : ""
+                      }`}
                     />
+                    {errors.duration && <p className="text-red-500 text-xs">{errors.duration}</p>}
                   </div>
                   <div>
                     <label className="text-sm text-gray-600">Total Marks</label>
@@ -200,8 +234,11 @@ export default function AssessmentModal({ open, onClose, initial }) {
                       type="number"
                       value={form.totalMarks}
                       onChange={(e) => setForm({ ...form, totalMarks: Number(e.target.value) })}
-                      className="w-full border rounded-lg px-3 py-2"
+                      className={`w-full border rounded-lg px-3 py-2 ${
+                        errors.totalMarks ? "border-red-500" : ""
+                      }`}
                     />
+                    {errors.totalMarks && <p className="text-red-500 text-xs">{errors.totalMarks}</p>}
                   </div>
                 </div>
                 <div>
@@ -258,9 +295,14 @@ export default function AssessmentModal({ open, onClose, initial }) {
                     <input
                       value={q.text}
                       onChange={(e) => setQ(idx, { ...q, text: e.target.value })}
-                      className="w-full border rounded-lg px-3 py-2"
+                      className={`w-full border rounded-lg px-3 py-2 ${
+                        errors[`q-${idx}`] ? "border-red-500" : ""
+                      }`}
                       placeholder="Question text"
                     />
+                    {errors[`q-${idx}`] && (
+                      <p className="text-red-500 text-xs">{errors[`q-${idx}`]}</p>
+                    )}
                     <div className="grid grid-cols-1 gap-2">
                       {q.options.map((opt, oi) => (
                         <label key={oi} className="flex items-center gap-2">
@@ -277,9 +319,14 @@ export default function AssessmentModal({ open, onClose, initial }) {
                               copy[oi] = e.target.value;
                               setQ(idx, { ...q, options: copy });
                             }}
-                            className="flex-1 border rounded-lg px-3 py-2"
+                            className={`flex-1 border rounded-lg px-3 py-2 ${
+                              errors[`q-${idx}-opt-${oi}`] ? "border-red-500" : ""
+                            }`}
                             placeholder={`Option ${oi + 1}`}
                           />
+                          {errors[`q-${idx}-opt-${oi}`] && (
+                            <p className="text-red-500 text-xs">{errors[`q-${idx}-opt-${oi}`]}</p>
+                          )}
                         </label>
                       ))}
                     </div>
@@ -289,7 +336,7 @@ export default function AssessmentModal({ open, onClose, initial }) {
             </div>
           </div>
 
-          {/* footer (always visible) */}
+          {/* footer */}
           <div className="px-6 py-4 border-t bg-white pb-[env(safe-area-inset-bottom)]">
             <div className="flex justify-end gap-3">
               <button onClick={onClose} className="px-4 py-2 rounded-lg bg-white border">Cancel</button>
