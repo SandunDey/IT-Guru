@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { FaInfoCircle } from "react-icons/fa";
 
-// ✅ Add API base URL
+// ✅ Add API base URL *******************************************************************************************
 const RAW_BASE =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_BASE_URL) ||// get API URL from Vite env
   (typeof process !== "undefined" && process.env?.REACT_APP_API_BASE_URL) ||// fallback if React env used
@@ -51,7 +51,7 @@ export default function UserEnrollmentPage() {
     try {
       const key = enrollmentKey.trim().toUpperCase();
 
-      // 1️⃣ Verify student exists
+      // 1️⃣ Verify student exists **************************
       const res = await fetch(`${API_BASE}/api/student/verify/${key}`);
       if (!res.ok) {
         const data = await res.json();
@@ -59,7 +59,7 @@ export default function UserEnrollmentPage() {
       }
       const verifiedStudent = await res.json();// valid student data
 
-      // 2️⃣ Create a new enrollment
+      // 2️⃣ Create a new enrollment ************************
       const enrollmentRes = await fetch(`${API_BASE}/api/enrollments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
