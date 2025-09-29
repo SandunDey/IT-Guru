@@ -16,6 +16,11 @@ import UserAnnouncementPage from "./pages/announcementPage.jsx";
 import HomePage from "./pages/homePage.jsx";
 import AnnouncementReport from "./pages/announcementReport.jsx";
 import HelpCenterPage from "./HelpCenterPage.jsx";
+// somewhere in startup code (e.g., App.jsx)
+import api from "./utils/api";
+const token = localStorage.getItem("token");
+if (token) api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
 
 import StaffPage from "./StaffPage.jsx";
 import LoginPage from "./loging.jsx";
@@ -48,6 +53,8 @@ import FeedbackPage from './pages/FeedbackPage.jsx';
 import TempAdminDashboard from './pages/TempAdminDashboard.jsx';
 import TempFeedbackDashboard from './pages/TempFeedbackDashboard.jsx';
 import FloatingButtons from "./components/FloatingButtons";
+import SignIn from "./pages/SignIn.jsx";
+import SignUp from "./pages/SignUp.jsx";
 
 
 
@@ -73,6 +80,8 @@ export default function App() {
         <Route path="/announcement/report" element={<AnnouncementReport />} />
         <Route path="/dashboard" element={<AdminDashboard />} />
         <Route path="/contactus" element={<ContactUs />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup2" element={<SignUp />} />
    
         <Route path="/admin" element={<LoginPage />} />
         <Route path="/Uservideos" element={<UserVideos />} />
