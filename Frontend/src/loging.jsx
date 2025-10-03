@@ -2,15 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  Eye,
-  EyeOff,
-  Shield,
-  Mail,
-  Lock,
-  AlertCircle,
-  UserPlus,
-} from "lucide-react";
+import { Eye, EyeOff, Shield, AlertCircle, UserPlus } from "lucide-react";
 
 import ITGURULogo from "./assets/logo.jpg";
 import LoginBG from "./assets/background.jpg";
@@ -18,7 +10,7 @@ import LoginBG from "./assets/background.jpg";
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 export default function LoginPage() {
-  const [role, setRole] = useState("student");
+  // ❌ NO role select in UI — we’ll auto-detect by hitting endpoints
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -37,61 +29,80 @@ export default function LoginPage() {
     return "";
   };
 
+  // Helper: try one endpoint and normalize the response
+  async function tryLoginTo(url, assumedRole) {
+    const res = await axios.post(url, { email, password });
+    const { token, user, student, teacher, admin } = res.data || {};
+    const finalUser = user || student || teacher || admin;
+    if (!finalUser && !token) {
+      throw new Error("Invalid response from server");
+    }
+    const role =
+      (finalUser && (finalUser.role || finalUser.userRole)) || assumedRole;
+
+    return { token, user: finalUser, role: role?.toLowerCase() };
+  }
+
   async function onLogin(e) {
     e.preventDefault();
     if (loading) return;
-    setError("");
 
+    setError("");
     const v = validate();
     if (v) return setError(v);
 
     try {
       setLoading(true);
 
-    
-      // ✅ Pick correct API endpoint
-      let url = "";
-      switch (role.toLowerCase()) {
-        case "admin":
-          url = `${API_BASE}/api/admin/login`;
-          break;
-        case "student":
-          url = `${API_BASE}/api/student/login`;
-          break;
-        case "teacher":
-          url = `${API_BASE}/api/teacher/login`;
-          break;
-        default:
-          throw new Error("Invalid role selected");
+      // Order matters: usually admin/teacher are fewer, student is common.
+      const candidates = [
+        { role: "admin", url: `${API_BASE}/api/admin/login` },
+        { role: "teacher", url: `${API_BASE}/api/teacher/login` },
+        { role: "student", url: `${API_BASE}/api/student/login` },
+      ];
+
+      let success = null;
+
+      for (const ep of candidates) {
+        try {
+          success = await tryLoginTo(ep.url, ep.role);
+          break; // stop on first success
+        } catch (err) {
+          // If it's an auth error, keep trying next role; network/500 => surface it
+          const status = err?.response?.status;
+          if (![400, 401, 403, 404].includes(status)) {
+            throw err;
+          }
+        }
       }
 
+      if (!success) {
+        // No endpoint accepted these credentials
+        throw new Error("Invalid email or password");
+      }
 
+      // Save to storage
+      const storage = remember ? localStorage : sessionStorage;
+      if (success.token) storage.setItem("authToken", success.token);
+      storage.setItem(
+        "authUser",
+        JSON.stringify({ ...(success.user || {}), role: success.role })
+      );
 
-      const res = await axios.post(url, { email, password });
-const { token, user, student, teacher } = res.data;
-const finalUser = user || student || teacher;
-
-      if (!finalUser) throw new Error("Login failed");
-
-      // ✅ Save to storage
-const storage = remember ? localStorage : sessionStorage;
-if (token) storage.setItem("authToken", token);
-
-// Always attach role, fallback to selected role
-const userWithRole = { ...finalUser, role: finalUser.role || role };
-storage.setItem("authUser", JSON.stringify(userWithRole));
-
-// ✅ Navigate by role (if/else)
-if (userWithRole.role.toLowerCase() === "admin") {
-  navigate("/admin/dashboard", { replace: true });
-} else if (userWithRole.role.toLowerCase() === "student") {
-  navigate("/StudentDashboard", { replace: true });
-} else if (userWithRole.role.toLowerCase() === "teacher") {
-  navigate("/teacher", { replace: true });
-} else {
-  navigate("/", { replace: true });
-}
-
+      // Navigate by detected role
+      switch (success.role) {
+        case "admin":
+          navigate("/admin/dashboard", { replace: true });
+          break;
+        case "teacher":
+          navigate("/teacher", { replace: true });
+          break;
+        case "student":
+          navigate("/StudentDashboard", { replace: true });
+          break;
+        default:
+          navigate("/", { replace: true });
+      }
     } catch (err) {
       setError(err?.response?.data?.message || err.message || "Login failed");
     } finally {
@@ -100,7 +111,8 @@ if (userWithRole.role.toLowerCase() === "admin") {
   }
 
   function onCreateAccount() {
-    navigate(`/signup?role=${encodeURIComponent(role)}`);
+    // Sign-up is for students only
+    navigate("/signup?role=student");
   }
 
   useEffect(() => {
@@ -155,20 +167,6 @@ if (userWithRole.role.toLowerCase() === "admin") {
               </div>
 
               <form onSubmit={onLogin} className="space-y-4">
-                {/* Role */}
-                <div>
-                  <label className="mb-1 block text-sm font-medium">Role</label>
-                  <select
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    className="w-full rounded-xl border border-black/10 px-3 py-2 text-sm"
-                  >
-                    <option value="student">Student</option>
-                    <option value="teacher">Teacher</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-
                 {/* Email */}
                 <div>
                   <label className="mb-1 block text-sm font-medium">Email</label>
@@ -202,16 +200,24 @@ if (userWithRole.role.toLowerCase() === "admin") {
                     </button>
                   </div>
                   {caps && (
-                    <span className="text-xs text-amber-600 mt-1">
-                      <AlertCircle size={14} /> Caps Lock is on
-                    </span>
+                    <div className="mt-1 flex items-center gap-1 text-xs text-amber-600">
+                      <AlertCircle size={14} /> <span>Caps Lock is on</span>
+                    </div>
                   )}
                 </div>
 
                 {/* Error */}
-                {error && (
-                  <div className="text-sm text-red-600">{error}</div>
-                )}
+                {error && <div className="text-sm text-red-600">{error}</div>}
+
+                {/* Remember me (optional UI) */}
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={remember}
+                    onChange={(e) => setRemember(e.target.checked)}
+                  />
+                  Remember me
+                </label>
 
                 <button
                   type="submit"

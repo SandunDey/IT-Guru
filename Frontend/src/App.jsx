@@ -53,8 +53,7 @@ import FeedbackPage from './pages/FeedbackPage.jsx';
 import TempAdminDashboard from './pages/TempAdminDashboard.jsx';
 import TempFeedbackDashboard from './pages/TempFeedbackDashboard.jsx';
 import FloatingButtons from "./components/FloatingButtons";
-import SignIn from "./pages/SignIn.jsx";
-import SignUp from "./pages/SignUp.jsx";
+
 
 
 
@@ -80,8 +79,7 @@ export default function App() {
         <Route path="/announcement/report" element={<AnnouncementReport />} />
         <Route path="/dashboard" element={<AdminDashboard />} />
         <Route path="/contactus" element={<ContactUs />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup2" element={<SignUp />} />
+        
    
         <Route path="/admin" element={<LoginPage />} />
         <Route path="/Uservideos" element={<UserVideos />} />
